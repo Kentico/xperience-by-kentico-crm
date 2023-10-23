@@ -13,5 +13,10 @@
     <PackageVersion Include="kentico.xperience.imageprocessing" Version="27.0.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.6.0.74858" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
+    <PackageVersion Include="NUnit" Version="3.13.3" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="4.4.2" />
+    <PackageVersion Include="NUnit.Analyzers" Version="3.6.1" />
+    <PackageVersion Include="coverlet.collector" Version="3.2.0" />
   </ItemGroup>
 </Project>

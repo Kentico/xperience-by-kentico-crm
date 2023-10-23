@@ -1,0 +1,14 @@
+﻿namespace DancingGoat.Models
+{
+    public record SocialLinkViewModel(string Title, string Url, string IconPath)
+    {
+        /// <summary>
+        /// Validates and maps <see cref="SocialLink"/> to a <see cref="SocialLinkViewModel"/>.
+        /// </summary>
+        public static SocialLinkViewModel GetViewModel(SocialLink socialLink)
+        {
+            string socialLinkUrl = Uri.TryCreate(socialLink.SocialLinkUrl, UriKind.Absolute, out var _) ? socialLink.SocialLinkUrl : string.Empty;
+            return new SocialLinkViewModel(socialLink.SocialLinkTitle, socialLinkUrl, socialLink.SocialLinkIcon.FirstOrDefault()?.ImageFile?.Url);
+        }
+    }
+}
