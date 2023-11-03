@@ -5,8 +5,6 @@ VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A94EE676-9ABE-44EA-BF9E-22004E9D54C9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DancingGoat", "src\Kentico.Xperience.CRM.Sample\DancingGoat.csproj", "{F1CA0C86-BC78-491F-A57A-8CF91C2B514B}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7C8D51F1-E71F-4DFE-BAE3-8B1D9180EEB4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kentico.Xperience.CRM.Common.Tests", "test\Kentico.Xperience.CRM.Common.Tests\Kentico.Xperience.CRM.Common.Tests.csproj", "{49602DC0-772B-4AE8-B492-3AB201BC9201}"
@@ -35,16 +33,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Dynam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.SalesForce", "src\Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj", "{08A93C9E-9037-4193-B386-37A6AA085A93}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{6264600D-221E-4E51-9D7F-14411DF793DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DancingGoat", "examples\DancingGoat\DancingGoat.csproj", "{A512E2C5-03C4-4707-800F-4BC6AA4C875C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F1CA0C86-BC78-491F-A57A-8CF91C2B514B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F1CA0C86-BC78-491F-A57A-8CF91C2B514B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F1CA0C86-BC78-491F-A57A-8CF91C2B514B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F1CA0C86-BC78-491F-A57A-8CF91C2B514B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49602DC0-772B-4AE8-B492-3AB201BC9201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49602DC0-772B-4AE8-B492-3AB201BC9201}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49602DC0-772B-4AE8-B492-3AB201BC9201}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,16 +59,20 @@ Global
 		{08A93C9E-9037-4193-B386-37A6AA085A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08A93C9E-9037-4193-B386-37A6AA085A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08A93C9E-9037-4193-B386-37A6AA085A93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A512E2C5-03C4-4707-800F-4BC6AA4C875C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A512E2C5-03C4-4707-800F-4BC6AA4C875C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A512E2C5-03C4-4707-800F-4BC6AA4C875C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A512E2C5-03C4-4707-800F-4BC6AA4C875C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{F1CA0C86-BC78-491F-A57A-8CF91C2B514B} = {A94EE676-9ABE-44EA-BF9E-22004E9D54C9}
 		{49602DC0-772B-4AE8-B492-3AB201BC9201} = {7C8D51F1-E71F-4DFE-BAE3-8B1D9180EEB4}
 		{AC7921C7-00EA-46FC-BDAF-A0BF7D5AD78B} = {A94EE676-9ABE-44EA-BF9E-22004E9D54C9}
 		{3AD02840-A1EE-43D7-A6AA-0BEFCA88ACDB} = {A94EE676-9ABE-44EA-BF9E-22004E9D54C9}
 		{08A93C9E-9037-4193-B386-37A6AA085A93} = {A94EE676-9ABE-44EA-BF9E-22004E9D54C9}
+		{A512E2C5-03C4-4707-800F-4BC6AA4C875C} = {6264600D-221E-4E51-9D7F-14411DF793DD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1B2A20BC-F57B-4AAE-B1C2-E4DC52EFCAC5}

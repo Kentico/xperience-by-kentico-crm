@@ -23,8 +23,8 @@
     <DefineConstants>$(DefineConstants);SEPARATED_ADMIN</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj" />
-    <ProjectReference Include="..\Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj" />
+    <ProjectReference Include="..\..\src\Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj" />
+    <ProjectReference Include="..\..\src\Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kentico.xperience.admin" Condition="'$(SeparatedAdmin)' == 'false'" />
