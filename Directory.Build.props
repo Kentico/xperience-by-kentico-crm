@@ -8,11 +8,11 @@
     <VersionPrefix>1.0.0-prerelease-1</VersionPrefix>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
 
-    <PackageProjectUrl>https://github.com/Kentico/xperience-by-kentico-salesforce-sales-cloud</PackageProjectUrl>
-    <PackageReleaseNotes>https://github.com/Kentico/xperience-by-kentico-salesforce-sales-cloud/releases</PackageReleaseNotes>
+    <PackageProjectUrl>https://github.com/Kentico/xperience-by-kentico-crm</PackageProjectUrl>
+    <PackageReleaseNotes>https://github.com/Kentico/xperience-by-kentico-crm/releases</PackageReleaseNotes>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>xperience;kentico;aspnetcore;salesforce</PackageTags>
+    <PackageTags>xperience;kentico;aspnetcore;crm</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,7 +29,6 @@
     <CopyDocumentationFilesFromPackages>true</CopyDocumentationFilesFromPackages>
     <CopyDebugSymbolFilesFromPackages>true</CopyDebugSymbolFilesFromPackages>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <RootNamespace>Kentico.Xperience.SalesforceSalesCloud</RootNamespace>
 
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
   </PropertyGroup>
@@ -42,7 +41,7 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
-  <ItemGroup Label="StaticCodeAnalysis">
+  <ItemGroup Label="StaticCodeAnalysis" Condition=" $(DisableCodeAnalysis) != 'True' ">
     <PackageReference Include="SonarAnalyzer.CSharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -4,6 +4,8 @@
     <UserSecretsId>7c090b2f-e617-4788-a234-2d7a5e11b80a</UserSecretsId>
     <SeparatedAdmin Condition="'$(SeparatedAdmin)' == ''">false</SeparatedAdmin>
     <Nullable>disable</Nullable>
+    <DisableCodeAnalysis>True</DisableCodeAnalysis>
+    <NoWarn>$(NoWarn);CS1570;CS1572</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="App_Data\CMSModules\WebFarm\webfarm.sync" />
@@ -21,6 +23,8 @@
     <DefineConstants>$(DefineConstants);SEPARATED_ADMIN</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj" />
+    <ProjectReference Include="..\Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="kentico.xperience.admin" Condition="'$(SeparatedAdmin)' == 'false'" />

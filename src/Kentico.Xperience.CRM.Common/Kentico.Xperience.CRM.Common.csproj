@@ -1,6 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Description>Shared functionality for all Xperience by Kentico CRM platform integrations</Description>
+    <RootNamespace>Kentico.Xperience.CRM.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

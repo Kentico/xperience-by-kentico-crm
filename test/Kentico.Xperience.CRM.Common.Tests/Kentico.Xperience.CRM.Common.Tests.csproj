@@ -3,6 +3,8 @@
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+
+    <RootNamespace>Kentico.Xperience.CRM.Common.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
