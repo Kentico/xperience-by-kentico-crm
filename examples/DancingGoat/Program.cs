@@ -1,16 +1,24 @@
+using CMS.OnlineForms;
+using CMS.OnlineForms.Types;
 using DancingGoat;
 using DancingGoat.Models;
+using DancingGoat.Services.CRM;
 using Kentico.Activities.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 using Kentico.Membership;
 using Kentico.OnlineMarketing.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
+using Kentico.Xperience.CRM.Common;
+using Kentico.Xperience.CRM.Dynamics;
+using Kentico.Xperience.CRM.Dynamics.Configuration;
+using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
+using Kentico.Xperience.CRM.SalesForce;
+using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +52,33 @@ builder.Services.AddLocalization()
 builder.Services.AddDancingGoatServices();
 
 ConfigureMembershipServices(builder.Services);
+
+//CRM integration registration start
+builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME,
+            c => c
+                .MapField("UserFirstName", "firstname")
+                .MapField<Lead>("UserLastName", e => e.LastName)
+                .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1)
+                .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+        )
+        .ExternalIdField("new_kenticoid")//optional custom field when you want updates to work
+    ,
+    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
+
+builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME,
+                    c => c
+                        .MapField("UserFirstName", "FirstName")
+                        .MapField("UserLastName", e => e.LastName)
+                        .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+                        .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+                )
+                .ExternalIdField("KenticoID__c")//optional custom field when you want updates to work
+        ,
+        builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName))
+    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+//CRM integration registration end
 
 var app = builder.Build();
 

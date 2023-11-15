@@ -10,6 +10,7 @@
     <PackageVersion Include="Kentico.Xperience.WebApp" Version="27.0.1" />
     <PackageVersion Include="kentico.xperience.azurestorage" Version="27.0.1" />
     <PackageVersion Include="kentico.xperience.imageprocessing" Version="27.0.1" />
+	<PackageVersion Include="Kentico.Xperience.Core" Version="27.0.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="1.1.1" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.6.0.74858" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
@@ -17,5 +18,9 @@
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
     <PackageVersion Include="NUnit.Analyzers" Version="3.9.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
+	<PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.1.14" />
+	<PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="2.0.3" />
+	<PackageVersion Include="IdentityModel" Version="6.2.0" />	
+	<PackageVersion Include="NSwag.ApiDescription.Client" Version="13.18.2" />
   </ItemGroup>
 </Project>
