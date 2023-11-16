@@ -29,16 +29,129 @@ The versions of this library are supported by the following versions of Xperienc
 
 ---This details the steps required to add the library to a solution. This could include multiple packages (NuGet and/or npm)---
 
+### Dynamics Sales integration
 Add the package to your application using the .NET CLI
 
 ```powershell
-dotnet add package Kentico.Xperience.SalesforceSalesCloud
+dotnet add package Kentico.Xperience.CRM.Dynamics
+```
+
+### SalesForce Sales integration
+Add the package to your application using the .NET CLI
+
+```powershell
+dotnet add package Kentico.Xperience.CRM.SalesForce
 ```
 
 ## Quick Start
 
----This section shows how to quickly get started with the library. The minimum number of steps (without all the details) should be listed
-to give a developer a general idea of what is involved---
+1. Fill CRM (Dynamics/SalesForce) settings
+2. Register services and setup form-lead mapping
+3. Start to use
+
+### CRM settings
+
+Integration uses OAuth client credentials scheme.
+Fill and add this settings to appsettings.json (API config is recommended to have in appsecrets.json)
+
+#### Dynamics settings
+
+```json
+{
+  "DynamicsCRMIntegration": {
+    "FormLeadsEnabled": true,
+    "ApiConfig": {
+      "DynamicsUrl": "",
+      "ClientId": "",
+      "ClientSecret": ""
+    }
+  }
+}
+```
+
+#### SalesForce settings
+
+```json
+{
+  "SalesForceCRMIntegration": {
+    "FormLeadsEnabled": true,
+    "ApiConfig": {
+      "SalesForceUrl": "",
+      "ClientId": "",
+      "ClientSecret": ""
+    }
+  }
+}
+```
+
+### Forms data - Leads integration
+
+Configure mapping for each form between Kentico Form fields and Dynamics Lead entity fields:
+
+#### Dynamics Sales
+   ```csharp
+    // Program.cs
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    // ...
+   
+   builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                    c => c
+                        .MapField("UserFirstName", "firstname")
+                        .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
+                        .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
+                        .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
+                )
+                .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
+        ,
+        builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
+   ```
+
+You can also register custom validation service to handle if given form item should be processed to CRM:
+
+```csharp
+    builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+        ... 
+    )
+    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+```
+
+#### SalesForce
+
+   ```csharp
+    // Program.cs
+
+    var builder = WebApplication.CreateBuilder(args);
+
+    // ...
+   
+   builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                c => c
+                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
+                    .MapField("UserLastName",
+                        e => e.LastName) //option 2: mapping source name string -> member expression to SObject
+                    .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+                    //option 3: source mapping function from generated BizForm object  -> member expression to SObject
+                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+                //option 4: source mapping function general BizFormItem  -> member expression to SObject
+            )            
+            .ExternalIdField("KenticoID") //optional custom field when you want updates to work
+    ,
+    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
+   ```
+
+You can also register custom validation service to handle if given form item should be processed to CRM:
+
+```csharp
+    builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+        ... 
+    )
+    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+```
+
 
 ## Full Instructions
 

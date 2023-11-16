@@ -29,11 +29,7 @@ builder.Services.AddKentico(features =>
     {
         DefaultSectionIdentifier = ComponentIdentifiers.SINGLE_COLUMN_SECTION,
         RegisterDefaultSection = false,
-        ContentTypeNames = new[]
-        {
-            LandingPage.CONTENT_TYPE_NAME,
-            ContactsPage.CONTENT_TYPE_NAME
-        }
+        ContentTypeNames = new[] { LandingPage.CONTENT_TYPE_NAME, ContactsPage.CONTENT_TYPE_NAME }
     });
 
     features.UseWebPageRouting();
@@ -47,7 +43,8 @@ builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true
 builder.Services.AddLocalization()
     .AddControllersWithViews()
     .AddViewLocalization()
-    .AddDataAnnotationsLocalization(options => options.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedResources)));
+    .AddDataAnnotationsLocalization(options =>
+        options.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedResources)));
 
 builder.Services.AddDancingGoatServices();
 
@@ -55,29 +52,33 @@ ConfigureMembershipServices(builder.Services);
 
 //CRM integration registration start
 builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
-        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME,
-            c => c
-                .MapField("UserFirstName", "firstname")
-                .MapField<Lead>("UserLastName", e => e.LastName)
-                .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1)
-                .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
-        )
-        .ExternalIdField("new_kenticoid")//optional custom field when you want updates to work
-    ,
-    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
+            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                    c => c
+                        .MapField("UserFirstName", "firstname")
+                        .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
+                        .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
+                        .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
+                )
+                .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
+        ,
+        builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
+    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
 
 builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
-            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME,
-                    c => c
-                        .MapField("UserFirstName", "FirstName")
-                        .MapField("UserLastName", e => e.LastName)
-                        .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
-                        .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
-                )
-                .ExternalIdField("KenticoID__c")//optional custom field when you want updates to work
-        ,
-        builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName))
-    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                c => c
+                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
+                    .MapField("UserLastName", e => e.LastName) //option 2: mapping source name string -> member expression to SObject
+                    .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+                    //option 3: source mapping function from generated BizForm object  -> member expression to SObject
+                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+                    //option 4: source mapping function general BizFormItem  -> member expression to SObject
+            )
+            .ExternalIdField("KenticoID") //optional custom field when you want updates to work
+    //.AddForm("formname") // add another forms definitions
+    ,
+    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
+
 //CRM integration registration end
 
 var app = builder.Build();
@@ -100,27 +101,21 @@ app.UseStatusCodePagesWithReExecute("/error/{0}");
 app.Kentico().MapRoutes();
 
 app.MapControllerRoute(
-   name: "error",
-   pattern: "error/{code}",
-   defaults: new { controller = "HttpErrors", action = "Error" }
+    name: "error",
+    pattern: "error/{code}",
+    defaults: new { controller = "HttpErrors", action = "Error" }
 );
 
 app.MapControllerRoute(
     name: DancingGoatConstants.DEFAULT_ROUTE_NAME,
     pattern: $"{{{WebPageRoutingOptions.LANGUAGE_ROUTE_VALUE_KEY}}}/{{controller}}/{{action}}",
-    constraints: new
-    {
-        controller = DancingGoatConstants.CONSTRAINT_FOR_NON_ROUTER_PAGE_CONTROLLERS
-    }
+    constraints: new { controller = DancingGoatConstants.CONSTRAINT_FOR_NON_ROUTER_PAGE_CONTROLLERS }
 );
 
 app.MapControllerRoute(
     name: DancingGoatConstants.DEFAULT_ROUTE_WITHOUT_LANGUAGE_PREFIX_NAME,
     pattern: "{controller}/{action}",
-    constraints: new
-    {
-        controller = DancingGoatConstants.CONSTRAINT_FOR_NON_ROUTER_PAGE_CONTROLLERS
-    }
+    constraints: new { controller = DancingGoatConstants.CONSTRAINT_FOR_NON_ROUTER_PAGE_CONTROLLERS }
 );
 
 app.Run();
@@ -129,16 +124,16 @@ app.Run();
 static void ConfigureMembershipServices(IServiceCollection services)
 {
     services.AddIdentity<ApplicationUser, NoOpApplicationRole>(options =>
-    {
-        options.Password.RequireDigit = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequiredLength = 0;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequiredUniqueChars = 0;
-        // Ensures, that disabled member cannot sign in.
-        options.SignIn.RequireConfirmedAccount = true;
-    })
+        {
+            options.Password.RequireDigit = false;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequiredLength = 0;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequiredUniqueChars = 0;
+            // Ensures, that disabled member cannot sign in.
+            options.SignIn.RequireConfirmedAccount = true;
+        })
         .AddUserStore<ApplicationUserStore<ApplicationUser>>()
         .AddRoleStore<NoOpApplicationRoleStore>()
         .AddUserManager<UserManager<ApplicationUser>>()
@@ -152,7 +147,8 @@ static void ConfigureMembershipServices(IServiceCollection services)
         options.Events.OnRedirectToAccessDenied = ctx =>
         {
             var factory = ctx.HttpContext.RequestServices.GetRequiredService<IUrlHelperFactory>();
-            var urlHelper = factory.GetUrlHelper(new ActionContext(ctx.HttpContext, new RouteData(ctx.HttpContext.Request.RouteValues), new ActionDescriptor()));
+            var urlHelper = factory.GetUrlHelper(new ActionContext(ctx.HttpContext,
+                new RouteData(ctx.HttpContext.Request.RouteValues), new ActionDescriptor()));
             string url = urlHelper.Action("Login", "Account") + new Uri(ctx.RedirectUri).Query;
 
             ctx.Response.Redirect(url);
