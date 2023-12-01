@@ -1,4 +1,5 @@
 ﻿using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,8 @@ public static class ServiceCollectionExtensions
                 formsMappingConfig(mappingBuilder);
                 return mappingBuilder.Build<TMappingConfiguration>();
             });
+        
+        services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
 
         return services;
     }
