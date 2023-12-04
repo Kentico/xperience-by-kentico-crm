@@ -31,7 +31,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         BizFormItemEvents.Insert.After += BizFormInserted;
         BizFormItemEvents.Update.After += BizFormUpdated;
         logger = Service.Resolve<ILogger<SalesForceBizFormGlobalEvents>>();
-        //Service.Resolve<ICrmModuleInstaller>().Install();
+        Service.Resolve<ICrmModuleInstaller>().Install();
         ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
     }
 
