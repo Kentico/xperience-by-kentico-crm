@@ -1,10 +1,12 @@
-﻿using CMS.Core;
+﻿using CMS.Base;
+using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
+using Kentico.Xperience.CRM.Dynamics.Workers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -30,6 +32,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         BizFormItemEvents.Update.After += BizFormUpdated;
         logger = Service.Resolve<ILogger<DynamicsBizFormGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();
+        ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
     }
 
     private async void BizFormInserted(object? sender, BizFormItemEventArgs e)

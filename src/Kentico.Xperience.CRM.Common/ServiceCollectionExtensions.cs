@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
             });
         
         services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
+        services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
 
         return services;
     }

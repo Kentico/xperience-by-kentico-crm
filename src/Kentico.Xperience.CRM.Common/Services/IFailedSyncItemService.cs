@@ -7,5 +7,6 @@ public interface IFailedSyncItemService
 {
     void LogFailedLeadItem(BizFormItem bizFormItem, string crmName);
     IEnumerable<FailedSyncItemInfo> GetFailedSyncItemsToReSync(string crmName);
-    BizFormItem GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
+    BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
+    void DeleteFailedSyncItem(string crmCrmName, string entityClass, int entityId);
 }

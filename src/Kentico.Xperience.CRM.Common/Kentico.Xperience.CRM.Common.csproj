@@ -16,5 +16,10 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+		<AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute">
+		</AssemblyAttribute>
+	</ItemGroup>
+
 </Project>
  

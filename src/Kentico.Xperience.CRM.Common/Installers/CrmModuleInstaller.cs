@@ -18,11 +18,11 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
     public void Install()
     {
-        // using (new CMSActionContext { ContinuousIntegrationAllowObjectSerialization = false })
-        // {
-        //     var resourceInfo = InstallModule();
-        //     InstallModuleClasses(resourceInfo);
-        // }
+        using (new CMSActionContext { ContinuousIntegrationAllowObjectSerialization = false })
+        {
+            var resourceInfo = InstallModule();
+            InstallModuleClasses(resourceInfo);
+        }
     }
 
     private ResourceInfo InstallModule()
@@ -48,8 +48,11 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
     private void InstallFailedSyncItemClass(ResourceInfo resourceInfo)
     {
-        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE) ??
-                                  DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
+        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE);
+        if (failedSyncItemClass is not null)
+            return;
+        
+        failedSyncItemClass = DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
 
         failedSyncItemClass.ClassName = FailedSyncItemInfo.OBJECT_TYPE;
         failedSyncItemClass.ClassTableName = FailedSyncItemInfo.OBJECT_TYPE.Replace(".", "_");
@@ -58,19 +61,8 @@ public class CrmModuleInstaller : ICrmModuleInstaller
         failedSyncItemClass.ClassType = ClassType.OTHER;
         
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(FailedSyncItemInfo.FailedSyncItemID));
-
+        
         var formItem = new FormFieldInfo
-        {
-            Name = nameof(FailedSyncItemInfo.EntityType),
-            Visible = false,
-            Precision = 0,
-            Size = 50,
-            DataType = "text",
-            Enabled = true
-        };
-        formInfo.AddFormItem(formItem);
-
-        formItem = new FormFieldInfo
         {
             Name = nameof(FailedSyncItemInfo.EntityClass),
             Visible = false,
@@ -132,9 +124,6 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         failedSyncItemClass.ClassFormDefinition = formInfo.GetXmlDefinition();
 
-        if (failedSyncItemClass.HasChanged)
-        {
-            DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
-        }
+        DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
     }
 }
