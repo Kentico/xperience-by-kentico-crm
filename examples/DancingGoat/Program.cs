@@ -74,7 +74,7 @@ builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
                     .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
                     //option 4: source mapping function general BizFormItem  -> member expression to SObject
             )
-            .ExternalIdField("KenticoID") //optional custom field when you want updates to work
+            .ExternalIdField("KenticoID__c") //optional custom field when you want updates to work
     //.AddForm("formname") // add another forms definitions
     ,
     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
