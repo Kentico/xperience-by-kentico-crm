@@ -33,7 +33,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         this.failedSyncItemService = failedSyncItemService;
     }
 
-    protected override async Task CreateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -49,6 +49,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             }
 
             await apiService.CreateLeadAsync(lead);
+            return true;
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
@@ -65,9 +66,11 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             logger.LogError(e, "Create lead failed - unexpected api error");
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
+
+        return false;
     }
 
-    protected override async Task UpdateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> UpdateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -83,10 +86,13 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             }
             else
             {
-                await CreateLeadAsync(bizFormItem, fieldMappings);
+                if (await CreateLeadAsync(bizFormItem, fieldMappings))
+                {
+                    failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                }
+
+                return true;
             }
-            
-            failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
@@ -103,6 +109,8 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             logger.LogError(e, "Update lead failed - unexpected api error");
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
+
+        return false;
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, LeadSObject lead,

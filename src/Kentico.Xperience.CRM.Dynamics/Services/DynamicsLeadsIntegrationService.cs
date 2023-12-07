@@ -1,4 +1,5 @@
 ﻿using CMS.OnlineForms;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
@@ -20,19 +21,22 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     private readonly DynamicsBizFormsMappingConfiguration bizFormMappingConfig;
     private readonly ServiceClient serviceClient;
     private readonly ILogger<DynamicsLeadsIntegrationService> logger;
+    private readonly IFailedSyncItemService failedSyncItemService;
 
     public DynamicsLeadsIntegrationService(
         DynamicsBizFormsMappingConfiguration bizFormMappingConfig, ILeadsIntegrationValidationService validationService,
         ServiceClient serviceClient,
-        ILogger<DynamicsLeadsIntegrationService> logger)
+        ILogger<DynamicsLeadsIntegrationService> logger,
+        IFailedSyncItemService failedSyncItemService)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
         this.serviceClient = serviceClient;
         this.logger = logger;
+        this.failedSyncItemService = failedSyncItemService;
     }
 
-    protected override async Task CreateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -51,22 +55,28 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             }
 
             await serviceClient.CreateAsync(leadEntity);
+            return true;
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", e.Detail);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", ie.Detail);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Create lead failed - unknown api error");
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
+
+        return false;
     }
 
-    protected override async Task UpdateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> UpdateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -79,21 +89,31 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             }
             else
             {
-                await CreateLeadAsync(bizFormItem, fieldMappings);
+                if (await CreateLeadAsync(bizFormItem, fieldMappings))
+                {
+                    failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                }
             }
+            
+            return true;
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
             logger.LogError(e, "Update lead failed - api error: {ApiResult}", e.Detail);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
             logger.LogError(e, "Update lead failed - api error: {ApiResult}", ie.Detail);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e)
         {
             logger.LogError(e, "Update lead failed - unknown api error");
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
+
+        return false;
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, Lead leadEntity,

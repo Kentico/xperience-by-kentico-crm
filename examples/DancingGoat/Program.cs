@@ -50,19 +50,19 @@ builder.Services.AddDancingGoatServices();
 
 ConfigureMembershipServices(builder.Services);
 
-// //CRM integration registration start
-// builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
-//             builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-//                     c => c
-//                         .MapField("UserFirstName", "firstname")
-//                         .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
-//                         .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
-//                         .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
-//                 )
-//                 .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
-//         ,
-//         builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
-//     .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
+//CRM integration registration start
+builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                    c => c
+                        .MapField("UserFirstName", "firstname")
+                        .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
+                        .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
+                        .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
+                )
+                .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
+        ,
+        builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
+    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
 
 builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
