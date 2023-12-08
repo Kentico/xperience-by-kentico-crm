@@ -3,7 +3,9 @@ using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Kentico.Xperience.CRM.Dynamics.Workers;
@@ -37,11 +39,12 @@ internal class DynamicsBizFormGlobalEvents : Module
 
     private async void BizFormInserted(object? sender, BizFormItemEventArgs e)
     {
+        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
             var settings = Service.Resolve<IOptions<DynamicsIntegrationSettings>>().Value;
             if (!settings.FormLeadsEnabled) return;
-
+            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider
@@ -53,6 +56,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         catch (Exception exception)
         {
             logger.LogError(exception, "Error occured during inserting lead");
+            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Dynamics);
         }
     }
 

@@ -5,6 +5,9 @@ using Kentico.Xperience.CRM.SalesForce.Services;
 
 namespace Kentico.Xperience.CRM.SalesForce.Workers;
 
+/// <summary>
+/// Specific thread worker for SalesForce which try to synchronize failed items. It run each 1 minute.
+/// </summary>
 public class FailedItemsWorker : FailedSyncItemsWorkerBase<FailedItemsWorker, ISalesForceLeadsIntegrationService,
     SalesForceIntegrationSettings, SalesForceApiConfig>
 {

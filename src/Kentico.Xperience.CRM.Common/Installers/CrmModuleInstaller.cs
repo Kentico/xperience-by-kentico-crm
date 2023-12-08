@@ -7,6 +7,11 @@ using Kentico.Xperience.CRM.Common.Constants;
 
 namespace Kentico.Xperience.CRM.Common.Installers;
 
+/// <summary>
+/// This installer creates custom module for common crm functionality
+/// Currently this module contains only custom class for failed synchronizations items <see cref="FailedSyncItemInfo"/>
+/// which is created when not exists on start.
+/// </summary>
 public class CrmModuleInstaller : ICrmModuleInstaller
 {
     private readonly IResourceInfoProvider resourceInfoProvider;
@@ -51,7 +56,7 @@ public class CrmModuleInstaller : ICrmModuleInstaller
         var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE);
         if (failedSyncItemClass is not null)
             return;
-        
+
         failedSyncItemClass = DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
 
         failedSyncItemClass.ClassName = FailedSyncItemInfo.OBJECT_TYPE;
@@ -59,9 +64,9 @@ public class CrmModuleInstaller : ICrmModuleInstaller
         failedSyncItemClass.ClassDisplayName = "Failed sync item";
         failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
         failedSyncItemClass.ClassType = ClassType.OTHER;
-        
+
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(FailedSyncItemInfo.FailedSyncItemID));
-        
+
         var formItem = new FormFieldInfo
         {
             Name = nameof(FailedSyncItemInfo.EntityClass),
@@ -75,10 +80,7 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.EntityID), 
-            Visible = false, 
-            DataType = "integer", 
-            Enabled = true
+            Name = nameof(FailedSyncItemInfo.EntityID), Visible = false, DataType = "integer", Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
@@ -95,10 +97,7 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.SyncTryCount),
-            Visible = false, 
-            DataType = "integer", 
-            Enabled = true
+            Name = nameof(FailedSyncItemInfo.SyncTryCount), Visible = false, DataType = "integer", Enabled = true
         };
         formInfo.AddFormItem(formItem);
 

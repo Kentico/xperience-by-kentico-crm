@@ -1,7 +1,6 @@
 ﻿using CMS.Base;
 using CMS.Core;
 using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +9,14 @@ using System.Diagnostics;
 
 namespace Kentico.Xperience.CRM.Common.Workers;
 
+/// <summary>
+/// Base class for thread workers which try to synchronize previously failed leads (biz form items)
+/// Concrete implementation for each CRM must exists
+/// </summary>
+/// <typeparam name="TWorker"></typeparam>
+/// <typeparam name="TService"></typeparam>
+/// <typeparam name="TSettings"></typeparam>
+/// <typeparam name="TApiConfig"></typeparam>
 public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TApiConfig> : ThreadWorker<TWorker>
     where TWorker : ThreadWorker<TWorker>, new()
     where TService : ILeadsIntegrationService
@@ -31,10 +38,11 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
 
         try
         {
-            var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
             var settings = Service.Resolve<IOptions<TSettings>>().Value;
             if (!settings.FormLeadsEnabled) return;
 
+            var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
+            
             using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
 
             var leadsIntegrationService = serviceScope.ServiceProvider

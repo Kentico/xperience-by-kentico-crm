@@ -3,7 +3,9 @@ using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Kentico.Xperience.CRM.SalesForce.Workers;
@@ -37,6 +39,7 @@ internal class SalesForceBizFormGlobalEvents : Module
 
     private async void BizFormInserted(object? sender, BizFormItemEventArgs e)
     {
+        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
             var settings = Service.Resolve<IOptions<SalesForceIntegrationSettings>>().Value;
@@ -53,6 +56,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         catch (Exception exception)
         {
             logger.LogError(exception, "Error occured during inserting lead");
+            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.SalesForce);
         }
     }
 
