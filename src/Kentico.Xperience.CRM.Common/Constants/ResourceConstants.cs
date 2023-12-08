@@ -1,6 +1,6 @@
 ﻿namespace Kentico.Xperience.CRM.Common.Constants;
 
-public class ResourceConstants
+public static class ResourceConstants
 {
     public const string ResourceName = "Kentic.Xperience.CRM.Common";
     public const string ResourceDisplayName = "Kentico CRM Integrations - Common";

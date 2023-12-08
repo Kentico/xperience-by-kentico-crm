@@ -26,7 +26,6 @@ namespace Kentico.Xperience.CRM.Common.Classes
         /// <summary>
         /// Type information.
         /// </summary>
-#warning "You will need to configure the type info."
         public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(FailedSyncItemInfoProvider), OBJECT_TYPE, "kenticocrmcommon.FailedSyncItem", "FailedSyncItemID", "SyncLastModified", null, null, null, null, null, null)
         {
             ModuleName = "Kentic.Xperience.CRM.Common",

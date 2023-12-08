@@ -15,7 +15,7 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
     private readonly ILeadsIntegrationValidationService validationService;
     private readonly ILogger<LeadsIntegrationServiceCommon> logger;
 
-    public LeadsIntegrationServiceCommon(
+    protected LeadsIntegrationServiceCommon(
         BizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
         ILogger<LeadsIntegrationServiceCommon> logger)
