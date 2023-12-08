@@ -5,8 +5,8 @@ namespace DancingGoat.Services.CRM;
 
 public class CustomFormLeadsValidationService : ILeadsIntegrationValidationService
 {
-    public bool ValidateFormItem(BizFormItem bizFormItem)
+    public Task<bool> ValidateFormItem(BizFormItem bizFormItem)
     {
-        return true;
+        return Task.FromResult(true);
     }
 }

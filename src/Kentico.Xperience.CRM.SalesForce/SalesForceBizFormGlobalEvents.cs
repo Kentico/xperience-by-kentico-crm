@@ -1,11 +1,15 @@
-﻿using CMS.Core;
+﻿using CMS;
+using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
+using Kentico.Xperience.CRM.SalesForce;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+[assembly: RegisterModule(typeof(SalesForceBizFormGlobalEvents))]
 
 namespace Kentico.Xperience.CRM.SalesForce;
 

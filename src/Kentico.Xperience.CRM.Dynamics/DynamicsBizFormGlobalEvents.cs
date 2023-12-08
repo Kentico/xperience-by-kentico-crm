@@ -1,11 +1,15 @@
-﻿using CMS.Core;
+﻿using CMS;
+using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
+using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+[assembly: RegisterModule(typeof(DynamicsBizFormGlobalEvents))]
 
 namespace Kentico.Xperience.CRM.Dynamics;
 
@@ -29,7 +33,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         logger = Service.Resolve<ILogger<DynamicsBizFormGlobalEvents>>();
     }
 
-    private async void BizFormInserted(object? sender, BizFormItemEventArgs e)
+    private void BizFormInserted(object? sender, BizFormItemEventArgs e)
     {
         try
         {
@@ -41,7 +45,7 @@ internal class DynamicsBizFormGlobalEvents : Module
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<IDynamicsLeadsIntegrationService>();
 
-                await leadsIntegrationService.CreateLeadAsync(e.Item);
+                leadsIntegrationService.CreateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)
@@ -50,7 +54,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         }
     }
 
-    private async void BizFormUpdated(object? sender, BizFormItemEventArgs e)
+    private void BizFormUpdated(object? sender, BizFormItemEventArgs e)
     {
         try
         {
@@ -62,13 +66,13 @@ internal class DynamicsBizFormGlobalEvents : Module
             {
                 return;
             }
-
+            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<IDynamicsLeadsIntegrationService>();
 
-                await leadsIntegrationService.UpdateLeadAsync(e.Item);
+                leadsIntegrationService.UpdateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)

@@ -112,10 +112,8 @@ Configure mapping for each form between Kentico Form fields and Dynamics Lead en
 You can also register custom validation service to handle if given form item should be processed to CRM:
 
 ```csharp
-    builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
-        ... 
-    )
-    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+    //call this after AddDynamicsCrmLeadsIntegration registration
+    builder.Services.AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
 ```
 
 #### SalesForce
@@ -146,10 +144,8 @@ You can also register custom validation service to handle if given form item sho
 You can also register custom validation service to handle if given form item should be processed to CRM:
 
 ```csharp
-    builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
-        ... 
-    )
-    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
+    //call this after AddSalesForceCrmLeadsIntegration registration
+    builder.Services.AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>();
 ```
 
 
