@@ -44,7 +44,7 @@ dotnet add package Kentico.Xperience.CRM.SalesForce
 ### CRM settings
 
 Integration uses OAuth client credentials scheme.
-Fill and add this settings to appsettings.json (API config is recommended to have in appsecrets.json)
+Fill and add this settings to appsettings.json (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 
 #### Dynamics settings
 
