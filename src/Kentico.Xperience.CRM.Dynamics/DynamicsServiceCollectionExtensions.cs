@@ -24,7 +24,7 @@ public static class DynamicsServiceCollectionExtensions
         IConfiguration configuration)
     {
         serviceCollection.AddKenticoCrmCommonIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
-        
+
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
         serviceCollection.AddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
@@ -42,14 +42,15 @@ public static class DynamicsServiceCollectionExtensions
         var settings = serviceProvider.GetRequiredService<IOptions<DynamicsIntegrationSettings>>().Value;
         var logger = serviceProvider.GetRequiredService<ILogger<DynamicsLeadsIntegrationService>>();
 
-        if (settings.ApiConfig is { ConnectionString: string } or { DynamicsUrl: string, ClientId: string, ClientSecret: string })
+        if (settings.ApiConfig?.IsValid() is not true)
         {
-            var connectionString = settings.ApiConfig.ConnectionString ??
-            $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}";
-
-            return new ServiceClient(connectionString, logger);
-        }
-        else
             throw new InvalidOperationException("Missing API setting");
+        }
+        
+        var connectionString = string.IsNullOrWhiteSpace(settings.ApiConfig.ConnectionString) ?
+            $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}" :
+            settings.ApiConfig.ConnectionString;
+
+        return new ServiceClient(connectionString, logger);
     }
 }

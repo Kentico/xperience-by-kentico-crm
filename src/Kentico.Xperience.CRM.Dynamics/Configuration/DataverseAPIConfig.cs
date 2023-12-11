@@ -9,4 +9,8 @@ public class DataverseApiConfig
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }
     public string? ConnectionString { get; set; }
+
+    public bool IsValid() => !string.IsNullOrWhiteSpace(ConnectionString) ||
+                             (!string.IsNullOrWhiteSpace(DynamicsUrl) && !string.IsNullOrWhiteSpace(ClientId) &&
+                              !string.IsNullOrWhiteSpace(ClientSecret));
 }

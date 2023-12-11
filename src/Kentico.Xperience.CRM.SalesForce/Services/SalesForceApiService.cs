@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SalesForce.OpenApi;
 using System.Net;
 using System.Net.Http.Headers;
@@ -12,14 +14,18 @@ internal class SalesForceApiService : ISalesForceApiService
 {
     private readonly HttpClient httpClient;
     private readonly ILogger<SalesForceApiService> logger;
+    private readonly IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings;
     private readonly SalesForceApiClient apiClient;
 
     public SalesForceApiService(
         HttpClient httpClient,
-        ILogger<SalesForceApiService> logger)
+        ILogger<SalesForceApiService> logger,
+        IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings
+        )
     {
         this.httpClient = httpClient;
         this.logger = logger;
+        this.integrationSettings = integrationSettings;
 
         apiClient = new SalesForceApiClient(httpClient);
     }

@@ -5,11 +5,11 @@
 /// </summary>
 public class BizFormFieldMapping
 {
-    public BizFormFieldMapping(IBizFormFieldMapping formFieldMapping, ICrmFieldMapping crmFieldMapping)
+    public BizFormFieldMapping(IBizFormFieldMapping formFieldMapping, ICRMFieldMapping crmFieldMapping)
     {
         FormFieldMapping = formFieldMapping;
-        CrmFieldMapping = crmFieldMapping;
+        CRMFieldMapping = crmFieldMapping;
     }
     public IBizFormFieldMapping FormFieldMapping { get; }
-    public ICrmFieldMapping CrmFieldMapping { get; }
+    public ICRMFieldMapping CRMFieldMapping { get; }
 }

@@ -3,9 +3,9 @@
 /// <summary>
 /// CRM entity field mapping based on field name
 /// </summary>
-public class CrmFieldNameMapping : ICrmFieldMapping
+public class CRMFieldNameMapping : ICRMFieldMapping
 {
-    public CrmFieldNameMapping(string crmFieldName)
+    public CRMFieldNameMapping(string crmFieldName)
     {
         CrmFieldName = crmFieldName;
     }

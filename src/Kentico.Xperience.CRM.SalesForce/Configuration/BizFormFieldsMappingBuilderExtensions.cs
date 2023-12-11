@@ -23,7 +23,7 @@ public static class BizFormFieldsMappingBuilderExtensions
         Expression<Func<LeadSObject, object>> expression)        
     {
         return builder.AddMapping(new BizFormFieldMapping(new BizFormFieldNameMapping(formFieldName),
-            new CrmFieldMappingFunction<LeadSObject>(expression)));
+            new CRMFieldMappingFunction<LeadSObject>(expression)));
     }
 
     /// <summary>
@@ -31,16 +31,16 @@ public static class BizFormFieldsMappingBuilderExtensions
     /// </summary>
     /// <param name="builder"></param>
     /// <param name="formMappingFunc"></param>
-    /// <param name="crmMappinFunc"></param>
+    /// <param name="crmMappingFunc"></param>
     /// <typeparam name="TBizFormItem"></typeparam>    
     /// <returns></returns>
     public static BizFormFieldsMappingBuilder MapField<TBizFormItem>(
         this BizFormFieldsMappingBuilder builder, Func<TBizFormItem, object> formMappingFunc,
-        Expression<Func<LeadSObject, object>> crmMappinFunc)
+        Expression<Func<LeadSObject, object>> crmMappingFunc)
         where TBizFormItem : BizFormItem        
     {
         return builder.AddMapping(new BizFormFieldMapping(
             new BizFormFieldMappingFunction<TBizFormItem>(formMappingFunc),
-            new CrmFieldMappingFunction<LeadSObject>(crmMappinFunc)));
+            new CRMFieldMappingFunction<LeadSObject>(crmMappingFunc)));
     }
 }

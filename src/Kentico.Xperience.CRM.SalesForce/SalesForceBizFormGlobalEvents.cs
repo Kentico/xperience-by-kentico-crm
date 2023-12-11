@@ -33,7 +33,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         logger = Service.Resolve<ILogger<SalesForceBizFormGlobalEvents>>();
     }
 
-    private async void BizFormInserted(object? sender, BizFormItemEventArgs e)
+    private void BizFormInserted(object? sender, BizFormItemEventArgs e)
     {
         try
         {
@@ -45,7 +45,7 @@ internal class SalesForceBizFormGlobalEvents : Module
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 
-                await leadsIntegrationService.CreateLeadAsync(e.Item);
+                leadsIntegrationService.CreateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)
@@ -54,7 +54,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         }
     }
 
-    private async void BizFormUpdated(object? sender, BizFormItemEventArgs e)
+    private void BizFormUpdated(object? sender, BizFormItemEventArgs e)
     {
         try
         {
@@ -72,7 +72,7 @@ internal class SalesForceBizFormGlobalEvents : Module
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 
-                await leadsIntegrationService.UpdateLeadAsync(e.Item);
+                leadsIntegrationService.UpdateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)

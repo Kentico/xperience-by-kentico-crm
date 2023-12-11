@@ -103,10 +103,10 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
         {
             var formFieldValue = fieldMapping.FormFieldMapping.MapFormField(bizFormItem);
 
-            _ = fieldMapping.CrmFieldMapping switch
+            _ = fieldMapping.CRMFieldMapping switch
             {
-                CrmFieldNameMapping m => leadEntity[m.CrmFieldName] = formFieldValue,
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CrmFieldMapping), fieldMapping.CrmFieldMapping.GetType(), "Unsupported mapping")
+                CRMFieldNameMapping m => leadEntity[m.CrmFieldName] = formFieldValue,
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping), fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }
     }

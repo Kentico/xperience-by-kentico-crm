@@ -3,6 +3,6 @@
 /// <summary>
 /// Common interface for CRM entity field mapping
 /// </summary>
-public interface ICrmFieldMapping
+public interface ICRMFieldMapping
 {
 }
