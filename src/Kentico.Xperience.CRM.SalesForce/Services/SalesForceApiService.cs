@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SalesForce.OpenApi;
 using System.Net;
 using System.Net.Http.Headers;
@@ -12,14 +14,18 @@ internal class SalesForceApiService : ISalesForceApiService
 {
     private readonly HttpClient httpClient;
     private readonly ILogger<SalesForceApiService> logger;
+    private readonly SalesForceIntegrationSettings integrationSettings;
     private readonly SalesForceApiClient apiClient;
 
     public SalesForceApiService(
         HttpClient httpClient,
-        ILogger<SalesForceApiService> logger)
+        ILogger<SalesForceApiService> logger,
+        IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings
+        )
     {
         this.httpClient = httpClient;
         this.logger = logger;
+        this.integrationSettings = integrationSettings.CurrentValue;
 
         apiClient = new SalesForceApiClient(httpClient);
     }
@@ -43,8 +49,9 @@ internal class SalesForceApiService : ISalesForceApiService
     /// <returns></returns>
     public async Task<string?> GetLeadIdByExternalId(string fieldName, string externalId)
     {
+        decimal apiVersion = integrationSettings?.ApiConfig?.ApiVersion ?? 59;
         using var request =
-            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v59.0/sobjects/lead/{fieldName}/{externalId}?fields=Id");
+            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v{apiVersion:F1}/sobjects/lead/{fieldName}/{externalId}?fields=Id");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         var response = await httpClient.SendAsync(request);
 

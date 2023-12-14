@@ -12,5 +12,5 @@ public interface ILeadsIntegrationValidationService
     /// </summary>
     /// <param name="bizFormItem"></param>
     /// <returns></returns>
-    bool ValidateFormItem(BizFormItem bizFormItem);
+    Task<bool> ValidateFormItem(BizFormItem bizFormItem);
 }

@@ -18,9 +18,6 @@ public class BizFormFieldMappingFunction<TBizFormFieldItem> : IBizFormFieldMappi
     
     public object MapFormField(BizFormItem bizFormItem)
     {
-        if (bizFormItem is not TBizFormFieldItem item)
-            throw new InvalidOperationException("Cannot map");
-
-        return mappingFunc(item);
+        return mappingFunc((TBizFormFieldItem)bizFormItem);
     }
 }

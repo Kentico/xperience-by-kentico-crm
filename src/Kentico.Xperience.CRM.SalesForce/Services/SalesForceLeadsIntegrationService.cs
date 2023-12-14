@@ -21,7 +21,6 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     public SalesForceLeadsIntegrationService(
         SalesForceBizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
-        IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings,
         ISalesForceApiService apiService,
         ILogger<SalesForceLeadsIntegrationService> logger,
         IFailedSyncItemService failedSyncItemService)
@@ -119,11 +118,11 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.FormFieldMapping.MapFormField(bizFormItem);
-            _ = fieldMapping.CrmFieldMapping switch
+            _ = fieldMapping.CRMFieldMapping switch
             {
-                CrmFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
-                CrmFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CrmFieldMapping), fieldMapping.CrmFieldMapping.GetType(), "Unsupported mapping")
+                CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
+                CRMFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping), fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }
     }

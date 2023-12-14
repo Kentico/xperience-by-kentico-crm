@@ -7,11 +7,11 @@ namespace Kentico.Xperience.CRM.Common.Mapping.Implementations;
 /// CRM entity field mapping based on function
 /// </summary>
 /// <typeparam name="TCrmEntity"></typeparam>
-public class CrmFieldMappingFunction<TCrmEntity> : ICrmFieldMapping
+public class CRMFieldMappingFunction<TCrmEntity> : ICRMFieldMapping
 {
     private readonly Expression<Func<TCrmEntity, object>> mappingFunc;
 
-    public CrmFieldMappingFunction(Expression<Func<TCrmEntity, object>> mappingFunc)
+    public CRMFieldMappingFunction(Expression<Func<TCrmEntity, object>> mappingFunc)
     {
         this.mappingFunc = mappingFunc;
     }
@@ -22,7 +22,7 @@ public class CrmFieldMappingFunction<TCrmEntity> : ICrmFieldMapping
             throw new ArgumentNullException(nameof(crmEntity));
 
         if (mappingFunc.Body is not MemberExpression { Member: PropertyInfo propertyInfo })
-            return new InvalidOperationException("CRM field mapping failed, missing member expression");
+            throw new InvalidOperationException("CRM field mapping failed, missing member expression");
                 
         propertyInfo.SetValue(crmEntity, value);
         return propertyInfo.GetValue(crmEntity);

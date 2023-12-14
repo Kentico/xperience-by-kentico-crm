@@ -30,12 +30,12 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.AddClientCredentialsTokenManagement()
             .AddClient("salesforce.api.client", client =>
             {
-                var config = configuration.Get<SalesForceIntegrationSettings>();
-
-                if (config?.ApiConfig is not { SalesForceUrl: string, ClientId: string, ClientSecret: string } apiConfig)
+                var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
+                
+                if (apiConfig?.IsValid() is not true)
                     throw new InvalidOperationException("Missing API settings");
-
-                client.TokenEndpoint = apiConfig.SalesForceUrl.TrimEnd('/') + "/services/oauth2/token";
+                
+                client.TokenEndpoint = apiConfig.SalesForceUrl?.TrimEnd('/') + "/services/oauth2/token";
 
                 client.ClientId = apiConfig.ClientId;
                 client.ClientSecret = apiConfig.ClientSecret;
@@ -44,11 +44,12 @@ public static class SalesForceServiceCollectionsExtensions
         //add http client for salesforce api
         serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>(client =>
         {
-            var config = configuration.Get<SalesForceIntegrationSettings>();
-            if (config?.ApiConfig is not { SalesForceUrl: string, ClientId: string, ClientSecret: string } apiConfig)
+            var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
+            
+            if (apiConfig?.IsValid() is not true)
                 throw new InvalidOperationException("Missing API settings");
 
-            client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl.TrimEnd('/')}/services/data/v59.0/");
+            client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiConfig.ApiVersion:F1}/");
         })
         .AddClientCredentialsTokenHandler("salesforce.api.client");
 

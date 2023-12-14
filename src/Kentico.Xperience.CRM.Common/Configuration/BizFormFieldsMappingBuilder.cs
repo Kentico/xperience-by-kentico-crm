@@ -12,14 +12,14 @@ public class BizFormFieldsMappingBuilder
 
     public BizFormFieldsMappingBuilder MapField(string formFieldName, string crmFieldName)
     {
-        fieldMappings.Add(new BizFormFieldMapping(new BizFormFieldNameMapping(formFieldName), new CrmFieldNameMapping(crmFieldName)));
+        fieldMappings.Add(new BizFormFieldMapping(new BizFormFieldNameMapping(formFieldName), new CRMFieldNameMapping(crmFieldName)));
         return this;
     }
 
     public BizFormFieldsMappingBuilder MapField<TBizFormItem>(Func<TBizFormItem, object> mappingFunc, string crmFieldName)
         where TBizFormItem : BizFormItem
     {
-        fieldMappings.Add(new BizFormFieldMapping(new BizFormFieldMappingFunction<TBizFormItem>(mappingFunc), new CrmFieldNameMapping(crmFieldName)));
+        fieldMappings.Add(new BizFormFieldMapping(new BizFormFieldMappingFunction<TBizFormItem>(mappingFunc), new CRMFieldNameMapping(crmFieldName)));
         return this;
     }
 

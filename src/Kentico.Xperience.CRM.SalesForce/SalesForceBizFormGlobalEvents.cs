@@ -1,17 +1,20 @@
-﻿using CMS.Base;
+using CMS;
+using CMS.Base;
 using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
-using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Common.Services;
+using Kentico.Xperience.CRM.SalesForce;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Kentico.Xperience.CRM.SalesForce.Workers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+[assembly: RegisterModule(typeof(SalesForceBizFormGlobalEvents))]
 
 namespace Kentico.Xperience.CRM.SalesForce;
 
@@ -37,7 +40,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
     }
 
-    private async void BizFormInserted(object? sender, BizFormItemEventArgs e)
+    private void BizFormInserted(object? sender, BizFormItemEventArgs e)
     {
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
@@ -50,7 +53,7 @@ internal class SalesForceBizFormGlobalEvents : Module
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 
-                await leadsIntegrationService.CreateLeadAsync(e.Item);
+                leadsIntegrationService.CreateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)
@@ -60,7 +63,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         }
     }
 
-    private async void BizFormUpdated(object? sender, BizFormItemEventArgs e)
+    private void BizFormUpdated(object? sender, BizFormItemEventArgs e)
     {
         try
         {
@@ -78,7 +81,7 @@ internal class SalesForceBizFormGlobalEvents : Module
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 
-                await leadsIntegrationService.UpdateLeadAsync(e.Item);
+                leadsIntegrationService.UpdateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)

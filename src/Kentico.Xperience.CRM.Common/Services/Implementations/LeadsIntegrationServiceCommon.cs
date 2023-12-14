@@ -32,7 +32,7 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
     /// <param name="bizFormItem"></param>
     public async Task CreateLeadAsync(BizFormItem bizFormItem)
     {
-        if (!validationService.ValidateFormItem(bizFormItem))
+        if (!await validationService.ValidateFormItem(bizFormItem))
         {
             logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} refused by validation",
                 bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
@@ -53,7 +53,7 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
     /// <param name="bizFormItem"></param>
     public async Task UpdateLeadAsync(BizFormItem bizFormItem)
     {
-        if (!validationService.ValidateFormItem(bizFormItem))
+        if (!await validationService.ValidateFormItem(bizFormItem))
         {
             logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} refused by validation",
                 bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
