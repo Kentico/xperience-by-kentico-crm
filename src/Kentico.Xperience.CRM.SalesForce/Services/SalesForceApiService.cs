@@ -14,7 +14,7 @@ internal class SalesForceApiService : ISalesForceApiService
 {
     private readonly HttpClient httpClient;
     private readonly ILogger<SalesForceApiService> logger;
-    private readonly IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings;
+    private readonly SalesForceIntegrationSettings integrationSettings;
     private readonly SalesForceApiClient apiClient;
 
     public SalesForceApiService(
@@ -25,7 +25,7 @@ internal class SalesForceApiService : ISalesForceApiService
     {
         this.httpClient = httpClient;
         this.logger = logger;
-        this.integrationSettings = integrationSettings;
+        this.integrationSettings = integrationSettings.CurrentValue;
 
         apiClient = new SalesForceApiClient(httpClient);
     }
@@ -49,8 +49,9 @@ internal class SalesForceApiService : ISalesForceApiService
     /// <returns></returns>
     public async Task<string?> GetLeadIdByExternalId(string fieldName, string externalId)
     {
+        decimal apiVersion = integrationSettings?.ApiConfig?.ApiVersion ?? 59;
         using var request =
-            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v59.0/sobjects/lead/{fieldName}/{externalId}?fields=Id");
+            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v{apiVersion:F1}/sobjects/lead/{fieldName}/{externalId}?fields=Id");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         var response = await httpClient.SendAsync(request);
 
