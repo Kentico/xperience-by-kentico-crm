@@ -74,23 +74,27 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     {
         try
         {
-            string? leadId = await apiService.GetLeadIdByExternalId(bizFormMappingConfig.ExternalIdFieldName!,
-                FormatExternalId(bizFormItem));
+            string? leadId = string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName) ? null :
+                await apiService.GetLeadIdByExternalId(bizFormMappingConfig.ExternalIdFieldName!,
+                    FormatExternalId(bizFormItem));
 
             if (leadId is not null)
             {
                 var lead = new LeadSObject();
                 MapLead(bizFormItem, lead, fieldMappings);
                 await apiService.UpdateLeadAsync(leadId, lead);
+                failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                return true;
             }
             else
             {
                 if (await CreateLeadAsync(bizFormItem, fieldMappings))
                 {
                     failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                    return true;
                 }
 
-                return true;
+                return false;
             }
         }
         catch (ApiException<ICollection<RestApiError>> e)

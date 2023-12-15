@@ -71,7 +71,7 @@ internal class SalesForceBizFormGlobalEvents : Module
             if (!settings.FormLeadsEnabled) return;
 
             var mappingConfig = Service.Resolve<SalesForceBizFormsMappingConfiguration>();
-            if (mappingConfig.ExternalIdFieldName is not { Length: > 0 })
+            if (string.IsNullOrWhiteSpace(mappingConfig.ExternalIdFieldName))
             {
                 return;
             }

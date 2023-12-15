@@ -86,16 +86,19 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             {
                 MapLead(bizFormItem, leadEntity, fieldMappings);
                 await serviceClient.UpdateAsync(leadEntity);
+                failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                return true;
             }
             else
             {
                 if (await CreateLeadAsync(bizFormItem, fieldMappings))
                 {
                     failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                    return true;
                 }
+
+                return false;
             }
-            
-            return true;
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
@@ -133,6 +136,9 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
 
     private async Task<Lead?> GetLeadByExternalId(string externalId)
     {
+        if (string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName))
+            return null;
+        
         var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
         query.Criteria.AddCondition(bizFormMappingConfig.ExternalIdFieldName, ConditionOperator.Equal, externalId);
 
