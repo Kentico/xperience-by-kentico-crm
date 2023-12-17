@@ -7,5 +7,5 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration;
 /// </summary>
 public class DynamicsIntegrationSettings : CommonIntegrationSettings<DataverseApiConfig>
 {
-    public const string ConfigKeyName = "DynamicsCRMIntegration";
+    public const string ConfigKeyName = "CMSDynamicsCRMIntegration";
 }
