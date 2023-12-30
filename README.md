@@ -50,7 +50,7 @@ Fill and add this settings to appsettings.json (API config is recommended to hav
 
 ```json
 {
-  "DynamicsCRMIntegration": {
+  "CMSDynamicsCRMIntegration": {
     "FormLeadsEnabled": true,
     "ApiConfig": {
       "DynamicsUrl": "",
@@ -65,7 +65,7 @@ Fill and add this settings to appsettings.json (API config is recommended to hav
 
 ```json
 {
-  "SalesForceCRMIntegration": {
+  "CMSSalesForceCRMIntegration": {
     "FormLeadsEnabled": true,
     "ApiConfig": {
       "SalesForceUrl": "",
@@ -79,7 +79,7 @@ Fill and add this settings to appsettings.json (API config is recommended to hav
 You can also set specific API version for SalesForce REST API (default version is 59).
 ```json
 {
-  "SalesForceCRMIntegration:ApiConfig:ApiVersion": 59
+  "CMSSalesForceCRMIntegration:ApiConfig:ApiVersion": 59
 }
 ```
 

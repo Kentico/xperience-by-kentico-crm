@@ -7,5 +7,5 @@ namespace Kentico.Xperience.CRM.SalesForce.Configuration;
 /// </summary>
 public class SalesForceIntegrationSettings : CommonIntegrationSettings<SalesForceApiConfig>
 {
-    public const string ConfigKeyName = "SalesForceCRMIntegration";
+    public const string ConfigKeyName = "CMSSalesForceCRMIntegration";
 }
