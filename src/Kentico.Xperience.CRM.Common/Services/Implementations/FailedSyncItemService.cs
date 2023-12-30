@@ -28,22 +28,22 @@ internal class FailedSyncItemService : IFailedSyncItemService
         {
             existingItem = new FailedSyncItemInfo
             {
-                EntityClass = bizFormItem.BizFormClassName,
-                EntityID = bizFormItem.ItemID,
-                EntityCRM = crmName,
-                SyncNextTime = DateTime.Now.AddMinutes(1),
-                SyncTryCount = 0
+                FailedSyncItemEntityClass = bizFormItem.BizFormClassName,
+                FailedSyncItemEntityID = bizFormItem.ItemID,
+                FailedSyncItemEntityCRM = crmName,
+                FailedSyncItemNextTime = DateTime.Now.AddMinutes(1),
+                FailedSyncItemTryCount = 0
             };
         }
-        else if (existingItem.SyncTryCount < MaxSyncCount)
+        else if (existingItem.FailedSyncItemTryCount < MaxSyncCount)
         {
-            existingItem.SyncTryCount++;
+            existingItem.FailedSyncItemTryCount++;
             // next times for re-sync in 2,4,8,16,32,64... minutes
-            existingItem.SyncNextTime = DateTime.Now.AddMinutes(Math.Pow(2, existingItem.SyncTryCount));
+            existingItem.FailedSyncItemNextTime = DateTime.Now.AddMinutes(Math.Pow(2, existingItem.FailedSyncItemTryCount));
         }
         else
         {
-            existingItem.SetValue(nameof(FailedSyncItemInfo.SyncNextTime), null);
+            existingItem.SetValue(nameof(FailedSyncItemInfo.FailedSyncItemNextTime), null);
         }
 
         failedSyncItemInfoProvider.Set(existingItem);
@@ -52,14 +52,14 @@ internal class FailedSyncItemService : IFailedSyncItemService
     public IEnumerable<FailedSyncItemInfo> GetFailedSyncItemsToReSync(string crmName)
     {
         return failedSyncItemInfoProvider.Get()
-            .WhereEquals(nameof(FailedSyncItemInfo.EntityCRM), crmName)
-            .WhereLessOrEquals(nameof(FailedSyncItemInfo.SyncNextTime), DateTime.Now)
-            .OrderBy(nameof(FailedSyncItemInfo.EntityID));
+            .WhereEquals(nameof(FailedSyncItemInfo.FailedSyncItemEntityCRM), crmName)
+            .WhereLessOrEquals(nameof(FailedSyncItemInfo.FailedSyncItemNextTime), DateTime.Now)
+            .OrderBy(nameof(FailedSyncItemInfo.FailedSyncItemEntityID));
     }
 
     public BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo)
     {
-        var formClass = DataClassInfoProvider.GetDataClassInfo(failedSyncItemInfo.EntityClass);
+        var formClass = DataClassInfoProvider.GetDataClassInfo(failedSyncItemInfo.FailedSyncItemEntityClass);
         if (formClass is null)
         {
             return null;
@@ -67,8 +67,8 @@ internal class FailedSyncItemService : IFailedSyncItemService
         
         var primaryColumnName = new BizFormItem(formClass.ClassName).TypeInfo.IDColumn;
 
-        return BizFormItemProvider.GetItems(failedSyncItemInfo.EntityClass)
-            .WhereEquals(primaryColumnName, failedSyncItemInfo.EntityID)
+        return BizFormItemProvider.GetItems(failedSyncItemInfo.FailedSyncItemEntityClass)
+            .WhereEquals(primaryColumnName, failedSyncItemInfo.FailedSyncItemEntityID)
             .FirstOrDefault();
     }
 
@@ -80,9 +80,9 @@ internal class FailedSyncItemService : IFailedSyncItemService
     private FailedSyncItemInfo? GetExistingItem(string crmName, string entityClass, int entityId)
     {
         return failedSyncItemInfoProvider.Get()
-            .WhereEquals(nameof(FailedSyncItemInfo.EntityClass), entityClass)
-            .WhereEquals(nameof(FailedSyncItemInfo.EntityID), entityId)
-            .WhereEquals(nameof(FailedSyncItemInfo.EntityCRM), crmName)
+            .WhereEquals(nameof(FailedSyncItemInfo.FailedSyncItemEntityClass), entityClass)
+            .WhereEquals(nameof(FailedSyncItemInfo.FailedSyncItemEntityID), entityId)
+            .WhereEquals(nameof(FailedSyncItemInfo.FailedSyncItemEntityCRM), crmName)
             .TopN(1)
             .FirstOrDefault();
     }

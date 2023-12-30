@@ -69,7 +69,7 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         var formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.EntityClass),
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemEntityClass),
             Visible = false,
             Precision = 0,
             Size = 100,
@@ -80,13 +80,13 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.EntityID), Visible = false, DataType = "integer", Enabled = true
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemEntityID), Visible = false, DataType = "integer", Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.EntityCRM),
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemEntityCRM),
             Visible = false,
             Precision = 0,
             Size = 50,
@@ -97,13 +97,13 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.SyncTryCount), Visible = false, DataType = "integer", Enabled = true
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemTryCount), Visible = false, DataType = "integer", Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.SyncNextTime),
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemNextTime),
             Visible = false,
             Precision = 0,
             DataType = "datetime",
@@ -113,7 +113,7 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.SyncLastModified),
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemLastModified),
             Visible = false,
             Precision = 0,
             DataType = "datetime",

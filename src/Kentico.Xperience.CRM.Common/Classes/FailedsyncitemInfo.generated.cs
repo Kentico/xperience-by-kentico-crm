@@ -26,7 +26,7 @@ namespace Kentico.Xperience.CRM.Common.Classes
         /// <summary>
         /// Type information.
         /// </summary>
-        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(FailedSyncItemInfoProvider), OBJECT_TYPE, "kenticocrmcommon.FailedSyncItem", "FailedSyncItemID", "SyncLastModified", null, null, null, null, null, null)
+        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(FailedSyncItemInfoProvider), OBJECT_TYPE, "kenticocrmcommon.failedsyncitem", "FailedSyncItemID", "FailedSyncItemLastModified", null, null, null, null, null, null)
         {
             ModuleName = "Kentic.Xperience.CRM.Common",
             TouchCacheDependencies = true,
@@ -45,79 +45,68 @@ namespace Kentico.Xperience.CRM.Common.Classes
 
 
         /// <summary>
-        /// Entity type.
+        /// Failed sync item entity class.
         /// </summary>
         [DatabaseField]
-        public virtual string EntityType
+        public virtual string FailedSyncItemEntityClass
         {
-            get => ValidationHelper.GetString(GetValue(nameof(EntityType)), String.Empty);
-            set => SetValue(nameof(EntityType), value);
+            get => ValidationHelper.GetString(GetValue(nameof(FailedSyncItemEntityClass)), String.Empty);
+            set => SetValue(nameof(FailedSyncItemEntityClass), value);
         }
 
 
         /// <summary>
-        /// Entity class.
+        /// Failed sync item entity ID.
         /// </summary>
         [DatabaseField]
-        public virtual string EntityClass
+        public virtual int FailedSyncItemEntityID
         {
-            get => ValidationHelper.GetString(GetValue(nameof(EntityClass)), String.Empty);
-            set => SetValue(nameof(EntityClass), value);
+            get => ValidationHelper.GetInteger(GetValue(nameof(FailedSyncItemEntityID)), 0);
+            set => SetValue(nameof(FailedSyncItemEntityID), value);
         }
 
 
         /// <summary>
-        /// Entity ID.
+        /// Failed sync item entity CRM.
         /// </summary>
         [DatabaseField]
-        public virtual int EntityID
+        public virtual string FailedSyncItemEntityCRM
         {
-            get => ValidationHelper.GetInteger(GetValue(nameof(EntityID)), 0);
-            set => SetValue(nameof(EntityID), value);
+            get => ValidationHelper.GetString(GetValue(nameof(FailedSyncItemEntityCRM)), String.Empty);
+            set => SetValue(nameof(FailedSyncItemEntityCRM), value);
         }
 
 
         /// <summary>
-        /// Entity CRM.
+        /// Failed sync item try count.
         /// </summary>
         [DatabaseField]
-        public virtual string EntityCRM
+        public virtual int FailedSyncItemTryCount
         {
-            get => ValidationHelper.GetString(GetValue(nameof(EntityCRM)), String.Empty);
-            set => SetValue(nameof(EntityCRM), value);
+            get => ValidationHelper.GetInteger(GetValue(nameof(FailedSyncItemTryCount)), 0);
+            set => SetValue(nameof(FailedSyncItemTryCount), value);
         }
 
 
         /// <summary>
-        /// Sync try count.
+        /// Failed sync item next time.
         /// </summary>
         [DatabaseField]
-        public virtual int SyncTryCount
+        public virtual DateTime FailedSyncItemNextTime
         {
-            get => ValidationHelper.GetInteger(GetValue(nameof(SyncTryCount)), 0);
-            set => SetValue(nameof(SyncTryCount), value);
+            get => ValidationHelper.GetDateTime(GetValue(nameof(FailedSyncItemNextTime)), DateTimeHelper.ZERO_TIME);
+            set => SetValue(nameof(FailedSyncItemNextTime), value);
         }
 
 
         /// <summary>
-        /// Sync next time.
+        /// Failed sync item last modified.
         /// </summary>
         [DatabaseField]
-        public virtual DateTime SyncNextTime
+        public virtual DateTime FailedSyncItemLastModified
         {
-            get => ValidationHelper.GetDateTime(GetValue(nameof(SyncNextTime)), DateTimeHelper.ZERO_TIME);
-            set => SetValue(nameof(SyncNextTime), value);
-        }
-
-
-        /// <summary>
-        /// Sync last modified.
-        /// </summary>
-        [DatabaseField]
-        public virtual DateTime SyncLastModified
-        {
-            get => ValidationHelper.GetDateTime(GetValue(nameof(SyncLastModified)), DateTimeHelper.ZERO_TIME);
-            set => SetValue(nameof(SyncLastModified), value);
+            get => ValidationHelper.GetDateTime(GetValue(nameof(FailedSyncItemLastModified)), DateTimeHelper.ZERO_TIME);
+            set => SetValue(nameof(FailedSyncItemLastModified), value);
         }
 
 
