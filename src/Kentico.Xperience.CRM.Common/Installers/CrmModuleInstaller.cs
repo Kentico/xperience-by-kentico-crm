@@ -55,7 +55,9 @@ public class CrmModuleInstaller : ICrmModuleInstaller
     {
         var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE);
         if (failedSyncItemClass is not null)
+        {
             return;
+        }
 
         failedSyncItemClass = DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
 
