@@ -40,6 +40,7 @@ public static class DynamicsServiceCollectionExtensions
 
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
+        serviceCollection.AddScoped<IDynamicsContactsIntegrationService, DynamicsContactsIntegrationService>();
         
         return serviceCollection;
     }

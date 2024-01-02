@@ -1,4 +1,5 @@
-﻿using CMS.OnlineForms;
+﻿using CMS.ContactManagement;
+using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Classes;
 
 namespace Kentico.Xperience.CRM.Common.Services;
@@ -15,6 +16,13 @@ public interface IFailedSyncItemService
     /// <param name="bizFormItem">BizForm item</param>
     /// <param name="crmName">CRM name</param>
     void LogFailedLeadItem(BizFormItem bizFormItem, string crmName);
+
+    /// <summary>
+    /// @TODO
+    /// </summary>
+    /// <param name="contactInfo"></param>
+    /// <param name="crmName"></param>
+    void LogFailedContactItem(ContactInfo contactInfo, string crmName);
     
     /// <summary>
     /// Get all items waiting for synchronization which can be already synced again (according SyncNextTime property) 

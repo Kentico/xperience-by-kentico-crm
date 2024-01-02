@@ -1,4 +1,5 @@
-﻿using CMS.OnlineForms;
+﻿using CMS.ContactManagement;
+using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Microsoft.Extensions.Logging;
@@ -66,10 +67,10 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
             await UpdateLeadAsync(bizFormItem, formMapping);
         }
     }
-
+    
     protected abstract Task CreateLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings);
     protected abstract Task UpdateLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings);
-
+    
     protected virtual string FormatExternalId(BizFormItem bizFormItem) =>
         $"{bizFormItem.BizFormClassName}-{bizFormItem.ItemID}";
 }

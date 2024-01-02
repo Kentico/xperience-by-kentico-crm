@@ -1,4 +1,5 @@
-﻿using CMS.DataEngine;
+﻿using CMS.ContactManagement;
+using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Classes;
@@ -47,6 +48,11 @@ internal class FailedSyncItemService : IFailedSyncItemService
         }
 
         failedSyncItemInfoProvider.Set(existingItem);
+    }
+
+    public void LogFailedContactItem(ContactInfo contactInfo, string crmName)
+    {
+        throw new NotImplementedException();
     }
 
     public IEnumerable<FailedSyncItemInfo> GetFailedSyncItemsToReSync(string crmName)
