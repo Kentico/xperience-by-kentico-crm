@@ -1,9 +1,11 @@
 ﻿using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
@@ -23,11 +25,22 @@ public static class DynamicsServiceCollectionExtensions
         Action<BizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonLeadIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
 
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
-        serviceCollection.AddSingleton(GetCrmServiceClient);
+        serviceCollection.TryAddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
+        return serviceCollection;
+    }
+
+    public static IServiceCollection AddDynamicCrmContactsToLeadsIntegration(this IServiceCollection serviceCollection,
+        Action<ContactMappingBuilder> contactsConfig, IConfiguration configuration)
+    {
+        serviceCollection.AddKenticoCrmCommonContactIntegration<DynamicsContactMappingConfiguration>(contactsConfig);
+
+        serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
+        serviceCollection.TryAddSingleton(GetCrmServiceClient);
+        
         return serviceCollection;
     }
 

@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     /// <param name="formsMappingConfig"></param>
     /// <typeparam name="TMappingConfiguration"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddKenticoCrmCommonIntegration<TMappingConfiguration>(
+    public static IServiceCollection AddKenticoCrmCommonLeadIntegration<TMappingConfiguration>(
         this IServiceCollection services, Action<BizFormsMappingBuilder> formsMappingConfig)
         where TMappingConfiguration : BizFormsMappingConfiguration, new()
     {
@@ -39,6 +39,24 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddKenticoCrmCommonContactIntegration<TMappingConfiguration>(
+        this IServiceCollection services, Action<ContactMappingBuilder> contactMappingConfig)
+        where TMappingConfiguration : ContactMappingConfiguration, new()
+    {
+        services.TryAddSingleton(
+            _ =>
+            {
+                var mappingBuilder = new ContactMappingBuilder();
+                contactMappingConfig(mappingBuilder);
+                return mappingBuilder.Build<TMappingConfiguration>();
+            });
+        
+        services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
+        services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
+
+        return services;
+    }
+    
     /// <summary>
     /// Adds custom service for BizForm item validation before sending to CRM
     /// </summary>

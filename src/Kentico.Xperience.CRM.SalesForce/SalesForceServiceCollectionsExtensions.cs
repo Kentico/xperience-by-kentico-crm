@@ -21,7 +21,7 @@ public static class SalesForceServiceCollectionsExtensions
         Action<BizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonLeadIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
         serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration);
 
         // default cache for token management

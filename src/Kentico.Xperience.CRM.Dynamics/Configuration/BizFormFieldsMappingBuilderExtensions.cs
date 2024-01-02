@@ -1,8 +1,8 @@
 ﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Dynamics.Helpers;
 using Microsoft.Xrm.Sdk;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Kentico.Xperience.CRM.Dynamics.Configuration
 {
@@ -26,7 +26,7 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration
             Expression<Func<TLeadEntity, object>> expression)
             where TLeadEntity : Entity
         {
-            string crmFieldName = GetLogicalNameFromExpression(expression);
+            string crmFieldName = EntityHelper.GetLogicalNameFromExpression(expression);
             if (crmFieldName == string.Empty)
             {
                 throw new InvalidOperationException("Attribute name cannot be empty");
@@ -53,7 +53,7 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration
             where TBizFormItem : BizFormItem
             where TLeadEntity : Entity
         {
-            string crmFieldName = GetLogicalNameFromExpression(expression);
+            string crmFieldName = EntityHelper.GetLogicalNameFromExpression(expression);
 
             if (crmFieldName == string.Empty)
             {
@@ -61,25 +61,6 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration
             }
 
             return builder.MapField(mappingFunc, crmFieldName);
-        }
-
-        /// <summary>
-        /// Method name is returned from <see cref="AttributeLogicalNameAttribute"/>
-        /// </summary>
-        /// <param name="expression"></param>
-        /// <typeparam name="TValue"></typeparam>
-        /// <typeparam name="TLeadEntity"></typeparam>
-        /// <returns></returns>
-        private static string GetLogicalNameFromExpression<TValue, TLeadEntity>(
-            Expression<Func<TLeadEntity, TValue>> expression)
-        {
-            if (expression.Body is MemberExpression memberExpression)
-            {
-                PropertyInfo propertyInfo = (PropertyInfo)memberExpression.Member;
-                return propertyInfo.GetCustomAttribute<AttributeLogicalNameAttribute>()?.LogicalName ?? string.Empty;
-            }
-
-            return string.Empty;
         }
     }
 }
