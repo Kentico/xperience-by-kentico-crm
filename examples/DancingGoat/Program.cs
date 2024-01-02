@@ -59,7 +59,7 @@ builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
                         .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
                         .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
                 )
-                .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
+                .ExternalIdField("crf1c_kenticoid") //optional custom field when you want updates to work
         ,
         builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
     .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional

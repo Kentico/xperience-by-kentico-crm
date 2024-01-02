@@ -4,6 +4,7 @@ using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
 
 namespace Kentico.Xperience.CRM.SalesForce;
 public static class SalesForceServiceCollectionsExtensions
@@ -49,7 +50,8 @@ public static class SalesForceServiceCollectionsExtensions
             if (apiConfig?.IsValid() is not true)
                 throw new InvalidOperationException("Missing API settings");
 
-            client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiConfig.ApiVersion:F1}/");
+            string apiVersion = apiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
+            client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiVersion}/");
         })
         .AddClientCredentialsTokenHandler("salesforce.api.client");
 

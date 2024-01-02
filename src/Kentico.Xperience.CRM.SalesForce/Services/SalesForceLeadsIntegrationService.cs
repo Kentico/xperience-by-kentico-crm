@@ -1,4 +1,5 @@
 ﻿using CMS.OnlineForms;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
@@ -15,20 +16,23 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     private readonly SalesForceBizFormsMappingConfiguration bizFormMappingConfig;    
     private readonly ISalesForceApiService apiService;
     private readonly ILogger<SalesForceLeadsIntegrationService> logger;
+    private readonly IFailedSyncItemService failedSyncItemService;
 
     public SalesForceLeadsIntegrationService(
         SalesForceBizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
         ISalesForceApiService apiService,
-        ILogger<SalesForceLeadsIntegrationService> logger)
+        ILogger<SalesForceLeadsIntegrationService> logger,
+        IFailedSyncItemService failedSyncItemService)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;        
         this.apiService = apiService;
         this.logger = logger;
+        this.failedSyncItemService = failedSyncItemService;
     }
 
-    protected override async Task CreateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -44,52 +48,72 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             }
 
             await apiService.CreateLeadAsync(lead);
+            return true;
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException e)
         {
             logger.LogError(e, "Create lead failed - unexpected api error");
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
+
+        return false;
     }
 
-    protected override async Task UpdateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> UpdateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
         {
-            string? leadId = await apiService.GetLeadIdByExternalId(bizFormMappingConfig.ExternalIdFieldName!,
-                FormatExternalId(bizFormItem));
+            string? leadId = string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName) ? null :
+                await apiService.GetLeadIdByExternalId(bizFormMappingConfig.ExternalIdFieldName!,
+                    FormatExternalId(bizFormItem));
 
             if (leadId is not null)
             {
                 var lead = new LeadSObject();
                 MapLead(bizFormItem, lead, fieldMappings);
                 await apiService.UpdateLeadAsync(leadId, lead);
+                failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                return true;
             }
             else
             {
-                await CreateLeadAsync(bizFormItem, fieldMappings);
+                if (await CreateLeadAsync(bizFormItem, fieldMappings))
+                {
+                    failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+                    return true;
+                }
+
+                return false;
             }
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
             logger.LogError(e, "Update lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
             logger.LogError(e, "Update lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException e)
         {
             logger.LogError(e, "Update lead failed - unexpected api error");
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
+
+        return false;
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, LeadSObject lead,

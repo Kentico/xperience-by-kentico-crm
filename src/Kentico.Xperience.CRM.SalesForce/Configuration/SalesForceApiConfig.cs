@@ -5,16 +5,16 @@
 /// </summary>
 public class SalesForceApiConfig
 {
-    private const decimal defaultVersion = 59m;
+    public const decimal DefaultVersion = 59m;
     
     public string? SalesForceUrl { get; set; }
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }
 
-    private decimal? apiVersion;
-    public decimal? ApiVersion
+    private decimal apiVersion;
+    public decimal ApiVersion
     {
-        get => apiVersion is > 0 ? apiVersion : defaultVersion;
+        get => apiVersion > 0 ? apiVersion : DefaultVersion;
         set => apiVersion = value;
     }
 
