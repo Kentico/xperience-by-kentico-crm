@@ -43,14 +43,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services, Action<ContactMappingBuilder> contactMappingConfig)
         where TMappingConfiguration : ContactMappingConfiguration, new()
     {
-        services.TryAddSingleton(
-            _ =>
-            {
-                var mappingBuilder = new ContactMappingBuilder();
-                contactMappingConfig(mappingBuilder);
-                return mappingBuilder.Build<TMappingConfiguration>();
-            });
-        
+        services.TryAddSingleton<IContactsIntegrationValidationService, ContactsIntegrationValidationService>();
         services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
 

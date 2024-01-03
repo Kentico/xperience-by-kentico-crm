@@ -37,7 +37,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         BizFormItemEvents.Update.After += BizFormUpdated;
         logger = Service.Resolve<ILogger<SalesForceBizFormGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();
-        ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
+        RequestEvents.RunEndRequestTasks.Execute += (_, _) => FailedItemsWorker.Current.EnsureRunningThread();
     }
 
     private void BizFormInserted(object? sender, BizFormItemEventArgs e)
@@ -45,7 +45,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
-            var settings = Service.Resolve<IOptions<SalesForceIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
@@ -67,7 +67,7 @@ internal class SalesForceBizFormGlobalEvents : Module
     {
         try
         {
-            var settings = Service.Resolve<IOptions<SalesForceIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             var mappingConfig = Service.Resolve<SalesForceBizFormsMappingConfiguration>();

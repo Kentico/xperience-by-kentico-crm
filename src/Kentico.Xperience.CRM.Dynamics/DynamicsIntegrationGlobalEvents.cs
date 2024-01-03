@@ -1,7 +1,9 @@
 ﻿using CMS;
 using CMS.Base;
+using CMS.ContactManagement;
 using CMS.Core;
 using CMS.DataEngine;
+using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
@@ -14,20 +16,20 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-[assembly: RegisterModule(typeof(DynamicsBizFormGlobalEvents))]
+[assembly: RegisterModule(typeof(DynamicsIntegrationGlobalEvents))]
 
 namespace Kentico.Xperience.CRM.Dynamics;
 
 /// <summary>
-/// Module with bizformitem event handlers for Dynamics integration
+/// Module with BizFormItem and ContactInfo event handlers for Dynamics integration
 /// </summary>
-internal class DynamicsBizFormGlobalEvents : Module
+internal class DynamicsIntegrationGlobalEvents : Module
 {
-    public DynamicsBizFormGlobalEvents() : base(nameof(DynamicsBizFormGlobalEvents))
+    public DynamicsIntegrationGlobalEvents() : base(nameof(DynamicsIntegrationGlobalEvents))
     {
     }
 
-    private ILogger<DynamicsBizFormGlobalEvents> logger = null!;
+    private ILogger<DynamicsIntegrationGlobalEvents> logger = null!;
 
     protected override void OnInit()
     {
@@ -35,9 +37,18 @@ internal class DynamicsBizFormGlobalEvents : Module
 
         BizFormItemEvents.Insert.After += BizFormInserted;
         BizFormItemEvents.Update.After += BizFormUpdated;
-        logger = Service.Resolve<ILogger<DynamicsBizFormGlobalEvents>>();
+        
+        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        
+        logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();
-        ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
+        RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
+        {
+            ContactsSyncQueueWorker.Current.EnsureRunningThread();
+            ContactsSyncFromCRMWorker.Current.EnsureRunningThread();
+            FailedItemsWorker.Current.EnsureRunningThread();
+        };
     }
 
     private void BizFormInserted(object? sender, BizFormItemEventArgs e)
@@ -45,7 +56,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
-            var settings = Service.Resolve<IOptions<DynamicsIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
             
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
@@ -67,7 +78,7 @@ internal class DynamicsBizFormGlobalEvents : Module
     {
         try
         {
-            var settings = Service.Resolve<IOptions<DynamicsIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             var mappingConfig = Service.Resolve<DynamicsBizFormsMappingConfiguration>();
@@ -88,5 +99,13 @@ internal class DynamicsBizFormGlobalEvents : Module
         {
             logger.LogError(exception, "Error occured during updating lead");
         }
+    }
+    
+    private void ContactSync(object? sender, ObjectEventArgs args)
+    {
+        if (args.Object is not ContactInfo contactInfo || !ValidationHelper.IsEmail(contactInfo.ContactEmail))
+            return;
+
+        ContactsSyncQueueWorker.Current.Enqueue(contactInfo);
     }
 }

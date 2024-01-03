@@ -33,10 +33,18 @@ public static class DynamicsServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddDynamicCrmContactsToLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddDynamicsCrmContactsToLeadsIntegration(this IServiceCollection serviceCollection,
         Action<ContactMappingBuilder> contactsConfig, IConfiguration configuration)
     {
         serviceCollection.AddKenticoCrmCommonContactIntegration<DynamicsContactMappingConfiguration>(contactsConfig);
+        serviceCollection.TryAddSingleton(
+            _ =>
+            {
+                var mappingBuilder = new ContactMappingBuilder();
+                mappingBuilder.AddDefaultMappingForLead();
+                contactsConfig(mappingBuilder);
+                return mappingBuilder.Build<DynamicsContactMappingConfiguration>();
+            });
 
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
         serviceCollection.TryAddSingleton(GetCrmServiceClient);

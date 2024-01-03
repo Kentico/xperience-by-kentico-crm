@@ -51,34 +51,37 @@ builder.Services.AddDancingGoatServices();
 ConfigureMembershipServices(builder.Services);
 
 //CRM integration registration start
-builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
-            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-                    c => c
-                        .MapField("UserFirstName", "firstname")
-                        .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
-                        .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
-                        .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
-                )
-                .ExternalIdField("crf1c_kenticoid") //optional custom field when you want updates to work
-        ,
-        builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
-    .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
+// builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+//             builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+//                     c => c
+//                         .MapField("UserFirstName", "firstname")
+//                         .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
+//                         .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
+//                         .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
+//                 )
+//                 .ExternalIdField("crf1c_kenticoid") //optional custom field when you want updates to work
+//         ,
+//         builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
+//     .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
+//
+// builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+//         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+//                 c => c
+//                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
+//                     .MapField("UserLastName", e => e.LastName) //option 2: mapping source name string -> member expression to SObject
+//                     .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+//                     //option 3: source mapping function from generated BizForm object  -> member expression to SObject
+//                     .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+//                     //option 4: source mapping function general BizFormItem  -> member expression to SObject
+//             )
+//             .ExternalIdField("KenticoID__c") //optional custom field when you want updates to work
+//     //.AddForm("formname") // add another forms definitions
+//     ,
+//     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
 
-builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
-        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-                c => c
-                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
-                    .MapField("UserLastName", e => e.LastName) //option 2: mapping source name string -> member expression to SObject
-                    .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
-                    //option 3: source mapping function from generated BizForm object  -> member expression to SObject
-                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
-                    //option 4: source mapping function general BizFormItem  -> member expression to SObject
-            )
-            .ExternalIdField("KenticoID__c") //optional custom field when you want updates to work
-    //.AddForm("formname") // add another forms definitions
-    ,
-    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
 
+builder.Services.AddDynamicsCrmContactsToLeadsIntegration(b => { },
+    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
 //CRM integration registration end
 
 var app = builder.Build();

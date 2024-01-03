@@ -7,6 +7,7 @@ using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
+using Microsoft.Xrm.Sdk.Query;
 using System.ServiceModel;
 
 namespace Kentico.Xperience.CRM.Dynamics.Services;
@@ -32,7 +33,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         this.failedSyncItemService = failedSyncItemService;
     }
 
-    public async Task CreateLeadAsync(ContactInfo contactInfo)
+    public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
     {
         try
         {
@@ -51,37 +52,22 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
-            logger.LogError(e, "Create entity failed - api error: {ApiResult}", e.Detail);
+            logger.LogError(e, "Contact/Lead sync failed - api error: {ApiResult}", e.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
-            logger.LogError(e, "Create entity failed - api error: {ApiResult}", ie.Detail);
+            logger.LogError(e, "Contact/Lead sync failed - api error: {ApiResult}", ie.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Create entity failed - unknown api error");
+            logger.LogError(e, "Contact/Lead sync failed - unknown api error");
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
     }
-
-    public Task UpdateLeadAsync(ContactInfo contactInfo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task CreateContactAsync(ContactInfo contactInfo)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task UpdateContactAsync(ContactInfo contactInfo)
-    {
-        throw new NotImplementedException();
-    }
-
-    private async Task CreateEntity(ContactInfo contactInfo, string entityType)
+    
+    public async Task SynchronizeContactToContactsAsync(ContactInfo contactInfo)
     {
         try
         {
@@ -91,32 +77,30 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
                     contactInfo.ContactID);
                 return;
             }
-            var leadEntity = new Entity(entityType);
+            var leadEntity = new Contact();
             MapCRMEntity(contactInfo, leadEntity, contactMapping.FieldsMapping);
-            if (entityType == Lead.EntityLogicalName)
-            {
-                leadEntity["subject"] ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";    
-            }
+
+            //leadEntity.Subject ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
 
             await serviceClient.CreateAsync(leadEntity);
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
-            logger.LogError(e, "Create entity failed - api error: {ApiResult}", e.Detail);
+            logger.LogError(e, "Contact sync failed - api error: {ApiResult}", e.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
-            logger.LogError(e, "Create entity failed - api error: {ApiResult}", ie.Detail);
+            logger.LogError(e, "Contact sync  failed - api error: {ApiResult}", ie.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Create entity failed - unknown api error");
+            logger.LogError(e, "Contact sync  failed - unknown api error");
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
     }
-
+    
     protected virtual void MapCRMEntity(ContactInfo contactInfo, Entity leadEntity,
         IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
@@ -124,12 +108,34 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         {
             var formFieldValue = fieldMapping.ContactFieldMapping.MapContactField(contactInfo);
 
-            _ = fieldMapping.CRMFieldMapping switch
+            if (fieldMapping.CRMFieldMapping is CRMFieldNameMapping m)
             {
-                CRMFieldNameMapping m => leadEntity[m.CrmFieldName] = formFieldValue,
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
-                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
-            };
+                leadEntity[m.CrmFieldName] = formFieldValue;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping");
+            }
         }
+    }
+
+    public async Task<IEnumerable<Lead>> GetModifiedLeadsAsync(DateTime lastSync)
+    {
+        return await GetModifiedEntitiesAsync<Lead>(lastSync, Lead.EntityLogicalName);
+    }
+
+    public async Task<IEnumerable<Contact>> GetModifiedContactsAsync(DateTime lastSync)
+    {
+        return await GetModifiedEntitiesAsync<Contact>(lastSync, Contact.EntityLogicalName);
+    }
+
+    private async Task<IEnumerable<TEntity>> GetModifiedEntitiesAsync<TEntity>(DateTime lastSync, string entityName)
+        where TEntity : Entity
+    {
+        var query = new QueryExpression(entityName) { ColumnSet = new ColumnSet(true) };
+        query.Criteria.AddCondition("modifiedon", ConditionOperator.GreaterThan, lastSync.ToUniversalTime());
+        
+        return (await serviceClient.RetrieveMultipleAsync(query)).Entities.Select(e => e.ToEntity<TEntity>());
     }
 }

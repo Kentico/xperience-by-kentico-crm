@@ -19,7 +19,7 @@ public class ContactMappingBuilder
         return this;
     }
     
-    internal TContactMappingConfiguration Build<TContactMappingConfiguration>()
+    public TContactMappingConfiguration Build<TContactMappingConfiguration>()
         where TContactMappingConfiguration : ContactMappingConfiguration, new()
     {
         return new TContactMappingConfiguration

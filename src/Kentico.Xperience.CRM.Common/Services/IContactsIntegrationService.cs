@@ -9,26 +9,12 @@ public interface IContactsIntegrationService
     /// </summary>
     /// <param name="contactInfo"></param>
     /// <returns></returns>
-    Task CreateLeadAsync(ContactInfo contactInfo);
+    Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo);
     
     /// <summary>
-    /// Updated contact in CRM from Contact info
-    /// </summary>
-    /// <param name="bizFormItem"></param>
-    /// <returns></returns>
-    Task UpdateLeadAsync(ContactInfo contactInfo);
-
-    /// <summary>
     /// 
     /// </summary>
     /// <param name="contactInfo"></param>
     /// <returns></returns>
-    Task CreateContactAsync(ContactInfo contactInfo);
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="contactInfo"></param>
-    /// <returns></returns>
-    Task UpdateContactAsync(ContactInfo contactInfo);
+    Task SynchronizeContactToContactsAsync(ContactInfo contactInfo);
 }
