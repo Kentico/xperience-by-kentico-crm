@@ -1,17 +1,22 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <Description>Shared functionality for all Xperience by Kentico CRM platform integrations</Description>
-    <RootNamespace>Kentico.Xperience.CRM.Common</RootNamespace>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Description>Shared functionality for all Xperience by Kentico CRM platform integrations</Description>
+		<RootNamespace>Kentico.Xperience.CRM.Common</RootNamespace>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Kentico.Xperience.Admin" />
-    <PackageReference Include="Kentico.Xperience.WebApp" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Kentico.Xperience.Core" />
+		<PackageReference Include="Microsoft.SourceLink.GitHub">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute">
+		</AssemblyAttribute>
+	</ItemGroup>
 
 </Project>
+ 

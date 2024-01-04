@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>Kentico.Xperience.Dynamics.CRM.Integration</AssemblyName>
+        <RootNamespace>Kentico.Xperience.CRM.Dynamics</RootNamespace>
+    </PropertyGroup>
+	
+    <ItemGroup>
+      <PackageReference Include="Kentico.Xperience.Core" Version="27.0.0" />      
+      <PackageReference Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.1.14" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Kentico.Xperience.CRM.Integration.Common\Kentico.Xperience.CRM.Integration.Common.csproj" />
+    </ItemGroup>
+   
+</Project>
