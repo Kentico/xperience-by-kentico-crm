@@ -82,7 +82,10 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.FailedSyncItemEntityID), Visible = false, DataType = "integer", Enabled = true
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemEntityID),
+            Visible = false,
+            DataType = "integer",
+            Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
@@ -99,7 +102,10 @@ public class CrmModuleInstaller : ICrmModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(FailedSyncItemInfo.FailedSyncItemTryCount), Visible = false, DataType = "integer", Enabled = true
+            Name = nameof(FailedSyncItemInfo.FailedSyncItemTryCount),
+            Visible = false,
+            DataType = "integer",
+            Enabled = true
         };
         formInfo.AddFormItem(formItem);
 

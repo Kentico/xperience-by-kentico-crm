@@ -47,7 +47,7 @@ internal class DynamicsBizFormGlobalEvents : Module
         {
             var settings = Service.Resolve<IOptions<DynamicsIntegrationSettings>>().Value;
             if (!settings.FormLeadsEnabled) return;
-            
+
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider
@@ -75,7 +75,7 @@ internal class DynamicsBizFormGlobalEvents : Module
             {
                 return;
             }
-            
+
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider

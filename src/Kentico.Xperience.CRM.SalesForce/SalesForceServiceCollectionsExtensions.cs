@@ -32,10 +32,10 @@ public static class SalesForceServiceCollectionsExtensions
             .AddClient("salesforce.api.client", client =>
             {
                 var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
-                
+
                 if (apiConfig?.IsValid() is not true)
                     throw new InvalidOperationException("Missing API settings");
-                
+
                 client.TokenEndpoint = apiConfig.SalesForceUrl?.TrimEnd('/') + "/services/oauth2/token";
 
                 client.ClientId = apiConfig.ClientId;
@@ -46,7 +46,7 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>(client =>
         {
             var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
-            
+
             if (apiConfig?.IsValid() is not true)
                 throw new InvalidOperationException("Missing API settings");
 

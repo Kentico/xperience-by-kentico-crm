@@ -13,7 +13,7 @@ public interface ISalesForceApiService
     /// <param name="lead"></param>
     /// <returns></returns>
     Task<SaveResult> CreateLeadAsync(LeadSObject lead);
-    
+
     /// <summary>
     /// Updates lead entity to SalesForce Leads 
     /// </summary>
@@ -21,7 +21,7 @@ public interface ISalesForceApiService
     /// <param name="leadSObject"></param>
     /// <returns></returns>
     Task UpdateLeadAsync(string id, LeadSObject leadSObject);
-    
+
     /// <summary>
     /// Get Lead ID for item by external ID
     /// </summary>

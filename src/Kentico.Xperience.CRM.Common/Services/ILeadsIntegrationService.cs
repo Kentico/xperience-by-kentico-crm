@@ -13,7 +13,7 @@ public interface ILeadsIntegrationService
     /// <param name="bizFormItem"></param>
     /// <returns></returns>
     Task CreateLeadAsync(BizFormItem bizFormItem);
-    
+
     /// <summary>
     /// Updates lead in CRM from BizForm item
     /// </summary>

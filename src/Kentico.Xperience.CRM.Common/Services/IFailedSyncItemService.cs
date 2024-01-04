@@ -15,21 +15,21 @@ public interface IFailedSyncItemService
     /// <param name="bizFormItem">BizForm item</param>
     /// <param name="crmName">CRM name</param>
     void LogFailedLeadItem(BizFormItem bizFormItem, string crmName);
-    
+
     /// <summary>
     /// Get all items waiting for synchronization which can be already synced again (according SyncNextTime property) 
     /// </summary>
     /// <param name="crmName">CRM name</param>
     /// <returns></returns>
     IEnumerable<FailedSyncItemInfo> GetFailedSyncItemsToReSync(string crmName);
-    
+
     /// <summary>
     /// Load BizForm item data for given failed sync item
     /// </summary>
     /// <param name="failedSyncItemInfo"></param>
     /// <returns></returns>
     BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
-    
+
     /// <summary>
     /// Delete record for given CRM, class name and ID
     /// </summary>

@@ -46,7 +46,7 @@ public static class DynamicsServiceCollectionExtensions
         {
             throw new InvalidOperationException("Missing API setting");
         }
-        
+
         var connectionString = string.IsNullOrWhiteSpace(settings.ApiConfig.ConnectionString) ?
             $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}" :
             settings.ApiConfig.ConnectionString;

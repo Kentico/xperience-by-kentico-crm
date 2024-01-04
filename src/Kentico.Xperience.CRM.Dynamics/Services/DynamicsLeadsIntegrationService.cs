@@ -138,7 +138,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     {
         if (string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName))
             return null;
-        
+
         var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
         query.Criteria.AddCondition(bizFormMappingConfig.ExternalIdFieldName, ConditionOperator.Equal, externalId);
 
