@@ -52,17 +52,17 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
-            logger.LogError(e, "Contact/Lead sync failed - api error: {ApiResult}", e.Detail);
+            logger.LogError(e, "Lead sync failed - api error: {ApiResult}", e.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
-            logger.LogError(e, "Contact/Lead sync failed - api error: {ApiResult}", ie.Detail);
+            logger.LogError(e, "Lead sync failed - api error: {ApiResult}", ie.Detail);
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Contact/Lead sync failed - unknown api error");
+            logger.LogError(e, "Lead sync failed - unknown api error");
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
     }

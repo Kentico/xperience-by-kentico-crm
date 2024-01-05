@@ -48,6 +48,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             }
 
             await apiService.CreateLeadAsync(lead);
+            
             return true;
         }
         catch (ApiException<ICollection<RestApiError>> e)

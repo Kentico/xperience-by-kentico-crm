@@ -1,5 +1,6 @@
 ﻿using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
@@ -21,7 +22,7 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="formsConfig"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDynamicsCrmLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
         Action<BizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
@@ -33,23 +34,35 @@ public static class DynamicsServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddDynamicsCrmContactsToLeadsIntegration(this IServiceCollection serviceCollection,
-        Action<ContactMappingBuilder> contactsConfig, IConfiguration configuration)
+    public static IServiceCollection AddDynamicsContactsIntegration(this IServiceCollection serviceCollection,
+        ContactCRMType crmType, IConfiguration configuration)
+    => serviceCollection.AddDynamicsContactsIntegration(crmType, b => { }, configuration);
+
+    public static IServiceCollection AddDynamicsContactsIntegration(this IServiceCollection serviceCollection,
+        ContactCRMType crmType, Action<ContactMappingBuilder> mappingConfig, IConfiguration configuration,
+        bool useDefaultMapping = true)
     {
-        serviceCollection.AddKenticoCrmCommonContactIntegration<DynamicsContactMappingConfiguration>(contactsConfig);
+        serviceCollection.AddKenticoCrmCommonContactIntegration<DynamicsContactMappingConfiguration>(mappingConfig);
         serviceCollection.TryAddSingleton(
-            _ =>
+            sp =>
             {
                 var mappingBuilder = new ContactMappingBuilder();
-                mappingBuilder.AddDefaultMappingForLead();
-                contactsConfig(mappingBuilder);
+                if (useDefaultMapping)
+                {
+                    mappingBuilder = crmType == ContactCRMType.Lead ?
+                        mappingBuilder.AddDefaultMappingForLead() :
+                        mappingBuilder.AddDefaultMappingForContact();
+                    mappingConfig(mappingBuilder);
+                }
+
                 return mappingBuilder.Build<DynamicsContactMappingConfiguration>();
             });
 
-        serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
+        serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
+            .PostConfigure(s => s.ContactType = crmType);
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsContactsIntegrationService, DynamicsContactsIntegrationService>();
-        
+
         return serviceCollection;
     }
 
@@ -62,13 +75,13 @@ public static class DynamicsServiceCollectionExtensions
     private static ServiceClient GetCrmServiceClient(IServiceProvider serviceProvider)
     {
         var settings = serviceProvider.GetRequiredService<IOptions<DynamicsIntegrationSettings>>().Value;
-        var logger = serviceProvider.GetRequiredService<ILogger<DynamicsLeadsIntegrationService>>();
+        var logger = serviceProvider.GetRequiredService<ILogger<ServiceClient>>();
 
         if (settings.ApiConfig?.IsValid() is not true)
         {
             throw new InvalidOperationException("Missing API setting");
         }
-        
+
         var connectionString = string.IsNullOrWhiteSpace(settings.ApiConfig.ConnectionString) ?
             $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}" :
             settings.ApiConfig.ConnectionString;

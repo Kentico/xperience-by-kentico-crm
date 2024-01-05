@@ -39,7 +39,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
         BizFormItemEvents.Update.After += BizFormUpdated;
         
         ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
-        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
         
         logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();

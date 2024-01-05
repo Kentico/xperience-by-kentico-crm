@@ -1,7 +1,9 @@
 using CMS;
 using CMS.Base;
+using CMS.ContactManagement;
 using CMS.Core;
 using CMS.DataEngine;
+using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
@@ -35,9 +37,18 @@ internal class SalesForceBizFormGlobalEvents : Module
 
         BizFormItemEvents.Insert.After += BizFormInserted;
         BizFormItemEvents.Update.After += BizFormUpdated;
+        
+        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
+        
         logger = Service.Resolve<ILogger<SalesForceBizFormGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();
-        RequestEvents.RunEndRequestTasks.Execute += (_, _) => FailedItemsWorker.Current.EnsureRunningThread();
+        RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
+        {
+            ContactsSyncQueueWorker.Current.EnsureRunningThread();
+            //ContactsSyncFromCRMWorker.Current.EnsureRunningThread(); //@TODO
+            FailedItemsWorker.Current.EnsureRunningThread();
+        };
     }
 
     private void BizFormInserted(object? sender, BizFormItemEventArgs e)
@@ -88,5 +99,13 @@ internal class SalesForceBizFormGlobalEvents : Module
         {
             logger.LogError(exception, "Error occured during updating lead");
         }
+    }
+    
+    private void ContactSync(object? sender, ObjectEventArgs args)
+    {
+        if (args.Object is not ContactInfo contactInfo || !ValidationHelper.IsEmail(contactInfo.ContactEmail))
+            return;
+
+        ContactsSyncQueueWorker.Current.Enqueue(contactInfo);
     }
 }

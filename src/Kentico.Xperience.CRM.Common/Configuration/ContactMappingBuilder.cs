@@ -19,6 +19,12 @@ public class ContactMappingBuilder
         return this;
     }
     
+    public ContactMappingBuilder AddMapping(ContactFieldToCRMMapping mapping)
+    {
+        fieldMappings.Add(mapping);
+        return this;
+    }
+    
     public TContactMappingConfiguration Build<TContactMappingConfiguration>()
         where TContactMappingConfiguration : ContactMappingConfiguration, new()
     {

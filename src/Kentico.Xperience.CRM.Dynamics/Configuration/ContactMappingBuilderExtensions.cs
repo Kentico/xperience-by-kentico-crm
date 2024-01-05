@@ -1,6 +1,7 @@
 ﻿using CMS.ContactManagement;
 using CMS.Globalization;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Kentico.Xperience.CRM.Dynamics.Helpers;
 using Microsoft.Xrm.Sdk;
@@ -77,7 +78,6 @@ public static class ContactMappingBuilderExtensions
         builder.MapField<Contact>(c => c.ContactJobTitle, l => l.JobTitle);
         builder.MapField<Contact>(c => c.ContactMobilePhone, l => l.MobilePhone);
         builder.MapField<Contact>(c => c.ContactBusinessPhone, l => l.Telephone1);
-        builder.MapField<Contact>(c => c.ContactCompanyName, l => l.Company);
         builder.MapField<Contact>(c => c.ContactNotes, l => l.Description);
         
         return builder;
