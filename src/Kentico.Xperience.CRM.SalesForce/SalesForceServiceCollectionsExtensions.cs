@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 
 namespace Kentico.Xperience.CRM.SalesForce;
+
 public static class SalesForceServiceCollectionsExtensions
 {
     /// <summary>
@@ -17,13 +18,22 @@ public static class SalesForceServiceCollectionsExtensions
     /// <param name="configuration"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static IServiceCollection AddSalesForceCrmLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddSalesForceFormLeadsIntegration(this IServiceCollection serviceCollection,
         Action<BizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
-        serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration);
+        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
 
+        serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration);
+        AddSalesForceCommonIntegration(serviceCollection, configuration);
+
+        serviceCollection.AddScoped<ISalesForceLeadsIntegrationService, SalesForceLeadsIntegrationService>();
+        return serviceCollection;
+    }
+    
+    private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection,
+        IConfiguration configuration)
+    {
         // default cache for token management
         serviceCollection.AddDistributedMemoryCache();
 
@@ -44,19 +54,15 @@ public static class SalesForceServiceCollectionsExtensions
 
         //add http client for salesforce api
         serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>(client =>
-        {
-            var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
+            {
+                var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
 
-            if (apiConfig?.IsValid() is not true)
-                throw new InvalidOperationException("Missing API settings");
+                if (apiConfig?.IsValid() is not true)
+                    throw new InvalidOperationException("Missing API settings");
 
-            string apiVersion = apiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
-            client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiVersion}/");
-        })
-        .AddClientCredentialsTokenHandler("salesforce.api.client");
-
-
-        serviceCollection.AddScoped<ISalesForceLeadsIntegrationService, SalesForceLeadsIntegrationService>();
-        return serviceCollection;
+                string apiVersion = apiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
+                client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiVersion}/");
+            })
+            .AddClientCredentialsTokenHandler("salesforce.api.client");
     }
 }

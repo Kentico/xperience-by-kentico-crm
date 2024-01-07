@@ -51,7 +51,7 @@ builder.Services.AddDancingGoatServices();
 ConfigureMembershipServices(builder.Services);
 
 //CRM integration registration start
-builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+builder.Services.AddDynamicsFormLeadsIntegration(builder =>
             builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                     c => c
                         .MapField("UserFirstName", "firstname")
@@ -64,7 +64,7 @@ builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
         builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
     .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
 
-builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+builder.Services.AddSalesForceFormLeadsIntegration(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                 c => c
                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names

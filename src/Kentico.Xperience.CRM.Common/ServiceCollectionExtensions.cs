@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     /// <param name="formsMappingConfig"></param>
     /// <typeparam name="TMappingConfiguration"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddKenticoCrmCommonIntegration<TMappingConfiguration>(
+    public static IServiceCollection AddKenticoCrmCommonFormLeadsIntegration<TMappingConfiguration>(
         this IServiceCollection services, Action<BizFormsMappingBuilder> formsMappingConfig)
         where TMappingConfiguration : BizFormsMappingConfiguration, new()
     {

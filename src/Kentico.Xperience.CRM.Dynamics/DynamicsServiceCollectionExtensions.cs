@@ -4,6 +4,7 @@ using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
@@ -19,14 +20,14 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="formsConfig"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDynamicsCrmLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
         Action<BizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
 
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
-        serviceCollection.AddSingleton(GetCrmServiceClient);
+        serviceCollection.TryAddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
         return serviceCollection;
     }
@@ -39,8 +40,8 @@ public static class DynamicsServiceCollectionExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static ServiceClient GetCrmServiceClient(IServiceProvider serviceProvider)
     {
-        var settings = serviceProvider.GetRequiredService<IOptions<DynamicsIntegrationSettings>>().Value;
-        var logger = serviceProvider.GetRequiredService<ILogger<DynamicsLeadsIntegrationService>>();
+        var settings = serviceProvider.GetRequiredService<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
+        var logger = serviceProvider.GetRequiredService<ILogger<ServiceClient>>();
 
         if (settings.ApiConfig?.IsValid() is not true)
         {

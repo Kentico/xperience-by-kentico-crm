@@ -38,7 +38,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
 
         try
         {
-            var settings = Service.Resolve<IOptions<TSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<TSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();

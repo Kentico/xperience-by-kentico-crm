@@ -14,18 +14,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-[assembly: RegisterModule(typeof(SalesForceBizFormGlobalEvents))]
+[assembly: RegisterModule(typeof(SalesForceIntegrationGlobalEvents))]
 
 namespace Kentico.Xperience.CRM.SalesForce;
 
 /// <summary>
-/// Module with bizformitem event handlers for SalesForce Sales integration
+/// Module with BizFormItem and ContactInfo event handlers for SalesForce integration
 /// </summary>
-internal class SalesForceBizFormGlobalEvents : Module
+internal class SalesForceIntegrationGlobalEvents : Module
 {
-    private ILogger<SalesForceBizFormGlobalEvents> logger = null!;
+    private ILogger<SalesForceIntegrationGlobalEvents> logger = null!;
 
-    public SalesForceBizFormGlobalEvents() : base(nameof(SalesForceBizFormGlobalEvents))
+    public SalesForceIntegrationGlobalEvents() : base(nameof(SalesForceIntegrationGlobalEvents))
     {
     }
 
@@ -35,9 +35,14 @@ internal class SalesForceBizFormGlobalEvents : Module
 
         BizFormItemEvents.Insert.After += BizFormInserted;
         BizFormItemEvents.Update.After += BizFormUpdated;
-        logger = Service.Resolve<ILogger<SalesForceBizFormGlobalEvents>>();
+        logger = Service.Resolve<ILogger<SalesForceIntegrationGlobalEvents>>();
         Service.Resolve<ICrmModuleInstaller>().Install();
         ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
+        
+        RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
+        {
+            FailedItemsWorker.Current.EnsureRunningThread();
+        };
     }
 
     private void BizFormInserted(object? sender, BizFormItemEventArgs e)
@@ -45,7 +50,7 @@ internal class SalesForceBizFormGlobalEvents : Module
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
-            var settings = Service.Resolve<IOptions<SalesForceIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
@@ -67,7 +72,7 @@ internal class SalesForceBizFormGlobalEvents : Module
     {
         try
         {
-            var settings = Service.Resolve<IOptions<SalesForceIntegrationSettings>>().Value;
+            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
 
             var mappingConfig = Service.Resolve<SalesForceBizFormsMappingConfiguration>();
