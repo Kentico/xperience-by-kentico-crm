@@ -41,7 +41,7 @@ SQL Server 2019 or newer compatible database
 
 Running the sample project requires creating a new Xperience by Kentico database using the included template.
 
-Change directory in your console to `./src/SalesforceSalesCloud.Sample` and follow the instructions in the Xperience
+Change directory in your console to `./examples/DancingGoat` and follow the instructions in the Xperience
 documentation on [creating a new database](https://docs.xperience.io/xp26/developers-and-admins/installation#Installation-CreatetheprojectdatabaseCreateProjectDatabase).
 
 ### Admin Customization
@@ -50,7 +50,7 @@ To run the Sample app Admin customization in development mode, add the following
 
 ```json
 "CMSAdminClientModuleSettings": {
-  "kentico-xperience-integrations-salesforce-sales-cloud": {
+  "kentico-xperience-integrations-crm": {
     "Mode": "Proxy",
     "Port": 3009
   }
@@ -65,7 +65,7 @@ To run the Sample app Admin customization in development mode, add the following
    - `refactor/` - for restructuring of existing features
    - `fix/` - for bugfixes
 
-1. Run `dotnet format` against the `src/Kentico.Xperience.SalesforceSalesCloud` project
+1. Run `dotnet format` against the `Kentico.Xperience.CRM.sln` solution
 
    > use `dotnet: format` VS Code task.
 

@@ -31,4 +31,3 @@ public class BizFormFieldsMappingBuilder
 
     internal List<BizFormFieldMapping> Build() => fieldMappings;
 }
-

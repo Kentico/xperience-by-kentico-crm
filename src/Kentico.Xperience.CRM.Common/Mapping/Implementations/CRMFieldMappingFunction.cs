@@ -23,7 +23,7 @@ public class CRMFieldMappingFunction<TCrmEntity> : ICRMFieldMapping
 
         if (mappingFunc.Body is not MemberExpression { Member: PropertyInfo propertyInfo })
             throw new InvalidOperationException("CRM field mapping failed, missing member expression");
-                
+
         propertyInfo.SetValue(crmEntity, value);
         return propertyInfo.GetValue(crmEntity);
     }

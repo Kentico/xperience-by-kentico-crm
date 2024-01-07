@@ -6,7 +6,7 @@
 public class SalesForceApiConfig
 {
     public const decimal DefaultVersion = 59m;
-    
+
     public string? SalesForceUrl { get; set; }
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }

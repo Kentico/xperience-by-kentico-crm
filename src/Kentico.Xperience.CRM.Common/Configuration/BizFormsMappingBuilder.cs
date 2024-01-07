@@ -38,7 +38,7 @@ public class BizFormsMappingBuilder
         externalIdFieldName = fieldName;
         return this;
     }
-    
+
     internal TBizFormsConfiguration Build<TBizFormsConfiguration>()
      where TBizFormsConfiguration : BizFormsMappingConfiguration, new()
     {

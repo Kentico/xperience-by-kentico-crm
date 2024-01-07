@@ -30,14 +30,14 @@ public interface IFailedSyncItemService
     /// <param name="crmName">CRM name</param>
     /// <returns></returns>
     IEnumerable<FailedSyncItemInfo> GetFailedSyncItemsToReSync(string crmName);
-    
+
     /// <summary>
     /// Load BizForm item data for given failed sync item
     /// </summary>
     /// <param name="failedSyncItemInfo"></param>
     /// <returns></returns>
     BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
-    
+
     /// <summary>
     /// Delete record for given CRM, class name and ID
     /// </summary>

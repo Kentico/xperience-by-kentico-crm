@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Globalization;
 
 namespace Kentico.Xperience.CRM.SalesForce;
+
 public static class SalesForceServiceCollectionsExtensions
 {
     /// <summary>
@@ -31,11 +32,11 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.AddScoped<ISalesForceLeadsIntegrationService, SalesForceLeadsIntegrationService>();
         return serviceCollection;
     }
-    
+
     public static IServiceCollection AddSalesForceContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType, IConfiguration configuration)
         => serviceCollection.AddSalesForceContactsIntegration(crmType, b => { }, configuration);
-    
+
     public static IServiceCollection AddSalesForceContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType,
         Action<ContactMappingBuilder> mappingConfig,
@@ -57,7 +58,7 @@ public static class SalesForceServiceCollectionsExtensions
 
                 return mappingBuilder.Build<SalesForceContactMappingConfiguration>();
             });
-        
+
         serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
             .PostConfigure(s => s.ContactType = crmType);
         AddSalesForceCommonIntegration(serviceCollection, configuration);
@@ -66,7 +67,8 @@ public static class SalesForceServiceCollectionsExtensions
         return serviceCollection;
     }
 
-    private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection, IConfiguration configuration)
+    private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection,
+        IConfiguration configuration)
     {
         // default cache for token management
         serviceCollection.AddDistributedMemoryCache();
@@ -76,10 +78,10 @@ public static class SalesForceServiceCollectionsExtensions
             .AddClient("salesforce.api.client", client =>
             {
                 var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
-                
+
                 if (apiConfig?.IsValid() is not true)
                     throw new InvalidOperationException("Missing API settings");
-                
+
                 client.TokenEndpoint = apiConfig.SalesForceUrl?.TrimEnd('/') + "/services/oauth2/token";
 
                 client.ClientId = apiConfig.ClientId;
@@ -90,7 +92,7 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>(client =>
             {
                 var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
-            
+
                 if (apiConfig?.IsValid() is not true)
                     throw new InvalidOperationException("Missing API settings");
 

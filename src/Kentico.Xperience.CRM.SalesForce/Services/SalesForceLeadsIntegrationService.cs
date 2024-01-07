@@ -13,7 +13,7 @@ namespace Kentico.Xperience.CRM.SalesForce.Services;
 
 internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon, ISalesForceLeadsIntegrationService
 {
-    private readonly SalesForceBizFormsMappingConfiguration bizFormMappingConfig;    
+    private readonly SalesForceBizFormsMappingConfiguration bizFormMappingConfig;
     private readonly ISalesForceApiService apiService;
     private readonly ILogger<SalesForceLeadsIntegrationService> logger;
     private readonly IFailedSyncItemService failedSyncItemService;
@@ -26,7 +26,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         IFailedSyncItemService failedSyncItemService)
         : base(bizFormMappingConfig, validationService, logger)
     {
-        this.bizFormMappingConfig = bizFormMappingConfig;        
+        this.bizFormMappingConfig = bizFormMappingConfig;
         this.apiService = apiService;
         this.logger = logger;
         this.failedSyncItemService = failedSyncItemService;

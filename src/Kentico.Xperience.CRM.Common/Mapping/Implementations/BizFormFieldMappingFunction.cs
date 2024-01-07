@@ -15,7 +15,7 @@ public class BizFormFieldMappingFunction<TBizFormFieldItem> : IBizFormFieldMappi
     {
         this.mappingFunc = mappingFunc;
     }
-    
+
     public object MapFormField(BizFormItem bizFormItem)
     {
         return mappingFunc((TBizFormFieldItem)bizFormItem);

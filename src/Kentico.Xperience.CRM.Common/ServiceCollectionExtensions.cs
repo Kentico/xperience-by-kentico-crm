@@ -32,7 +32,7 @@ public static class ServiceCollectionExtensions
                 formsMappingConfig(mappingBuilder);
                 return mappingBuilder.Build<TMappingConfiguration>();
             });
-        
+
         services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
 

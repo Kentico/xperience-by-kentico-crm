@@ -14,7 +14,7 @@ internal class FailedSyncItemService : IFailedSyncItemService
     /// Preventing infinite syncing
     /// </summary>
     private const int MaxSyncCount = 10;
-    
+
     public FailedSyncItemService(IFailedSyncItemInfoProvider failedSyncItemInfoProvider
     )
     {
@@ -24,7 +24,7 @@ internal class FailedSyncItemService : IFailedSyncItemService
     public void LogFailedLeadItem(BizFormItem bizFormItem, string crmName)
     {
         var existingItem = GetExistingItem(crmName, bizFormItem.BizFormClassName, bizFormItem.ItemID);
-        
+
         if (existingItem is null)
         {
             existingItem = new FailedSyncItemInfo
@@ -70,7 +70,7 @@ internal class FailedSyncItemService : IFailedSyncItemService
         {
             return null;
         }
-        
+
         var primaryColumnName = new BizFormItem(formClass.ClassName).TypeInfo.IDColumn;
 
         return BizFormItemProvider.GetItems(failedSyncItemInfo.FailedSyncItemEntityClass)

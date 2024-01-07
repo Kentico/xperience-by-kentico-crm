@@ -24,7 +24,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
 {
     protected override int DefaultInterval => 60000;
     private ILogger<TWorker> logger = null!;
-    
+
     protected override void Initialize()
     {
         base.Initialize();
@@ -42,12 +42,12 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
             if (!settings.FormLeadsEnabled) return;
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
-            
+
             using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
 
             var leadsIntegrationService = serviceScope.ServiceProvider
                 .GetRequiredService<TService>();
-            
+
             foreach (var syncItem in failedSyncItemsService.GetFailedSyncItemsToReSync(CRMName))
             {
                 var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
@@ -55,7 +55,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
                 {
                     continue;
                 }
-                
+
                 leadsIntegrationService.UpdateLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
@@ -71,6 +71,6 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
     protected override void Finish()
     {
     }
-    
+
     protected abstract string CRMName { get; }
 }

@@ -1,6 +1,6 @@
 # Xperience by Kentico CRM
 
-[![CI: Build and Test](https://github.com/Kentico/xperience-by-kentico-crm/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Kentico/xperience-by-kentico-crm/actions/workflows/ci.yml)
+[![CI: Build and Test](https://github.com/Kentico/xperience-by-kentico-crm/actions/workflows/ci.yml/badge.svg)](https://github.com/Kentico/xperience-by-kentico-crm/actions/workflows/ci.yml)
 
 ## Description
 
@@ -22,6 +22,7 @@ The versions of this library are supported by the following versions of Xperienc
 ## Package Installation
 
 ### Dynamics Sales integration
+
 Add the package to your application using the .NET CLI
 
 ```powershell
@@ -29,6 +30,7 @@ dotnet add package Kentico.Xperience.CRM.Dynamics
 ```
 
 ### SalesForce Sales integration
+
 Add the package to your application using the .NET CLI
 
 ```powershell
@@ -77,37 +79,38 @@ Fill and add this settings to appsettings.json (API config is recommended to hav
 ```
 
 You can also set specific API version for SalesForce REST API (default version is 59).
+
 ```json
 {
   "CMSSalesForceCRMIntegration:ApiConfig:ApiVersion": 59
 }
 ```
 
-
 ### Forms data - Leads integration
 
 Configure mapping for each form between Kentico Form fields and Dynamics Lead entity fields:
 
 #### Dynamics Sales
-   ```csharp
-    // Program.cs
 
-    var builder = WebApplication.CreateBuilder(args);
+```csharp
+ // Program.cs
 
-    // ...
-   
-   builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
-            builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-                    c => c
-                        .MapField("UserFirstName", "firstname")
-                        .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
-                        .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
-                        .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
-                )
-                .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
-        ,
-        builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
-   ```
+ var builder = WebApplication.CreateBuilder(args);
+
+ // ...
+
+builder.Services.AddDynamicsCrmLeadsIntegration(builder =>
+         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+                 c => c
+                     .MapField("UserFirstName", "firstname")
+                     .MapField<Lead>("UserLastName", e => e.LastName) //you can map to Lead object or use own generated Lead class
+                     .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
+                     .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
+             )
+             .ExternalIdField("new_kenticoid") //optional custom field when you want updates to work
+     ,
+     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
+```
 
 You can also register custom validation service to handle if given form item should be processed to CRM:
 
@@ -118,28 +121,28 @@ You can also register custom validation service to handle if given form item sho
 
 #### SalesForce
 
-   ```csharp
-    // Program.cs
+```csharp
+ // Program.cs
 
-    var builder = WebApplication.CreateBuilder(args);
+ var builder = WebApplication.CreateBuilder(args);
 
-    // ...
-   
-   builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
-        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-                c => c
-                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
-                    .MapField("UserLastName",
-                        e => e.LastName) //option 2: mapping source name string -> member expression to SObject
-                    .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
-                    //option 3: source mapping function from generated BizForm object  -> member expression to SObject
-                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
-                //option 4: source mapping function general BizFormItem  -> member expression to SObject
-            )            
-            .ExternalIdField("KenticoID") //optional custom field when you want updates to work
-    ,
-    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
-   ```
+ // ...
+
+builder.Services.AddSalesForceCrmLeadsIntegration(builder =>
+     builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+             c => c
+                 .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
+                 .MapField("UserLastName",
+                     e => e.LastName) //option 2: mapping source name string -> member expression to SObject
+                 .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+                 //option 3: source mapping function from generated BizForm object  -> member expression to SObject
+                 .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+             //option 4: source mapping function general BizFormItem  -> member expression to SObject
+         )
+         .ExternalIdField("KenticoID") //optional custom field when you want updates to work
+ ,
+ builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
+```
 
 You can also register custom validation service to handle if given form item should be processed to CRM:
 
@@ -160,7 +163,7 @@ Distributed under the MIT License. See [`LICENSE.md`](./LICENSE.md) for more inf
 
 ## Support
 
-This project has  **Kentico Labs limited support**.
+This project has **Kentico Labs limited support**.
 
 See [`SUPPORT.md`](https://github.com/Kentico/.github/blob/main/SUPPORT.md#full-support) for more information.
 
