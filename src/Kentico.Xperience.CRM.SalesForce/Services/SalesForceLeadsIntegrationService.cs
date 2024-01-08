@@ -16,79 +16,50 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     private readonly SalesForceBizFormsMappingConfiguration bizFormMappingConfig;
     private readonly ISalesForceApiService apiService;
     private readonly ILogger<SalesForceLeadsIntegrationService> logger;
+    private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
+    private readonly IOptionsMonitor<SalesForceIntegrationSettings> settings;
 
     public SalesForceLeadsIntegrationService(
         SalesForceBizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
         ISalesForceApiService apiService,
         ILogger<SalesForceLeadsIntegrationService> logger,
-        IFailedSyncItemService failedSyncItemService)
+        ICRMSyncItemService syncItemService,
+        IFailedSyncItemService failedSyncItemService,
+        IOptionsMonitor<SalesForceIntegrationSettings> settings)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
         this.apiService = apiService;
         this.logger = logger;
+        this.syncItemService = syncItemService;
         this.failedSyncItemService = failedSyncItemService;
+        this.settings = settings;
     }
-
-    protected async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
-    {
-        try
-        {
-            var lead = new LeadSObject();
-            MapLead(bizFormItem, lead, fieldMappings);
-
-            lead.LeadSource ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
-            lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
-
-            await apiService.CreateLeadAsync(lead);
-            return true;
-        }
-        catch (ApiException<ICollection<RestApiError>> e)
-        {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
-        }
-        catch (ApiException<ICollection<ErrorInfo>> e)
-        {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
-        }
-        catch (ApiException e)
-        {
-            logger.LogError(e, "Create lead failed - unexpected api error");
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
-        }
-
-        return false;
-    }
-
+    
     protected override async Task<bool> SynchronizeLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
         {
-            string? leadId = null;//@TODO
-
-            if (leadId is not null)
+            var syncItem = syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
+            
+            if (syncItem is null)
             {
-                var lead = new LeadSObject();
-                MapLead(bizFormItem, lead, fieldMappings);
-                await apiService.UpdateLeadAsync(leadId, lead);
-                failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
-                return true;
+                await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
             }
             else
             {
-                if (await CreateLeadAsync(bizFormItem, fieldMappings))
+                var existingLead = await GetLeadById(Guid.Parse(syncItem.CRMSyncItemCRMID));
+                if (existingLead is null)
                 {
-                    failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
-                    return true;
+                    await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
                 }
-
-                return false;
+                else if (!settings.CurrentValue.IgnoreExistingRecords)
+                {
+                    await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+                }
             }
         }
         catch (ApiException<ICollection<RestApiError>> e)
@@ -108,6 +79,31 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         }
 
         return false;
+    }
+
+    private async Task CreateLeadAsync(BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        var lead = new LeadSObject();
+        MapLead(bizFormItem, lead, fieldMappings);
+
+        lead.LeadSource ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
+        lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
+
+        var result = await apiService.CreateLeadAsync(lead);
+        
+        syncItemService.LogFormLeadUpdateItem(bizFormItem, result.Id!, CRMType.SalesForce);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+    }
+
+    private async Task UpdateLeadAsync(string leadId, BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        var lead = new LeadSObject();
+        MapLead(bizFormItem, lead, fieldMappings);
+        
+        await apiService.UpdateLeadAsync(leadId, lead);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, LeadSObject lead,

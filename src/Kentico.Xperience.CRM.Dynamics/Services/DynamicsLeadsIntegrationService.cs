@@ -122,8 +122,9 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
         }
 
-        await serviceClient.CreateAsync(leadEntity);
+        var leadId = await serviceClient.CreateAsync(leadEntity);
         
+        syncItemService.LogFormLeadCreateItem(bizFormItem, leadId.ToString(), CRMType.Dynamics);  
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
@@ -140,6 +141,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
 
         await serviceClient.UpdateAsync(leadEntity);
         
+        syncItemService.LogFormLeadUpdateItem(bizFormItem, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
