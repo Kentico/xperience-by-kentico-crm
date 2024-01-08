@@ -89,16 +89,12 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         Lead? existingLead = null;
-        var emailMapping = fieldMappings.FirstOrDefault(m =>
-            m.CRMFieldMapping is CRMFieldNameMapping nm && nm.CrmFieldName == "emailaddress1");
-        if (emailMapping is not null)
+        var tmpLead = new Lead();
+        MapLead(bizFormItem, tmpLead, fieldMappings);
+        
+        if (!string.IsNullOrWhiteSpace(tmpLead.EMailAddress1))
         {
-            var email = ValidationHelper.GetString(emailMapping.FormFieldMapping.MapFormField(bizFormItem),
-                string.Empty);
-            if (!string.IsNullOrWhiteSpace(email))
-            {
-                existingLead = await GetLeadByEmail(email);
-            }
+            existingLead = await GetLeadByEmail(tmpLead.EMailAddress1);
         }
 
         if (existingLead is null)

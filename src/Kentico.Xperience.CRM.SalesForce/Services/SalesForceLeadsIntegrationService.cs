@@ -37,28 +37,28 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         this.failedSyncItemService = failedSyncItemService;
         this.settings = settings;
     }
-    
+
     protected override async Task<bool> SynchronizeLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
         {
             var syncItem = syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
-            
+
             if (syncItem is null)
             {
                 await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
             }
             else
             {
-                var existingLead = await GetLeadById(Guid.Parse(syncItem.CRMSyncItemCRMID));
+                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID);
                 if (existingLead is null)
                 {
                     await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
                 }
                 else if (!settings.CurrentValue.IgnoreExistingRecords)
                 {
-                    await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+                    await UpdateLeadAsync(existingLead.Id!, bizFormItem, fieldMappings);
                 }
             }
         }
@@ -81,8 +81,29 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         return false;
     }
 
-    private async Task CreateLeadAsync(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+    private async Task UpdateByEmailOrCreate(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        LeadSObject? existingLead = null;
+        
+        var tmpLead = new LeadSObject();
+        MapLead(bizFormItem, new LeadSObject(), fieldMappings);
+        
+        if (!string.IsNullOrWhiteSpace(tmpLead.Email))
+        {
+            existingLead = await apiService.GetLeadByEmail(tmpLead.Email);
+        }
+
+        if (existingLead is null)
+        {
+            await CreateLeadAsync(bizFormItem, fieldMappings);
+        }
+        else if (!settings.CurrentValue.IgnoreExistingRecords)
+        {
+            await UpdateLeadAsync(existingLead.Id!, bizFormItem, fieldMappings);
+        }
+    }
+
+    private async Task CreateLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         var lead = new LeadSObject();
         MapLead(bizFormItem, lead, fieldMappings);
@@ -91,9 +112,10 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
 
         var result = await apiService.CreateLeadAsync(lead);
-        
+
         syncItemService.LogFormLeadUpdateItem(bizFormItem, result.Id!, CRMType.SalesForce);
-        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
+            bizFormItem.ItemID);
     }
 
     private async Task UpdateLeadAsync(string leadId, BizFormItem bizFormItem,
@@ -101,9 +123,10 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     {
         var lead = new LeadSObject();
         MapLead(bizFormItem, lead, fieldMappings);
-        
+
         await apiService.UpdateLeadAsync(leadId, lead);
-        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
+            bizFormItem.ItemID);
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, LeadSObject lead,
@@ -116,7 +139,8 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             {
                 CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
                 CRMFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping), fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }
     }

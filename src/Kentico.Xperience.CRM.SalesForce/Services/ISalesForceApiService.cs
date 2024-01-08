@@ -29,4 +29,18 @@ public interface ISalesForceApiService
     /// <param name="externalId">External ID value</param>
     /// <returns></returns>
     Task<string?> GetLeadIdByExternalId(string fieldName, string externalId);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    Task<LeadSObject?> GetLeadById(string id);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    Task<LeadSObject?> GetLeadByEmail(string email);
 }

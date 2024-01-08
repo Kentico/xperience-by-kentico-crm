@@ -74,4 +74,12 @@ internal class SalesForceApiService : ISalesForceApiService
             throw new ApiException("Unexpected response", (int)response.StatusCode, responseMessage, null!, null);
         }
     }
+
+    public async Task<LeadSObject?> GetLeadById(string id)
+        => await apiClient.LeadGET2Async(id);
+
+    public Task<LeadSObject?> GetLeadByEmail(string email)
+    {
+        throw new NotImplementedException();
+    }
 }
