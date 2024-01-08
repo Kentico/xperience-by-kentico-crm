@@ -33,10 +33,10 @@ internal class SalesForceIntegrationGlobalEvents : Module
     {
         base.OnInit();
 
-        BizFormItemEvents.Insert.After += BizFormInserted;
-        BizFormItemEvents.Update.After += BizFormUpdated;
+        BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
+        BizFormItemEvents.Update.After += SynchronizeBizFormLead;
         logger = Service.Resolve<ILogger<SalesForceIntegrationGlobalEvents>>();
-        Service.Resolve<ICrmModuleInstaller>().Install();
+        Service.Resolve<ICRMModuleInstaller>().Install(CRMType.SalesForce);
         ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
         
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
@@ -44,54 +44,27 @@ internal class SalesForceIntegrationGlobalEvents : Module
             FailedItemsWorker.Current.EnsureRunningThread();
         };
     }
-
-    private void BizFormInserted(object? sender, BizFormItemEventArgs e)
+    
+    private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
             var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
-
+            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 
-                leadsIntegrationService.CreateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Error occured during inserting lead");
-            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.SalesForce);
-        }
-    }
-
-    private void BizFormUpdated(object? sender, BizFormItemEventArgs e)
-    {
-        try
-        {
-            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
-            if (!settings.FormLeadsEnabled) return;
-
-            var mappingConfig = Service.Resolve<SalesForceBizFormsMappingConfiguration>();
-            if (string.IsNullOrWhiteSpace(mappingConfig.ExternalIdFieldName))
-            {
-                return;
-            }
-
-            using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
-            {
-                var leadsIntegrationService = serviceScope.ServiceProvider
-                    .GetRequiredService<ISalesForceLeadsIntegrationService>();
-
-                leadsIntegrationService.UpdateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
+                leadsIntegrationService.SynchronizeLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Error occured during updating lead");
+            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.SalesForce);
         }
     }
 }

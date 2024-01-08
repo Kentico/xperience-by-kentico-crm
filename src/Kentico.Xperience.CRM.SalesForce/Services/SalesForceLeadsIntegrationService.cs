@@ -32,7 +32,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         this.failedSyncItemService = failedSyncItemService;
     }
 
-    protected override async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
+    protected async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
@@ -42,10 +42,6 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
 
             lead.LeadSource ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
             lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
-            if (bizFormMappingConfig.ExternalIdFieldName is { Length: > 0 } externalIdFieldName)
-            {
-                lead.AdditionalProperties[externalIdFieldName] = FormatExternalId(bizFormItem);
-            }
 
             await apiService.CreateLeadAsync(lead);
             return true;
@@ -69,14 +65,12 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         return false;
     }
 
-    protected override async Task<bool> UpdateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task<bool> SynchronizeLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
         {
-            string? leadId = string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName) ? null :
-                await apiService.GetLeadIdByExternalId(bizFormMappingConfig.ExternalIdFieldName!,
-                    FormatExternalId(bizFormItem));
+            string? leadId = null;//@TODO
 
             if (leadId is not null)
             {

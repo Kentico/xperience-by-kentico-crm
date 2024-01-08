@@ -33,58 +33,29 @@ internal class DynamicsIntegrationGlobalEvents : Module
     {
         base.OnInit();
 
-        BizFormItemEvents.Insert.After += BizFormInserted;
-        BizFormItemEvents.Update.After += BizFormUpdated;
+        BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
+        BizFormItemEvents.Update.After += SynchronizeBizFormLead;
         logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
-        Service.Resolve<ICrmModuleInstaller>().Install();
+        Service.Resolve<ICRMModuleInstaller>().Install(CRMType.Dynamics);
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
             FailedItemsWorker.Current.EnsureRunningThread();
         };
     }
-
-    private void BizFormInserted(object? sender, BizFormItemEventArgs e)
-    {
-        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
-        try
-        {
-            var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
-            if (!settings.FormLeadsEnabled) return;
-
-            using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
-            {
-                var leadsIntegrationService = serviceScope.ServiceProvider
-                    .GetRequiredService<IDynamicsLeadsIntegrationService>();
-
-                leadsIntegrationService.CreateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Error occured during inserting lead");
-            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Dynamics);
-        }
-    }
-
-    private void BizFormUpdated(object? sender, BizFormItemEventArgs e)
+    
+    private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
         try
         {
             var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
             if (!settings.FormLeadsEnabled) return;
-
-            var mappingConfig = Service.Resolve<DynamicsBizFormsMappingConfiguration>();
-            if (mappingConfig.ExternalIdFieldName is not { Length: > 0 })
-            {
-                return;
-            }
-
+            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<IDynamicsLeadsIntegrationService>();
 
-                leadsIntegrationService.UpdateLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
+                leadsIntegrationService.SynchronizeLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception exception)

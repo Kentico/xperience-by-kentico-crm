@@ -1,4 +1,5 @@
-﻿using CMS.OnlineForms;
+﻿using CMS.Helpers;
+using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
@@ -6,6 +7,7 @@ using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -21,102 +23,125 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     private readonly DynamicsBizFormsMappingConfiguration bizFormMappingConfig;
     private readonly ServiceClient serviceClient;
     private readonly ILogger<DynamicsLeadsIntegrationService> logger;
+    private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
+    private readonly IOptionsMonitor<DynamicsIntegrationSettings> settings;
 
     public DynamicsLeadsIntegrationService(
         DynamicsBizFormsMappingConfiguration bizFormMappingConfig, ILeadsIntegrationValidationService validationService,
         ServiceClient serviceClient,
         ILogger<DynamicsLeadsIntegrationService> logger,
-        IFailedSyncItemService failedSyncItemService)
+        ICRMSyncItemService syncItemService,
+        IFailedSyncItemService failedSyncItemService,
+        IOptionsMonitor<DynamicsIntegrationSettings> settings)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
         this.serviceClient = serviceClient;
         this.logger = logger;
+        this.syncItemService = syncItemService;
         this.failedSyncItemService = failedSyncItemService;
+        this.settings = settings;
     }
 
-    protected override async Task<bool> CreateLeadAsync(BizFormItem bizFormItem,
+    protected override async Task SynchronizeLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings)
     {
         try
         {
-            var leadEntity = new Lead();
-            MapLead(bizFormItem, leadEntity, fieldMappings);
-
-            if (leadEntity.Subject is null)
+            var syncItem = syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
+            
+            if (syncItem is null)
             {
-                leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
-            }
-
-            if (bizFormMappingConfig.ExternalIdFieldName is { Length: > 0 } externalIdFieldName)
-            {
-                leadEntity[externalIdFieldName] = FormatExternalId(bizFormItem);
-            }
-
-            await serviceClient.CreateAsync(leadEntity);
-            return true;
-        }
-        catch (FaultException<OrganizationServiceFault> e)
-        {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", e.Detail);
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
-        }
-        catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
-        {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", ie.Detail);
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
-        }
-        catch (Exception e)
-        {
-            logger.LogError(e, "Create lead failed - unknown api error");
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
-        }
-
-        return false;
-    }
-
-    protected override async Task<bool> UpdateLeadAsync(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
-    {
-        try
-        {
-            var leadEntity = await GetLeadByExternalId(FormatExternalId(bizFormItem));
-            if (leadEntity is not null)
-            {
-                MapLead(bizFormItem, leadEntity, fieldMappings);
-                await serviceClient.UpdateAsync(leadEntity);
-                failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName, bizFormItem.ItemID);
-                return true;
+                await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
             }
             else
             {
-                if (await CreateLeadAsync(bizFormItem, fieldMappings))
+                var existingLead = await GetLeadById(Guid.Parse(syncItem.CRMSyncItemCRMID));
+                if (existingLead is null)
                 {
-                    failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName, bizFormItem.ItemID);
-                    return true;
+                    await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
                 }
-
-                return false;
+                else if (!settings.CurrentValue.IgnoreExistingRecords)
+                {
+                    await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+                }
             }
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
-            logger.LogError(e, "Update lead failed - api error: {ApiResult}", e.Detail);
+            logger.LogError(e, "Sync lead failed - api error: {ApiResult}", e.Detail);
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
         {
-            logger.LogError(e, "Update lead failed - api error: {ApiResult}", ie.Detail);
+            logger.LogError(e, "Sync lead failed - api error: {ApiResult}", ie.Detail);
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Update lead failed - unknown api error");
+            logger.LogError(e, "Sync lead failed - unknown api error");
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Dynamics);
         }
+    }
 
-        return false;
+    private async Task UpdateByEmailOrCreate(BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        Lead? existingLead = null;
+        var emailMapping = fieldMappings.FirstOrDefault(m =>
+            m.CRMFieldMapping is CRMFieldNameMapping nm && nm.CrmFieldName == "emailaddress1");
+        if (emailMapping is not null)
+        {
+            var email = ValidationHelper.GetString(emailMapping.FormFieldMapping.MapFormField(bizFormItem),
+                string.Empty);
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                existingLead = await GetLeadByEmail(email);
+            }
+        }
+
+        if (existingLead is null)
+        {
+            await CreateLeadAsync(bizFormItem, fieldMappings);
+        }
+        else if (!settings.CurrentValue.IgnoreExistingRecords)
+        {
+            await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+        }
+    }
+
+    private async Task CreateLeadAsync(BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        var leadEntity = new Lead();
+        MapLead(bizFormItem, leadEntity, fieldMappings);
+
+        if (leadEntity.Subject is null)
+        {
+            leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
+        }
+
+        await serviceClient.CreateAsync(leadEntity);
+        
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
+            bizFormItem.ItemID);
+    }
+
+    private async Task UpdateLeadAsync(Lead leadEntity, BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings)
+    {
+        MapLead(bizFormItem, leadEntity, fieldMappings);
+
+        if (leadEntity.Subject is null)
+        {
+            leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
+        }
+
+        await serviceClient.UpdateAsync(leadEntity);
+        
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
+            bizFormItem.ItemID);
     }
 
     protected virtual void MapLead(BizFormItem bizFormItem, Lead leadEntity,
@@ -129,18 +154,19 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             _ = fieldMapping.CRMFieldMapping switch
             {
                 CRMFieldNameMapping m => leadEntity[m.CrmFieldName] = formFieldValue,
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping), fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }
     }
 
-    private async Task<Lead?> GetLeadByExternalId(string externalId)
-    {
-        if (string.IsNullOrWhiteSpace(bizFormMappingConfig.ExternalIdFieldName))
-            return null;
+    private async Task<Lead?> GetLeadById(Guid leadId)
+        => (await serviceClient.RetrieveAsync(Lead.EntityLogicalName, leadId, new ColumnSet(true)))?.ToEntity<Lead>();
 
+    private async Task<Lead?> GetLeadByEmail(string email)
+    {
         var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
-        query.Criteria.AddCondition(bizFormMappingConfig.ExternalIdFieldName, ConditionOperator.Equal, externalId);
+        query.Criteria.AddCondition("emailaddress1", ConditionOperator.Equal, email);
 
         return (await serviceClient.RetrieveMultipleAsync(query)).Entities.FirstOrDefault()?.ToEntity<Lead>();
     }

@@ -56,7 +56,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
                     continue;
                 }
 
-                leadsIntegrationService.UpdateLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
+                leadsIntegrationService.SynchronizeLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception e)

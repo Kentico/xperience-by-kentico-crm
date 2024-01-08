@@ -2,6 +2,6 @@
 
 public static class CRMType
 {
-    public const string Dynamics = "dynamics";
-    public const string SalesForce = "salesforce";
+    public const string Dynamics = "Dynamics";
+    public const string SalesForce = "Salesforce";
 }

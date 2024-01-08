@@ -24,13 +24,13 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
         this.validationService = validationService;
         this.logger = logger;
     }
-
+    
     /// <summary>
     /// Validates BizForm item, then get specific mapping and finally specific implementation is called
     /// from inherited service
     /// </summary>
     /// <param name="bizFormItem"></param>
-    public async Task CreateLeadAsync(BizFormItem bizFormItem)
+    public async Task SynchronizeLeadAsync(BizFormItem bizFormItem)
     {
         if (!await validationService.ValidateFormItem(bizFormItem))
         {
@@ -42,34 +42,9 @@ public abstract class LeadsIntegrationServiceCommon : ILeadsIntegrationService
         if (bizFormMappingConfig.FormsMappings.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
                 out var formMapping))
         {
-            await CreateLeadAsync(bizFormItem, formMapping);
+            await SynchronizeLeadAsync(bizFormItem, formMapping);
         }
     }
-
-    /// <summary>
-    /// Validates BizForm item, then get specific mapping and finally specific implementation is called
-    /// from inherited service
-    /// </summary>
-    /// <param name="bizFormItem"></param>
-    public async Task UpdateLeadAsync(BizFormItem bizFormItem)
-    {
-        if (!await validationService.ValidateFormItem(bizFormItem))
-        {
-            logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} refused by validation",
-                bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
-            return;
-        }
-
-        if (bizFormMappingConfig.FormsMappings.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
-                out var formMapping))
-        {
-            await UpdateLeadAsync(bizFormItem, formMapping);
-        }
-    }
-
-    protected abstract Task CreateLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings);
-    protected abstract Task UpdateLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings);
-
-    protected virtual string FormatExternalId(BizFormItem bizFormItem) =>
-        $"{bizFormItem.BizFormClassName}-{bizFormItem.ItemID}";
+    
+    protected abstract Task SynchronizeLeadAsync(BizFormItem bizFormItem, IEnumerable<BizFormFieldMapping> fieldMappings);
 }

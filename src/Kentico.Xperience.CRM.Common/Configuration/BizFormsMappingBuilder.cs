@@ -30,7 +30,6 @@ public class BizFormsMappingBuilder
         {
             FormsMappings = forms.Select(f => (f.Key, f.Value.Build()))
                 .ToDictionary(r => r.Key, r => r.Item2),
-            ExternalIdFieldName = externalIdFieldName
         };
     }
 }

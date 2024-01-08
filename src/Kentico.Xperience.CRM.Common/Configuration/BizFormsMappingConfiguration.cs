@@ -8,5 +8,4 @@ namespace Kentico.Xperience.CRM.Common.Configuration;
 public class BizFormsMappingConfiguration
 {
     public Dictionary<string, List<BizFormFieldMapping>> FormsMappings { get; internal init; } = new();
-    public string? ExternalIdFieldName { get; internal init; }
 }

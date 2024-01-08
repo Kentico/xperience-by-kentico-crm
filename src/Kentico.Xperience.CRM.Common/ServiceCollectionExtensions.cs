@@ -1,4 +1,5 @@
-﻿using Kentico.Xperience.CRM.Common.Configuration;
+﻿using Kentico.Xperience.CRM.Common.Classes;
+using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
@@ -33,8 +34,9 @@ public static class ServiceCollectionExtensions
                 return mappingBuilder.Build<TMappingConfiguration>();
             });
 
-        services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
+        services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
+        services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
 
         return services;
     }
