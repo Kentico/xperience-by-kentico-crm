@@ -50,11 +50,11 @@ internal class SalesForceIntegrationGlobalEvents : Module
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
-            var settings = Service.Resolve<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
-            if (!settings.FormLeadsEnabled) return;
-            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
+                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SalesForceIntegrationSettings>>().Value;
+                if (!settings.FormLeadsEnabled) return;
+                
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<ISalesForceLeadsIntegrationService>();
 

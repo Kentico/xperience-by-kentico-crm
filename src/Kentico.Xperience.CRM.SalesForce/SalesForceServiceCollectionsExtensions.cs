@@ -1,9 +1,14 @@
-﻿using Kentico.Xperience.CRM.Common;
+﻿using CMS.Core;
+using CMS.Helpers;
+using Duende.AccessTokenManagement;
+using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System.Globalization;
 
 namespace Kentico.Xperience.CRM.SalesForce;
@@ -24,13 +29,15 @@ public static class SalesForceServiceCollectionsExtensions
     {
         serviceCollection.AddKenticoCrmCommonFormLeadsIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
 
-        serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration);
+        serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
+            .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);
+
         AddSalesForceCommonIntegration(serviceCollection, configuration);
 
         serviceCollection.AddScoped<ISalesForceLeadsIntegrationService, SalesForceLeadsIntegrationService>();
         return serviceCollection;
     }
-    
+
     private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection,
         IConfiguration configuration)
     {
@@ -38,12 +45,16 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.AddDistributedMemoryCache();
 
         //add token management config
-        serviceCollection.AddClientCredentialsTokenManagement()
-            .AddClient("salesforce.api.client", client =>
-            {
-                var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
+        serviceCollection.AddClientCredentialsTokenManagement();
 
-                if (apiConfig?.IsValid() is not true)
+        serviceCollection.AddOptions<ClientCredentialsClient>("salesforce.api.client")
+            .Configure<IServiceProvider>((client, sp) =>
+            {
+                //cannot use IOptionsSnapshot, so changes in CMS settings needs restarting app to apply immediately
+                var apiConfig = sp.GetRequiredService<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue
+                    .ApiConfig;
+
+                if (!apiConfig.IsValid())
                     throw new InvalidOperationException("Missing API settings");
 
                 client.TokenEndpoint = apiConfig.SalesForceUrl?.TrimEnd('/') + "/services/oauth2/token";
@@ -53,16 +64,46 @@ public static class SalesForceServiceCollectionsExtensions
             });
 
         //add http client for salesforce api
-        serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>(client =>
+        serviceCollection.AddHttpClient<ISalesForceApiService, SalesForceApiService>((provider, client) =>
             {
-                var apiConfig = configuration.Get<SalesForceIntegrationSettings>()?.ApiConfig;
+                //cannot use IOptionsSnapshot, so changes in CMS settings needs restarting app to apply immediately
+                var settings = provider.GetRequiredService<IOptionsMonitor<SalesForceIntegrationSettings>>().CurrentValue;
 
-                if (apiConfig?.IsValid() is not true)
+                if (!settings.ApiConfig.IsValid())
                     throw new InvalidOperationException("Missing API settings");
 
-                string apiVersion = apiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
-                client.BaseAddress = new Uri($"{apiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiVersion}/");
+                string apiVersion = settings.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
+                client.BaseAddress =
+                    new Uri($"{settings.ApiConfig.SalesForceUrl?.TrimEnd('/')}/services/data/v{apiVersion}/");
             })
             .AddClientCredentialsTokenHandler("salesforce.api.client");
+    }
+
+    private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings,
+        ISettingsService settingsService)
+    {
+        var formsEnabled = settingsService[SettingKeys.SalesForceFormLeadsEnabled];
+        if (!string.IsNullOrWhiteSpace(formsEnabled))
+        {
+            settings.FormLeadsEnabled = ValidationHelper.GetBoolean(formsEnabled, false);
+        }
+
+        var salesForceUrl = settingsService[SettingKeys.SalesForceUrl];
+        if (!string.IsNullOrWhiteSpace(salesForceUrl))
+        {
+            settings.ApiConfig.SalesForceUrl = salesForceUrl;
+        }
+
+        var clientId = settingsService[SettingKeys.SalesForceClientId];
+        if (!string.IsNullOrWhiteSpace(clientId))
+        {
+            settings.ApiConfig.ClientId = clientId;
+        }
+
+        var clientSecret = settingsService[SettingKeys.SalesForceClientSecret];
+        if (!string.IsNullOrWhiteSpace(clientSecret))
+        {
+            settings.ApiConfig.ClientSecret = clientSecret;
+        }
     }
 }

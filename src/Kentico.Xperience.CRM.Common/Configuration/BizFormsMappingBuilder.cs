@@ -15,9 +15,18 @@ public class BizFormsMappingBuilder
         forms.Add(formCodeName.ToLowerInvariant(), configureFields(new BizFormFieldsMappingBuilder()));
         return this;
     }
-    
+
+    public BizFormsMappingBuilder AddForm(string formCodeName,
+        BizFormFieldsMappingBuilder configuredBuilder)
+    {
+        if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
+
+        forms.Add(formCodeName.ToLowerInvariant(), configuredBuilder);
+        return this;
+    }
+
     internal TBizFormsConfiguration Build<TBizFormsConfiguration>()
-     where TBizFormsConfiguration : BizFormsMappingConfiguration, new()
+        where TBizFormsConfiguration : BizFormsMappingConfiguration, new()
     {
         return new TBizFormsConfiguration
         {

@@ -47,11 +47,11 @@ internal class DynamicsIntegrationGlobalEvents : Module
     {
         try
         {
-            var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
-            if (!settings.FormLeadsEnabled) return;
-            
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
+                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<DynamicsIntegrationSettings>>().Value;
+                if (!settings.FormLeadsEnabled) return;
+                
                 var leadsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<IDynamicsLeadsIntegrationService>();
 

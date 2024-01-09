@@ -4,13 +4,14 @@
 /// Common setting for Kentico-CRM integration
 /// </summary>
 /// <typeparam name="TApiConfig"></typeparam>
-public class CommonIntegrationSettings<TApiConfig>
+public class CommonIntegrationSettings<TApiConfig> where TApiConfig : new()
 {
     public bool FormLeadsEnabled { get; set; }
+
     // @TODO phase 2
     public bool ContactsEnabled { get; set; }
-    
+
     public bool IgnoreExistingRecords { get; set; }
 
-    public TApiConfig? ApiConfig { get; set; }
+    public TApiConfig ApiConfig { get; set; } = new();
 }

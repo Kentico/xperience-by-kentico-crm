@@ -25,7 +25,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     private readonly ILogger<DynamicsLeadsIntegrationService> logger;
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
-    private readonly IOptionsMonitor<DynamicsIntegrationSettings> settings;
+    private readonly IOptionsSnapshot<DynamicsIntegrationSettings> settings;
 
     public DynamicsLeadsIntegrationService(
         DynamicsBizFormsMappingConfiguration bizFormMappingConfig, ILeadsIntegrationValidationService validationService,
@@ -33,7 +33,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
         ILogger<DynamicsLeadsIntegrationService> logger,
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
-        IOptionsMonitor<DynamicsIntegrationSettings> settings)
+        IOptionsSnapshot<DynamicsIntegrationSettings> settings)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
@@ -62,7 +62,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
                 {
                     await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
                 }
-                else if (!settings.CurrentValue.IgnoreExistingRecords)
+                else if (!settings.Value.IgnoreExistingRecords)
                 {
                     await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
                 }
@@ -101,7 +101,7 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
         {
             await CreateLeadAsync(bizFormItem, fieldMappings);
         }
-        else if (!settings.CurrentValue.IgnoreExistingRecords)
+        else if (!settings.Value.IgnoreExistingRecords)
         {
             await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
         }

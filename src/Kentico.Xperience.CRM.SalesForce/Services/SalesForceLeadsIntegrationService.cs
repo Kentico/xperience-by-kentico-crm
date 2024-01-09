@@ -18,7 +18,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
     private readonly ILogger<SalesForceLeadsIntegrationService> logger;
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
-    private readonly IOptionsMonitor<SalesForceIntegrationSettings> settings;
+    private readonly IOptionsSnapshot<SalesForceIntegrationSettings> settings;
 
     public SalesForceLeadsIntegrationService(
         SalesForceBizFormsMappingConfiguration bizFormMappingConfig,
@@ -27,7 +27,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         ILogger<SalesForceLeadsIntegrationService> logger,
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
-        IOptionsMonitor<SalesForceIntegrationSettings> settings)
+        IOptionsSnapshot<SalesForceIntegrationSettings> settings)
         : base(bizFormMappingConfig, validationService, logger)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
@@ -51,12 +51,12 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID);
+                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
                 if (existingLead is null)
                 {
                     await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
                 }
-                else if (!settings.CurrentValue.IgnoreExistingRecords)
+                else if (!settings.Value.IgnoreExistingRecords)
                 {
                     await UpdateLeadAsync(existingLead.Id!, bizFormItem, fieldMappings);
                 }
@@ -95,7 +95,7 @@ internal class SalesForceLeadsIntegrationService : LeadsIntegrationServiceCommon
         {
             await CreateLeadAsync(bizFormItem, fieldMappings);
         }
-        else if (!settings.CurrentValue.IgnoreExistingRecords)
+        else if (!settings.Value.IgnoreExistingRecords)
         {
             await UpdateLeadAsync(existingLeadId, bizFormItem, fieldMappings);
         }
