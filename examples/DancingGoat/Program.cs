@@ -59,7 +59,6 @@ builder.Services.AddDynamicsFormLeadsIntegration(builder =>
                         .MapField<DancingGoatContactUsItem, Lead>(c => c.UserEmail, e => e.EMailAddress1) //generated form class used
                         .MapField<BizFormItem, Lead>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //general BizFormItem used
                 )
-                .ExternalIdField("crf1c_kenticoid") //optional custom field when you want updates to work
         ,
         builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)) //config section with settings
     .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>(); //optional
@@ -74,7 +73,6 @@ builder.Services.AddSalesForceFormLeadsIntegration(builder =>
                     .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
                     //option 4: source mapping function general BizFormItem  -> member expression to SObject
             )
-            .ExternalIdField("KenticoID__c") //optional custom field when you want updates to work
     //.AddForm("formname") // add another forms definitions
     ,
     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings

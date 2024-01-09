@@ -6,7 +6,6 @@
 public class BizFormsMappingBuilder
 {
     private readonly Dictionary<string, BizFormFieldsMappingBuilder> forms = new();
-    private string? externalIdFieldName;
 
     public BizFormsMappingBuilder AddForm(string formCodeName,
         Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
@@ -16,13 +15,7 @@ public class BizFormsMappingBuilder
         forms.Add(formCodeName.ToLowerInvariant(), configureFields(new BizFormFieldsMappingBuilder()));
         return this;
     }
-
-    public BizFormsMappingBuilder ExternalIdField(string fieldName)
-    {
-        externalIdFieldName = fieldName;
-        return this;
-    }
-
+    
     internal TBizFormsConfiguration Build<TBizFormsConfiguration>()
      where TBizFormsConfiguration : BizFormsMappingConfiguration, new()
     {

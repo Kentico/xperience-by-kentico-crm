@@ -14,7 +14,7 @@ internal class CRMSyncItemService : ICRMSyncItemService
     }
 
     public void LogFormLeadCreateItem(BizFormItem bizFormItem, string crmId, string crmName)
-        => LogFormLeadSyncItem(bizFormItem, crmId, crmName, false);
+        => LogFormLeadSyncItem(bizFormItem, crmId, crmName, true);
 
     public void LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName)
         => LogFormLeadSyncItem(bizFormItem, crmId, crmName, false);

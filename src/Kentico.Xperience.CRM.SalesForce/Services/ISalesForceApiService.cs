@@ -42,5 +42,5 @@ public interface ISalesForceApiService
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>
-    Task<LeadSObject?> GetLeadByEmail(string email);
+    Task<string?> GetLeadByEmail(string email);
 }

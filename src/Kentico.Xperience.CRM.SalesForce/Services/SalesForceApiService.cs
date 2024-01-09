@@ -1,4 +1,5 @@
 ﻿using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Kentico.Xperience.CRM.SalesForce.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SalesForce.OpenApi;
@@ -76,10 +77,26 @@ internal class SalesForceApiService : ISalesForceApiService
     }
 
     public async Task<LeadSObject?> GetLeadById(string id)
-        => await apiClient.LeadGET2Async(id);
+        => await apiClient.LeadGET2Async(id, nameof(LeadSObject.Id));
 
-    public Task<LeadSObject?> GetLeadByEmail(string email)
+    public async Task<string?> GetLeadByEmail(string email)
     {
-        throw new NotImplementedException();
+        var apiVersion = (integrationSettings?.ApiConfig?.ApiVersion ?? SalesForceApiConfig.DefaultVersion)
+            .ToString("F1", CultureInfo.InvariantCulture);
+        using var request =
+            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+Lead+WHERE+Email='{email}'+ORDER+BY+CreatedDate+DESC");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        var response = await httpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<LeadSObject>>();
+            return queryResult?.Records.FirstOrDefault()?.Id;
+        }
+        else
+        {
+            string responseMessage = await response.Content.ReadAsStringAsync();
+            throw new ApiException("Unexpected response", (int)response.StatusCode, responseMessage, null!, null);
+        }
     }
 }
