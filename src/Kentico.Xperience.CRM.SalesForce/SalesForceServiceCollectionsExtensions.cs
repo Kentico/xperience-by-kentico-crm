@@ -8,6 +8,7 @@ using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 
@@ -24,10 +25,17 @@ public static class SalesForceServiceCollectionsExtensions
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
     public static IServiceCollection AddSalesForceFormLeadsIntegration(this IServiceCollection serviceCollection,
-        Action<BizFormsMappingBuilder> formsConfig,
+        Action<SalesForceBizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration<SalesForceBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
+        serviceCollection.TryAddSingleton(
+            _ =>
+            {
+                var mappingBuilder = new SalesForceBizFormsMappingBuilder(serviceCollection);
+                formsConfig(mappingBuilder);
+                return mappingBuilder.Build();
+            });
 
         serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
             .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);

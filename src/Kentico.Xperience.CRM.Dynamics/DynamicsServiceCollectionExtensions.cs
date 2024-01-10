@@ -24,10 +24,13 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="configuration"></param>
     /// <returns></returns>
     public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
-        Action<BizFormsMappingBuilder> formsConfig,
+        Action<DynamicsBizFormsMappingBuilder> formsConfig,
         IConfiguration configuration)
     {
-        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
+        var mappingBuilder = new DynamicsBizFormsMappingBuilder(serviceCollection);
+        formsConfig(mappingBuilder);
+        serviceCollection.TryAddSingleton(_ => mappingBuilder.Build());
 
         serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
             .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);

@@ -1,11 +1,19 @@
-﻿namespace Kentico.Xperience.CRM.Common.Configuration;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace Kentico.Xperience.CRM.Common.Configuration;
 
 /// <summary>
 /// Common builder for BizForms to CRM leads configuration mapping 
 /// </summary>
 public class BizFormsMappingBuilder
 {
-    private readonly Dictionary<string, BizFormFieldsMappingBuilder> forms = new();
+    private readonly IServiceCollection serviceCollection;
+    protected readonly Dictionary<string, BizFormFieldsMappingBuilder> forms = new();
+
+    public BizFormsMappingBuilder(IServiceCollection serviceCollection)
+    {
+        this.serviceCollection = serviceCollection;
+    }
 
     public BizFormsMappingBuilder AddForm(string formCodeName,
         Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
@@ -23,15 +31,5 @@ public class BizFormsMappingBuilder
 
         forms.Add(formCodeName.ToLowerInvariant(), configuredBuilder);
         return this;
-    }
-
-    internal TBizFormsConfiguration Build<TBizFormsConfiguration>()
-        where TBizFormsConfiguration : BizFormsMappingConfiguration, new()
-    {
-        return new TBizFormsConfiguration
-        {
-            FormsMappings = forms.Select(f => (f.Key, f.Value.Build()))
-                .ToDictionary(r => r.Key, r => r.Item2),
-        };
     }
 }

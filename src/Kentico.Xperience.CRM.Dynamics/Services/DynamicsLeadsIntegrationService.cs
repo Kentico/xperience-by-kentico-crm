@@ -1,6 +1,7 @@
 ﻿using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
@@ -18,34 +19,74 @@ namespace Kentico.Xperience.CRM.Dynamics.Services;
 /// <summary>
 /// Specific Lead integration service implementation for Dynamics Sales
 /// </summary>
-internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, IDynamicsLeadsIntegrationService
+internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationService
 {
     private readonly DynamicsBizFormsMappingConfiguration bizFormMappingConfig;
+    private readonly ILeadsIntegrationValidationService validationService;
     private readonly ServiceClient serviceClient;
     private readonly ILogger<DynamicsLeadsIntegrationService> logger;
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
     private readonly IOptionsSnapshot<DynamicsIntegrationSettings> settings;
+    private readonly IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters;
 
     public DynamicsLeadsIntegrationService(
-        DynamicsBizFormsMappingConfiguration bizFormMappingConfig, ILeadsIntegrationValidationService validationService,
+        DynamicsBizFormsMappingConfiguration bizFormMappingConfig, 
+        ILeadsIntegrationValidationService validationService,
         ServiceClient serviceClient,
         ILogger<DynamicsLeadsIntegrationService> logger,
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
-        IOptionsSnapshot<DynamicsIntegrationSettings> settings)
-        : base(bizFormMappingConfig, validationService, logger)
+        IOptionsSnapshot<DynamicsIntegrationSettings> settings,
+        IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
+        this.validationService = validationService;
         this.serviceClient = serviceClient;
         this.logger = logger;
         this.syncItemService = syncItemService;
         this.failedSyncItemService = failedSyncItemService;
         this.settings = settings;
+        this.converters = converters;
+    }
+    
+    /// <summary>
+    /// Validates BizForm item, then get specific mapping and finally specific implementation is called
+    /// from inherited service
+    /// </summary>
+    /// <param name="bizFormItem"></param>
+    public async Task SynchronizeLeadAsync(BizFormItem bizFormItem)
+    {
+        var leadConverters = Enumerable.Empty<ICRMTypeConverter<BizFormItem, Lead>>();
+        var leadMapping = Enumerable.Empty<BizFormFieldMapping>();
+        
+        if (bizFormMappingConfig.FormsConverters.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
+                out var formConverters))
+        {
+            leadConverters = converters.Where(c => formConverters.Contains(c.GetType()));
+        }
+
+        if (bizFormMappingConfig.FormsMappings.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
+                out var formMapping))
+        {
+            leadMapping = formMapping;
+        }
+
+        if (leadConverters.Any() || leadMapping.Any())
+        {
+            if (!await validationService.ValidateFormItem(bizFormItem))
+            {
+                logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} refused by validation",
+                    bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
+                return;
+            }
+
+            await SynchronizeLeadAsync(bizFormItem, leadMapping, leadConverters);
+        }
     }
 
-    protected override async Task SynchronizeLeadAsync(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+    protected async Task SynchronizeLeadAsync(BizFormItem bizFormItem,
+        IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         try
         {
@@ -53,18 +94,18 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             
             if (syncItem is null)
             {
-                await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
+                await UpdateByEmailOrCreate(bizFormItem, fieldMappings, converters);
             }
             else
             {
                 var existingLead = await GetLeadById(Guid.Parse(syncItem.CRMSyncItemCRMID));
                 if (existingLead is null)
                 {
-                    await UpdateByEmailOrCreate(bizFormItem, fieldMappings);
+                    await UpdateByEmailOrCreate(bizFormItem, fieldMappings, converters);
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+                    await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings, converters);
                 }
             }
         }
@@ -86,11 +127,11 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     }
 
     private async Task UpdateByEmailOrCreate(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+        IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         Lead? existingLead = null;
         var tmpLead = new Lead();
-        MapLead(bizFormItem, tmpLead, fieldMappings);
+        MapLead(bizFormItem, tmpLead, fieldMappings, converters);
         
         if (!string.IsNullOrWhiteSpace(tmpLead.EMailAddress1))
         {
@@ -99,19 +140,19 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
 
         if (existingLead is null)
         {
-            await CreateLeadAsync(bizFormItem, fieldMappings);
+            await CreateLeadAsync(bizFormItem, fieldMappings, converters);
         }
         else if (!settings.Value.IgnoreExistingRecords)
         {
-            await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings);
+            await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings, converters);
         }
     }
 
     private async Task CreateLeadAsync(BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+        IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         var leadEntity = new Lead();
-        MapLead(bizFormItem, leadEntity, fieldMappings);
+        MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
         if (leadEntity.Subject is null)
         {
@@ -126,9 +167,9 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
     }
 
     private async Task UpdateLeadAsync(Lead leadEntity, BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+        IEnumerable<BizFormFieldMapping> fieldMappings,  IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
-        MapLead(bizFormItem, leadEntity, fieldMappings);
+        MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
         if (leadEntity.Subject is null)
         {
@@ -142,9 +183,14 @@ internal class DynamicsLeadsIntegrationService : LeadsIntegrationServiceCommon, 
             bizFormItem.ItemID);
     }
 
-    protected virtual void MapLead(BizFormItem bizFormItem, Lead leadEntity,
-        IEnumerable<BizFormFieldMapping> fieldMappings)
+    protected async Task MapLead(BizFormItem bizFormItem, Lead leadEntity,
+        IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
+        foreach (var converter in converters)
+        {
+            await converter.Convert(bizFormItem, leadEntity);
+        }
+        
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.FormFieldMapping.MapFormField(bizFormItem);
