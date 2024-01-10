@@ -8,4 +8,5 @@ namespace Kentico.Xperience.CRM.Common.Configuration;
 public class BizFormsMappingConfiguration
 {
     public Dictionary<string, List<BizFormFieldMapping>> FormsMappings { get; init; } = new();
+    public Dictionary<string, List<Type>> FormsConverters { get; init; } = new();
 }

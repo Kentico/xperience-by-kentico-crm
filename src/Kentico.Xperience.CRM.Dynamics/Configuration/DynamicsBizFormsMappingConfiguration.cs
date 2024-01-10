@@ -10,5 +10,4 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration;
 /// </summary>
 public class DynamicsBizFormsMappingConfiguration : BizFormsMappingConfiguration
 {
-    public Dictionary<string, List<Type>> FormsConverters { get; init; } = new();
 }

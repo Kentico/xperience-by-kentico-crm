@@ -67,23 +67,29 @@ ConfigureMembershipServices(builder.Services);
 builder.Services.AddDynamicsFormLeadsIntegration(builder =>
         builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME,b  => b
                 .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.EMailAddress1))
-            .AddCustomFormLeadsValidationService<CustomFormLeadsValidationService>() //optional
+            .AddCustomValidation<CustomFormLeadsValidationService>() //optional
     ,
     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
 
+// builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+//         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
+//                 c => c
+//                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
+//                     .MapField("UserLastName", e => e.LastName) //option 2: mapping source name string -> member expression to SObject
+//                     .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
+//                     //option 3: source mapping function from generated BizForm object  -> member expression to SObject
+//                     .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
+//                     //option 4: source mapping function general BizFormItem  -> member expression to SObject
+//             )
+//     ,
+//     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
+
 builder.Services.AddSalesForceFormLeadsIntegration(builder =>
-        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
-                c => c
-                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
-                    .MapField("UserLastName", e => e.LastName) //option 2: mapping source name string -> member expression to SObject
-                    .MapField<DancingGoatContactUsItem>(c => c.UserEmail, e => e.Email)
-                    //option 3: source mapping function from generated BizForm object  -> member expression to SObject
-                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description)
-                    //option 4: source mapping function general BizFormItem  -> member expression to SObject
-            )
-    //.AddForm("formname") // add another forms definitions
+        builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME,b  => b
+                .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
+            .AddCustomValidation<CustomFormLeadsValidationService>() //optional
     ,
-    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
+    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
 
 //CRM integration registration end
 

@@ -31,8 +31,8 @@ public class DynamicsBizFormsMappingBuilder
         return this;
     }
 
-    public DynamicsBizFormsMappingBuilder AddFormWithContactMapping(
-        string formCodeName) => AddFormWithContactMapping(formCodeName, b => b);
+    public DynamicsBizFormsMappingBuilder AddFormWithContactMapping(string formCodeName) 
+        => AddFormWithContactMapping(formCodeName, b => b);
 
     public DynamicsBizFormsMappingBuilder AddFormWithContactMapping(
         string formCodeName,
@@ -41,16 +41,7 @@ public class DynamicsBizFormsMappingBuilder
         if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
         forms.Add(formCodeName.ToLowerInvariant(), configureFields(new BizFormFieldsMappingBuilder()));
 
-        if (converters.TryGetValue(formCodeName.ToLowerInvariant(), out var values))
-        {
-            values.Add(typeof(FormContactMappingToLeadConverter));
-        }
-        else
-        {
-            converters[formCodeName.ToLowerInvariant()] = new List<Type> { typeof(FormContactMappingToLeadConverter)};
-        }
-            
-        serviceCollection.TryAddEnumerable(ServiceDescriptor.Scoped<ICRMTypeConverter<BizFormItem, Lead>, FormContactMappingToLeadConverter>());
+        AddFormWithConverter<FormContactMappingToLeadConverter>(formCodeName);
         return this;
     }
 
@@ -78,7 +69,7 @@ public class DynamicsBizFormsMappingBuilder
     /// <param name="services"></param>
     /// <typeparam name="TService"></typeparam>
     /// <returns></returns>
-    public DynamicsBizFormsMappingBuilder AddCustomFormLeadsValidationService<TService>()
+    public DynamicsBizFormsMappingBuilder AddCustomValidation<TService>()
         where TService : class, ILeadsIntegrationValidationService
     {
         serviceCollection.AddSingleton<ILeadsIntegrationValidationService, TService>();

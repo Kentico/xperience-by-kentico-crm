@@ -28,7 +28,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
     private readonly IOptionsSnapshot<DynamicsIntegrationSettings> settings;
-    private readonly IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters;
+    private readonly IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> formsConverters;
 
     public DynamicsLeadsIntegrationService(
         DynamicsBizFormsMappingConfiguration bizFormMappingConfig, 
@@ -38,7 +38,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
         IOptionsSnapshot<DynamicsIntegrationSettings> settings,
-        IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
+        IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> formsConverters)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
         this.validationService = validationService;
@@ -47,7 +47,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         this.syncItemService = syncItemService;
         this.failedSyncItemService = failedSyncItemService;
         this.settings = settings;
-        this.converters = converters;
+        this.formsConverters = formsConverters;
     }
     
     /// <summary>
@@ -63,7 +63,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         if (bizFormMappingConfig.FormsConverters.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
                 out var formConverters))
         {
-            leadConverters = converters.Where(c => formConverters.Contains(c.GetType()));
+            leadConverters = formsConverters.Where(c => formConverters.Contains(c.GetType()));
         }
 
         if (bizFormMappingConfig.FormsMappings.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
@@ -85,7 +85,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         }
     }
 
-    protected async Task SynchronizeLeadAsync(BizFormItem bizFormItem,
+    private async Task SynchronizeLeadAsync(BizFormItem bizFormItem,
         IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         try

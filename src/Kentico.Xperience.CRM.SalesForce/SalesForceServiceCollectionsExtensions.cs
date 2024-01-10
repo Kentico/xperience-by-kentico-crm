@@ -29,25 +29,22 @@ public static class SalesForceServiceCollectionsExtensions
         IConfiguration configuration)
     {
         serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
+        
+        var mappingBuilder = new SalesForceBizFormsMappingBuilder(serviceCollection);
+        formsConfig(mappingBuilder);
         serviceCollection.TryAddSingleton(
-            _ =>
-            {
-                var mappingBuilder = new SalesForceBizFormsMappingBuilder(serviceCollection);
-                formsConfig(mappingBuilder);
-                return mappingBuilder.Build();
-            });
+            _ => mappingBuilder.Build());
 
         serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
             .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);
 
-        AddSalesForceCommonIntegration(serviceCollection, configuration);
+        AddSalesForceCommonIntegration(serviceCollection);
 
         serviceCollection.AddScoped<ISalesForceLeadsIntegrationService, SalesForceLeadsIntegrationService>();
         return serviceCollection;
     }
 
-    private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection,
-        IConfiguration configuration)
+    private static void AddSalesForceCommonIntegration(IServiceCollection serviceCollection)
     {
         // default cache for token management
         serviceCollection.AddDistributedMemoryCache();

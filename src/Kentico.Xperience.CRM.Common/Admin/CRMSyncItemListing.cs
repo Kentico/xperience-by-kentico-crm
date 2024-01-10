@@ -9,7 +9,7 @@ using Kentico.Xperience.CRM.Common.Constants;
 
 [assembly:
     UIPage(typeof(FormEditSection), "crm-sync-listing", typeof(CRMSyncItemListing),
-        "CRM synchronization", TemplateNames.LISTING, 1000, "xp-graph")]
+        "CRM synchronization", TemplateNames.LISTING, 1000, Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
@@ -24,15 +24,14 @@ public class CRMSyncItemListing : ListingPage
     public int FormId { get; set; }
 
     private BizFormInfo EditedForm =>
-        this.editedForm ??= AbstractInfo<BizFormInfo, IBizFormInfoProvider>.Provider.Get(this.FormId);
+        this.editedForm ??= AbstractInfo<BizFormInfo, IBizFormInfoProvider>.Provider.Get(FormId);
 
     private DataClassInfo DataClassInfo => this.dataClassInfo ??=
-        DataClassInfoProviderBase<DataClassInfoProvider>.GetDataClassInfo(this.EditedForm.FormClassID);
+        DataClassInfoProviderBase<DataClassInfoProvider>.GetDataClassInfo(EditedForm.FormClassID);
 
     public override Task ConfigurePage()
     {
         PageConfiguration.ColumnConfigurations
-            .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityClass), "Form")
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityID), "Form item ID")
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), "CRM")
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemCRMID), "CRM ID")

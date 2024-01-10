@@ -2,11 +2,11 @@
 using CMS.OnlineForms;
 using CMS.OnlineForms.Internal;
 using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
+using SalesForce.OpenApi;
 
-namespace Kentico.Xperience.CRM.Dynamics.Converters;
+namespace Kentico.Xperience.CRM.SalesForce.Converters;
 
-public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, Lead>
+public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, LeadSObject>
 {
     private readonly IContactFieldFromFormRetriever contactFieldFromFormRetriever;
 
@@ -15,7 +15,7 @@ public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, 
         this.contactFieldFromFormRetriever = contactFieldFromFormRetriever;
     }
 
-    public Task<Lead> Convert(BizFormItem source, Lead destination)
+    public Task<LeadSObject> Convert(BizFormItem source, LeadSObject destination)
     {
         var firstName = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactFirstName));
         if (!string.IsNullOrWhiteSpace(firstName))
@@ -32,13 +32,13 @@ public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, 
         var email = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactEmail));
         if (!string.IsNullOrWhiteSpace(email))
         {
-            destination.EMailAddress1 = email;
+            destination.Email = email;
         }
         
         var companyName = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactCompanyName));
         if (!string.IsNullOrWhiteSpace(companyName))
         {
-            destination.CompanyName = companyName;
+            destination.Company = companyName;
         }
         
         var phone = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactMobilePhone));
@@ -50,37 +50,31 @@ public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, 
         var bizPhone = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactBusinessPhone));
         if (!string.IsNullOrWhiteSpace(bizPhone))
         {
-            destination.Telephone1 = bizPhone;
-        }
-        
-        var middleName = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactMiddleName));
-        if (!string.IsNullOrWhiteSpace(middleName))
-        {
-            destination.MiddleName = middleName;
+            destination.Phone = bizPhone;
         }
         
         var jobTitle = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactJobTitle));
         if (!string.IsNullOrWhiteSpace(jobTitle))
         {
-            destination.JobTitle = jobTitle;
+            destination.Title = jobTitle;
         }
         
         var address1 = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactAddress1));
         if (!string.IsNullOrWhiteSpace(address1))
         {
-            destination.Address1_Line1 = address1;
+            destination.Street = address1;
         }
         
         var city = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactCity));
         if (!string.IsNullOrWhiteSpace(city))
         {
-            destination.Address1_City = city;
+            destination.City = city;
         }
         
         var zipCode = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactZIP));
         if (!string.IsNullOrWhiteSpace(zipCode))
         {
-            destination.Address1_PostalCode = zipCode;
+            destination.PostalCode = zipCode;
         }
         
         //@TODO country, state
