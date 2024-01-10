@@ -26,7 +26,7 @@ public static class SalesForceServiceCollectionsExtensions
     /// <exception cref="InvalidOperationException"></exception>
     public static IServiceCollection AddSalesForceFormLeadsIntegration(this IServiceCollection serviceCollection,
         Action<SalesForceBizFormsMappingBuilder> formsConfig,
-        IConfiguration configuration)
+        IConfiguration? configuration = null)
     {
         serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
         
@@ -35,8 +35,16 @@ public static class SalesForceServiceCollectionsExtensions
         serviceCollection.TryAddSingleton(
             _ => mappingBuilder.Build());
 
-        serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
-            .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);
+        if (configuration is null)
+        {
+            serviceCollection.AddOptions<SalesForceIntegrationSettings>()
+                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+        }
+        else
+        {
+            serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
+                .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);
+        }
 
         AddSalesForceCommonIntegration(serviceCollection);
 

@@ -65,11 +65,9 @@ ConfigureMembershipServices(builder.Services);
 //     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
 
 builder.Services.AddDynamicsFormLeadsIntegration(builder =>
-        builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME,b  => b
-                .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.EMailAddress1))
-            .AddCustomValidation<CustomFormLeadsValidationService>() //optional
-    ,
-    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
+    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
+            .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.EMailAddress1))
+        .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
 
 // builder.Services.AddSalesForceFormLeadsIntegration(builder =>
 //         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
@@ -85,11 +83,10 @@ builder.Services.AddDynamicsFormLeadsIntegration(builder =>
 //     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName)); //config section with settings
 
 builder.Services.AddSalesForceFormLeadsIntegration(builder =>
-        builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME,b  => b
-                .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
-            .AddCustomValidation<CustomFormLeadsValidationService>() //optional
-    ,
-    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
+    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
+            .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
+        .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
+    
 
 //CRM integration registration end
 
