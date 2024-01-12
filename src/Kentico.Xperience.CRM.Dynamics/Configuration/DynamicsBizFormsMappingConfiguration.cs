@@ -1,7 +1,4 @@
-﻿using CMS.OnlineForms;
-using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
+﻿using Kentico.Xperience.CRM.Common.Configuration;
 
 namespace Kentico.Xperience.CRM.Dynamics.Configuration;
 

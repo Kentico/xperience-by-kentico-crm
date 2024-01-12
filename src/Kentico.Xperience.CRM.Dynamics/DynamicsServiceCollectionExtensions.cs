@@ -1,7 +1,6 @@
 ﻿using CMS.Core;
 using CMS.Helpers;
 using Kentico.Xperience.CRM.Common;
-using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;

@@ -1,6 +1,4 @@
-﻿using CMS.Core;
-using CMS.OnlineForms;
-using CMS.OnlineForms.Internal;
+﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Services;

@@ -5,7 +5,6 @@ using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
-using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;

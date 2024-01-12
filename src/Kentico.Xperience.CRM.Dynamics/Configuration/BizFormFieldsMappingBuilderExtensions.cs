@@ -1,7 +1,5 @@
 ﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Xrm.Sdk;
 using System.Linq.Expressions;
 using System.Reflection;

@@ -1,5 +1,4 @@
 ﻿using CMS.Base;
-using CMS.Core;
 using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.Modules;

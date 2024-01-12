@@ -1,11 +1,9 @@
 ﻿using CMS.DataEngine;
-using CMS.FormEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.DigitalMarketing.UIPages;
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Classes;
-using Kentico.Xperience.CRM.Common.Constants;
 
 [assembly:
     UIPage(typeof(FormEditSection), "crm-sync-listing", typeof(CRMSyncItemListing),
