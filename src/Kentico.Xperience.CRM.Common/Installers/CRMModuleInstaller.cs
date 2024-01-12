@@ -281,6 +281,23 @@ public class CRMModuleInstaller : ICRMModuleInstaller
             SettingsKeyInfo.Provider.Set(settingFormsEnabled);
         }
         
+        var settingsIgnoreExisting = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationIgnoreExistingRecords");
+        if (settingsIgnoreExisting is null)
+        {
+            settingsIgnoreExisting = new SettingsKeyInfo
+            {
+                KeyName = $"CMS{crmType}CRMIntegrationIgnoreExistingRecords",
+                KeyDisplayName = "Ignore existing records",
+                KeyDescription = "",
+                KeyType = "boolean",
+                KeyCategoryID = crmCategory.CategoryID,
+                KeyIsCustom = true,
+                KeyExplanationText = "If true no existing item with same email or paired record by ID is updated"
+            };
+            
+            SettingsKeyInfo.Provider.Set(settingsIgnoreExisting);
+        }
+        
         var settingUrl = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegration{crmType}Url");
         if (settingUrl is null)
         {
@@ -320,7 +337,7 @@ public class CRMModuleInstaller : ICRMModuleInstaller
         {
             settingClientSecret = new SettingsKeyInfo
             {
-                KeyName = $"CMS{crmType}CRMIntegration{crmType}ClientSecret",
+                KeyName = $"CMS{crmType}CRMIntegrationClientSecret",
                 KeyDisplayName = "Client Secret",
                 KeyDescription = "",
                 KeyType = "string",
@@ -330,23 +347,6 @@ public class CRMModuleInstaller : ICRMModuleInstaller
             };
             
             SettingsKeyInfo.Provider.Set(settingClientSecret);
-        }
-        
-        var settingsIgnoreExisting = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationIgnoreExistingRecords");
-        if (settingsIgnoreExisting is null)
-        {
-            settingsIgnoreExisting = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegration{crmType}ClientSecret",
-                KeyDisplayName = "Ignore existing records",
-                KeyDescription = "",
-                KeyType = "string",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingsIgnoreExisting);
         }
     }
 }

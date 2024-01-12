@@ -46,11 +46,13 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
 
-            var leadsIntegrationService = serviceScope.ServiceProvider
-                .GetRequiredService<TService>();
+            ILeadsIntegrationService? leadsIntegrationService = null;
 
             foreach (var syncItem in failedSyncItemsService.GetFailedSyncItemsToReSync(CRMName))
             {
+                leadsIntegrationService ??= serviceScope.ServiceProvider
+                    .GetRequiredService<TService>();
+                
                 var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
                 if (bizFormItem is null)
                 {

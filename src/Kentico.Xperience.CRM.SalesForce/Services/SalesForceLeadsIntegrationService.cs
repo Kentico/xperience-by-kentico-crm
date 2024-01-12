@@ -100,21 +100,26 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
                 {
                     await UpdateLeadAsync(existingLead.Id!, bizFormItem, fieldMappings, converters);
                 }
+                else
+                {
+                    logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} ignored",
+                        bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
+                }
             }
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
-            logger.LogError(e, "Update lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            logger.LogError(e, "Sync lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
-            logger.LogError(e, "Update lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            logger.LogError(e, "Sync lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
         catch (ApiException e)
         {
-            logger.LogError(e, "Update lead failed - unexpected api error");
+            logger.LogError(e, "Sync lead failed - unexpected api error");
             failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
         }
     }
@@ -139,6 +144,11 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         else if (!settings.Value.IgnoreExistingRecords)
         {
             await UpdateLeadAsync(existingLeadId, bizFormItem, fieldMappings, converters);
+        }
+        else
+        {
+            logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} ignored",
+                bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
         }
     }
 

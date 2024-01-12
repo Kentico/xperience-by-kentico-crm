@@ -5,6 +5,7 @@ using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
@@ -44,6 +45,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
     
     private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
+        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         try
         {
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
@@ -60,6 +62,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
         catch (Exception exception)
         {
             logger.LogError(exception, "Error occured during updating lead");
+            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Dynamics);
         }
     }
 }

@@ -9,7 +9,7 @@ public class SettingKeys
     public const string DynamicsUrl = "CMSDynamicsCRMIntegrationDynamicsUrl";
     public const string DynamicsClientId = "CMSDynamicsCRMIntegrationClientId";
     public const string DynamicsClientSecret = "CMSDynamicsCRMIntegrationClientSecret";
-    public const string DynamicsIgnoreExistingRecords = "CMSDynamicsCRMIgnoreExistingRecords";
+    public const string DynamicsIgnoreExistingRecords = "CMSDynamicsCRMIntegrationIgnoreExistingRecords";
     
     public const string SalesForceFormLeadsEnabled = "CMSSalesforceCRMIntegrationFormLeadsEnabled";
     public const string SalesForceUrl = "CMSSalesforceCRMIntegrationSalesforceUrl";

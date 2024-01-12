@@ -22,21 +22,20 @@ public class SalesForceBizFormsMappingBuilder
     {
         this.serviceCollection = serviceCollection;
     }
-    
+
     /// <summary>
-    /// Adds form when conversion is added automatically based on Form-Contact mapping <see cref="FormContactMappingToLeadConverter"/>
-    /// with custom mapping combined
+    /// Adds Form with mapping
     /// </summary>
     /// <param name="formCodeName"></param>
-    /// <param name="configuredBuilder"></param>
+    /// <param name="configureFields"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
     public SalesForceBizFormsMappingBuilder AddForm(string formCodeName,
-        BizFormFieldsMappingBuilder configuredBuilder)
+         Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
     {
         if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
 
-        forms.Add(formCodeName.ToLowerInvariant(), configuredBuilder);
+        forms.Add(formCodeName.ToLowerInvariant(), configureFields(new BizFormFieldsMappingBuilder()));
         return this;
     }
 

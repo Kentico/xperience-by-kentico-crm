@@ -105,6 +105,11 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
                 {
                     await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings, converters);
                 }
+                else
+                {
+                    logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} ignored",
+                        bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
+                }
             }
         }
         catch (FaultException<OrganizationServiceFault> e)
@@ -143,6 +148,11 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         else if (!settings.Value.IgnoreExistingRecords)
         {
             await UpdateLeadAsync(existingLead, bizFormItem, fieldMappings, converters);
+        }
+        else
+        {
+            logger.LogInformation("BizForm item {ItemID} for {BizFormDisplayName} ignored",
+                bizFormItem.ItemID, bizFormItem.BizFormInfo.FormDisplayName);
         }
     }
 
