@@ -13,6 +13,9 @@ using Kentico.Xperience.CRM.Common.Constants;
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
+/// <summary>
+/// Admin listing page for displaying synced items in CMS for selected form
+/// </summary>
 public class CRMSyncItemListing : ListingPage
 {
     private BizFormInfo? editedForm;

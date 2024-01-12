@@ -10,8 +10,10 @@ namespace Kentico.Xperience.CRM.Common.Installers;
 
 /// <summary>
 /// This installer creates custom module for common crm functionality
-/// Currently this module contains only custom class for failed synchronizations items <see cref="FailedSyncItemInfo"/>
-/// which is created when not exists on start.
+/// Currently this module contains custom class for failed synchronizations items <see cref="FailedSyncItemInfo"/>
+/// and synced items class <see cref="CRMSyncItemInfo"/>
+/// Custom settings are created
+/// Objects are created when not exists on start.
 /// </summary>
 public class CRMModuleInstaller : ICRMModuleInstaller
 {
@@ -314,7 +316,7 @@ public class CRMModuleInstaller : ICRMModuleInstaller
             SettingsKeyInfo.Provider.Set(settingClientId);
         }
         
-        var settingClientSecret = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegration{crmType}ClientSecret");
+        var settingClientSecret = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationClientSecret");
         if (settingClientSecret is null)
         {
             settingClientSecret = new SettingsKeyInfo
@@ -329,6 +331,23 @@ public class CRMModuleInstaller : ICRMModuleInstaller
             };
             
             SettingsKeyInfo.Provider.Set(settingClientSecret);
+        }
+        
+        var settingsIgnoreExisting = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationIgnoreExistingRecords");
+        if (settingsIgnoreExisting is null)
+        {
+            settingsIgnoreExisting = new SettingsKeyInfo
+            {
+                KeyName = $"CMS{crmType}CRMIntegration{crmType}ClientSecret",
+                KeyDisplayName = "Ignore existing records",
+                KeyDescription = "",
+                KeyType = "string",
+                KeyCategoryID = crmCategory.CategoryID,
+                KeyIsCustom = true,
+                KeyExplanationText = "",
+            };
+            
+            SettingsKeyInfo.Provider.Set(settingsIgnoreExisting);
         }
     }
 }

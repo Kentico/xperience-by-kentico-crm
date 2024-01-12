@@ -42,8 +42,7 @@ public static class SalesForceServiceCollectionsExtensions
         }
         else
         {
-            serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
-                .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);
+            serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration);
         }
 
         AddSalesForceCommonIntegration(serviceCollection);
@@ -95,28 +94,14 @@ public static class SalesForceServiceCollectionsExtensions
     private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings,
         ISettingsService settingsService)
     {
-        var formsEnabled = settingsService[SettingKeys.SalesForceFormLeadsEnabled];
-        if (!string.IsNullOrWhiteSpace(formsEnabled))
-        {
-            settings.FormLeadsEnabled = ValidationHelper.GetBoolean(formsEnabled, false);
-        }
+        settings.FormLeadsEnabled =
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceFormLeadsEnabled], false);
 
-        var salesForceUrl = settingsService[SettingKeys.SalesForceUrl];
-        if (!string.IsNullOrWhiteSpace(salesForceUrl))
-        {
-            settings.ApiConfig.SalesForceUrl = salesForceUrl;
-        }
+        settings.IgnoreExistingRecords = 
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceIgnoreExistingRecords], false);
 
-        var clientId = settingsService[SettingKeys.SalesForceClientId];
-        if (!string.IsNullOrWhiteSpace(clientId))
-        {
-            settings.ApiConfig.ClientId = clientId;
-        }
-
-        var clientSecret = settingsService[SettingKeys.SalesForceClientSecret];
-        if (!string.IsNullOrWhiteSpace(clientSecret))
-        {
-            settings.ApiConfig.ClientSecret = clientSecret;
-        }
+        settings.ApiConfig.SalesForceUrl = settingsService[SettingKeys.SalesForceUrl];
+        settings.ApiConfig.ClientId = settingsService[SettingKeys.SalesForceClientId];
+        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.SalesForceClientSecret];
     }
 }

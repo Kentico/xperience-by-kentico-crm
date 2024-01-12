@@ -9,26 +9,28 @@ using SalesForce.OpenApi;
 
 namespace Kentico.Xperience.CRM.SalesForce.Configuration;
 
+/// <summary>
+/// Mapping builder for BizForm to SalesForce mapping
+/// </summary>
 public class SalesForceBizFormsMappingBuilder
 {
     private readonly IServiceCollection serviceCollection;
     protected readonly Dictionary<string, BizFormFieldsMappingBuilder> forms = new();
     protected readonly Dictionary<string, List<Type>> converters = new();
-    
+
     public SalesForceBizFormsMappingBuilder(IServiceCollection serviceCollection)
     {
         this.serviceCollection = serviceCollection;
     }
     
-    public SalesForceBizFormsMappingBuilder AddForm(string formCodeName,
-        Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
-    {
-        if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
-
-        forms.Add(formCodeName.ToLowerInvariant(), configureFields(new BizFormFieldsMappingBuilder()));
-        return this;
-    }
-
+    /// <summary>
+    /// Adds form when conversion is added automatically based on Form-Contact mapping <see cref="FormContactMappingToLeadConverter"/>
+    /// with custom mapping combined
+    /// </summary>
+    /// <param name="formCodeName"></param>
+    /// <param name="configuredBuilder"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public SalesForceBizFormsMappingBuilder AddForm(string formCodeName,
         BizFormFieldsMappingBuilder configuredBuilder)
     {
@@ -37,8 +39,13 @@ public class SalesForceBizFormsMappingBuilder
         forms.Add(formCodeName.ToLowerInvariant(), configuredBuilder);
         return this;
     }
-    
-    public SalesForceBizFormsMappingBuilder AddFormWithContactMapping(string formCodeName) 
+
+    /// <summary>
+    /// Adds form when conversion is added automatically based on Form-Contact mapping <see cref="FormContactMappingToLeadConverter"/>
+    /// </summary>
+    /// <param name="formCodeName"></param>
+    /// <returns></returns>
+    public SalesForceBizFormsMappingBuilder AddFormWithContactMapping(string formCodeName)
         => AddFormWithContactMapping(formCodeName, b => b);
 
     public SalesForceBizFormsMappingBuilder AddFormWithContactMapping(
@@ -52,24 +59,33 @@ public class SalesForceBizFormsMappingBuilder
         return this;
     }
 
+    /// <summary>
+    /// Adds form when conversion is added automatically based on Form-Contact mapping <see cref="FormContactMappingToLeadConverter"/>
+    /// with custom mapping combined
+    /// </summary>
+    /// <param name="formCodeName"></param>
+    /// <typeparam name="TConverter"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentNullException"></exception>
     public SalesForceBizFormsMappingBuilder AddFormWithConverter<TConverter>(string formCodeName)
         where TConverter : class, ICRMTypeConverter<BizFormItem, LeadSObject>
     {
         if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
-        
+
         if (converters.TryGetValue(formCodeName.ToLowerInvariant(), out var values))
         {
             values.Add(typeof(FormContactMappingToLeadConverter));
         }
         else
         {
-            converters[formCodeName.ToLowerInvariant()] = new List<Type> { typeof(TConverter)};
+            converters[formCodeName.ToLowerInvariant()] = new List<Type> { typeof(TConverter) };
         }
-        
-        serviceCollection.TryAddEnumerable(ServiceDescriptor.Scoped<ICRMTypeConverter<BizFormItem, LeadSObject>, TConverter>());
+
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<BizFormItem, LeadSObject>, TConverter>());
         return this;
     }
-    
+
     /// <summary>
     /// Adds custom service for BizForm item validation before sending to CRM
     /// </summary>
@@ -83,7 +99,7 @@ public class SalesForceBizFormsMappingBuilder
 
         return this;
     }
-    
+
     internal SalesForceBizFormsMappingConfiguration Build()
     {
         return new SalesForceBizFormsMappingConfiguration
@@ -93,5 +109,4 @@ public class SalesForceBizFormsMappingBuilder
             FormsConverters = converters
         };
     }
-
 }

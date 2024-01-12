@@ -6,6 +6,9 @@ using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 
 namespace Kentico.Xperience.CRM.Dynamics.Converters;
 
+/// <summary>
+/// Converter for mapping BizForm to Lead based on Form-Contact mapping in CMS
+/// </summary>
 public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, Lead>
 {
     private readonly IContactFieldFromFormRetriever contactFieldFromFormRetriever;

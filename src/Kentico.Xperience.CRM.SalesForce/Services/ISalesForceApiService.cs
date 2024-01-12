@@ -31,14 +31,14 @@ public interface ISalesForceApiService
     Task<string?> GetLeadIdByExternalId(string fieldName, string externalId);
 
     /// <summary>
-    /// 
+    /// Get Lead by primary Id
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
     Task<LeadSObject?> GetLeadById(string id, string? fields = null);
 
     /// <summary>
-    /// 
+    /// Get Lead by email
     /// </summary>
     /// <param name="email"></param>
     /// <returns></returns>

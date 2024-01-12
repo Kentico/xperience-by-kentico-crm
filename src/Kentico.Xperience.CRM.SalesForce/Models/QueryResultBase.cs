@@ -2,6 +2,9 @@
 
 namespace Kentico.Xperience.CRM.SalesForce.Models;
 
+/// <summary>
+/// Base model for query result
+/// </summary>
 public class QueryResultBase
 {
     [JsonPropertyName("totalSize")] public int TotalSize { get; set; }

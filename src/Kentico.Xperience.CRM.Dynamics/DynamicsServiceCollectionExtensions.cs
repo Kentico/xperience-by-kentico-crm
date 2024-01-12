@@ -35,14 +35,13 @@ public static class DynamicsServiceCollectionExtensions
         if (configuration is null)
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings);    
+                .Configure<ISettingsService>(ConfigureWithCMSSettings);
         }
         else
         {
-            serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
-                .PostConfigure<ISettingsService>(ConfigureWithCMSSettings);    
+            serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
         }
-        
+
         serviceCollection.TryAddScoped(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
         return serviceCollection;
@@ -64,37 +63,23 @@ public static class DynamicsServiceCollectionExtensions
             throw new InvalidOperationException("Missing API setting");
         }
 
-        var connectionString = string.IsNullOrWhiteSpace(settings.ApiConfig.ConnectionString)
-            ? $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}"
-            : settings.ApiConfig.ConnectionString;
+        var connectionString = string.IsNullOrWhiteSpace(settings.ApiConfig.ConnectionString) ?
+            $"AuthType=ClientSecret;Url={settings.ApiConfig.DynamicsUrl};ClientId={settings.ApiConfig.ClientId};ClientSecret={settings.ApiConfig.ClientSecret}" :
+            settings.ApiConfig.ConnectionString;
 
         return new ServiceClient(connectionString, logger);
     }
 
     private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ISettingsService settingsService)
     {
-        var formsEnabled = settingsService[SettingKeys.DynamicsFormLeadsEnabled];
-        if (!string.IsNullOrWhiteSpace(formsEnabled))
-        {
-            settings.FormLeadsEnabled = ValidationHelper.GetBoolean(formsEnabled, false);
-        }
-        
-        var dynamicsUrl = settingsService[SettingKeys.DynamicsUrl];
-        if (!string.IsNullOrWhiteSpace(dynamicsUrl))
-        {
-            settings.ApiConfig.DynamicsUrl = dynamicsUrl;
-        }
-        
-        var clientId = settingsService[SettingKeys.DynamicsClientId];
-        if (!string.IsNullOrWhiteSpace(clientId))
-        {
-            settings.ApiConfig.ClientId = clientId;
-        }
-        
-        var clientSecret = settingsService[SettingKeys.DynamicsClientSecret];
-        if (!string.IsNullOrWhiteSpace(clientSecret))
-        {
-            settings.ApiConfig.ClientSecret = clientSecret;
-        }
+        settings.FormLeadsEnabled =
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsFormLeadsEnabled], false);
+
+        settings.IgnoreExistingRecords = 
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsIgnoreExistingRecords], false);
+
+        settings.ApiConfig.DynamicsUrl = settingsService[SettingKeys.DynamicsUrl];
+        settings.ApiConfig.ClientId = settingsService[SettingKeys.DynamicsClientId];
+        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.DynamicsClientSecret];
     }
 }

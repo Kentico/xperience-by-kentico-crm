@@ -6,6 +6,9 @@ using SalesForce.OpenApi;
 
 namespace Kentico.Xperience.CRM.SalesForce.Converters;
 
+/// <summary>
+/// Converter for mapping BizForm to Lead based on Form-Contact mapping in CMS
+/// </summary>
 public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, LeadSObject>
 {
     private readonly IContactFieldFromFormRetriever contactFieldFromFormRetriever;

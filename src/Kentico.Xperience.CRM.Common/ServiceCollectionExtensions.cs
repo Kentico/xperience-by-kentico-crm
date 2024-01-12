@@ -1,6 +1,4 @@
-﻿using Kentico.Xperience.CRM.Common.Classes;
-using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Installers;
+﻿using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
