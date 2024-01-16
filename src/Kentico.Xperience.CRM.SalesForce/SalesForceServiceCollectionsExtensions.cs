@@ -2,8 +2,8 @@
 using CMS.Helpers;
 using Duende.AccessTokenManagement;
 using Kentico.Xperience.CRM.Common;
-using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;

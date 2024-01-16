@@ -1,5 +1,4 @@
-﻿using CMS.ContactManagement;
-using CMS.OnlineForms;
+﻿using CMS.OnlineForms;
 
 namespace Kentico.Xperience.CRM.Common.Services;
 

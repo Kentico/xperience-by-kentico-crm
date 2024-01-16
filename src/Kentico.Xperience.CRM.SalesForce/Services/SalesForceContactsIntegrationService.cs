@@ -1,5 +1,4 @@
 ﻿using CMS.ContactManagement;
-using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.SalesForce.Configuration;

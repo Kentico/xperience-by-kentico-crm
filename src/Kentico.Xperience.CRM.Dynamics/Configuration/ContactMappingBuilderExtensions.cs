@@ -1,7 +1,6 @@
 ﻿using CMS.ContactManagement;
 using CMS.Globalization;
 using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Kentico.Xperience.CRM.Dynamics.Helpers;
 using Microsoft.Xrm.Sdk;

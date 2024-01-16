@@ -4,7 +4,6 @@ using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 
 namespace Kentico.Xperience.CRM.Common;
 
