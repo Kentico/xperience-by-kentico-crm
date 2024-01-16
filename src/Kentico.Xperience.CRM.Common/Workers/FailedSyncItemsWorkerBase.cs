@@ -21,6 +21,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
     where TWorker : ThreadWorker<TWorker>, new()
     where TService : ILeadsIntegrationService
     where TSettings : CommonIntegrationSettings<TApiConfig>
+    where TApiConfig : new()
 {
     protected override int DefaultInterval => 60000;
     private ILogger<TWorker> logger = null!;
@@ -38,25 +39,27 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
 
         try
         {
-            var settings = Service.Resolve<IOptionsMonitor<TSettings>>().CurrentValue;
+            using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
+            
+            var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
             if (!settings.FormLeadsEnabled) return;
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
 
-            using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
-
-            var leadsIntegrationService = serviceScope.ServiceProvider
-                .GetRequiredService<TService>();
+            ILeadsIntegrationService? leadsIntegrationService = null;
 
             foreach (var syncItem in failedSyncItemsService.GetFailedSyncItemsToReSync(CRMName))
             {
+                leadsIntegrationService ??= serviceScope.ServiceProvider
+                    .GetRequiredService<TService>();
+                
                 var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
                 if (bizFormItem is null)
                 {
                     continue;
                 }
 
-                leadsIntegrationService.UpdateLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
+                leadsIntegrationService.SynchronizeLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
         catch (Exception e)

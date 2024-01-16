@@ -4,6 +4,7 @@ using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using System;
 
 namespace Kentico.Xperience.CRM.Common;
 
@@ -19,22 +20,14 @@ public static class ServiceCollectionExtensions
     /// <param name="formsMappingConfig"></param>
     /// <typeparam name="TMappingConfiguration"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddKenticoCrmCommonLeadIntegration<TMappingConfiguration>(
-        this IServiceCollection services, Action<BizFormsMappingBuilder> formsMappingConfig)
-        where TMappingConfiguration : BizFormsMappingConfiguration, new()
+    public static IServiceCollection AddKenticoCrmCommonFormLeadsIntegration(
+        this IServiceCollection services)
     {
         services.TryAddSingleton<ILeadsIntegrationValidationService, LeadIntegrationValidationService>();
 
-        services.TryAddSingleton(
-            _ =>
-            {
-                var mappingBuilder = new BizFormsMappingBuilder();
-                formsMappingConfig(mappingBuilder);
-                return mappingBuilder.Build<TMappingConfiguration>();
-            });
-
-        services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
+        services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
+        services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
 
         return services;
     }
@@ -44,22 +37,8 @@ public static class ServiceCollectionExtensions
         where TMappingConfiguration : ContactMappingConfiguration, new()
     {
         services.TryAddSingleton<IContactsIntegrationValidationService, ContactsIntegrationValidationService>();
-        services.TryAddSingleton<ICrmModuleInstaller, CrmModuleInstaller>();
+        services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
-
-        return services;
-    }
-    
-    /// <summary>
-    /// Adds custom service for BizForm item validation before sending to CRM
-    /// </summary>
-    /// <param name="services"></param>
-    /// <typeparam name="TService"></typeparam>
-    /// <returns></returns>
-    public static IServiceCollection AddCustomFormLeadsValidationService<TService>(this IServiceCollection services)
-        where TService : class, ILeadsIntegrationValidationService
-    {
-        services.AddSingleton<ILeadsIntegrationValidationService, TService>();
 
         return services;
     }

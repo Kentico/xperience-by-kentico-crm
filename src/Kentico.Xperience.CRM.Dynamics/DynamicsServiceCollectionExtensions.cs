@@ -1,4 +1,7 @@
-﻿using Kentico.Xperience.CRM.Common;
+﻿using CMS.Core;
+using CMS.Helpers;
+using Kentico.Xperience.CRM.Common;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Mapping;
@@ -23,13 +26,25 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="configuration"></param>
     /// <returns></returns>
     public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
-        Action<BizFormsMappingBuilder> formsConfig,
-        IConfiguration configuration)
+        Action<DynamicsBizFormsMappingBuilder> formsConfig,
+        IConfiguration? configuration = null)
     {
-        serviceCollection.AddKenticoCrmCommonLeadIntegration<DynamicsBizFormsMappingConfiguration>(formsConfig);
+        serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
+        var mappingBuilder = new DynamicsBizFormsMappingBuilder(serviceCollection);
+        formsConfig(mappingBuilder);
+        serviceCollection.TryAddSingleton(_ => mappingBuilder.Build());
 
-        serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
-        serviceCollection.TryAddSingleton(GetCrmServiceClient);
+        if (configuration is null)
+        {
+            serviceCollection.AddOptions<DynamicsIntegrationSettings>()
+                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+        }
+        else
+        {
+            serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration);
+        }
+
+        serviceCollection.TryAddScoped(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
         return serviceCollection;
     }
@@ -74,10 +89,10 @@ public static class DynamicsServiceCollectionExtensions
     /// <exception cref="InvalidOperationException"></exception>
     private static ServiceClient GetCrmServiceClient(IServiceProvider serviceProvider)
     {
-        var settings = serviceProvider.GetRequiredService<IOptions<DynamicsIntegrationSettings>>().Value;
+        var settings = serviceProvider.GetRequiredService<IOptionsSnapshot<DynamicsIntegrationSettings>>().Value;
         var logger = serviceProvider.GetRequiredService<ILogger<ServiceClient>>();
 
-        if (settings.ApiConfig?.IsValid() is not true)
+        if (!settings.ApiConfig.IsValid())
         {
             throw new InvalidOperationException("Missing API setting");
         }
@@ -87,5 +102,18 @@ public static class DynamicsServiceCollectionExtensions
             settings.ApiConfig.ConnectionString;
 
         return new ServiceClient(connectionString, logger);
+    }
+
+    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ISettingsService settingsService)
+    {
+        settings.FormLeadsEnabled =
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsFormLeadsEnabled], false);
+
+        settings.IgnoreExistingRecords = 
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsIgnoreExistingRecords], false);
+
+        settings.ApiConfig.DynamicsUrl = settingsService[SettingKeys.DynamicsUrl];
+        settings.ApiConfig.ClientId = settingsService[SettingKeys.DynamicsClientId];
+        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.DynamicsClientSecret];
     }
 }

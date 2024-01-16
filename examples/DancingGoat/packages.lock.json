@@ -1379,6 +1379,7 @@
       "kentico.xperience.crm.common": {
         "type": "Project",
         "dependencies": {
+          "Kentico.Xperience.Admin": "[27.0.1, )",
           "Kentico.Xperience.Core": "[27.0.1, )"
         }
       },

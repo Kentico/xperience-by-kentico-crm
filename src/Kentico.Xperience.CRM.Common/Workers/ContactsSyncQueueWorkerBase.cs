@@ -15,6 +15,7 @@ public abstract class ContactsSyncQueueWorkerBase<TWorker, TService, TSettings, 
     where TWorker : ThreadQueueWorker<ContactInfo, TWorker>, new()
     where TService : IContactsIntegrationService
     where TSettings : CommonIntegrationSettings<TApiConfig>
+    where TApiConfig : new()
 {
     private readonly ILogger<TWorker> logger = Service.Resolve<ILogger<TWorker>>();
 
