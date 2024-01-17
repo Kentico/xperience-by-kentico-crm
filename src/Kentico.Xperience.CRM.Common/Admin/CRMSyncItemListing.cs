@@ -6,8 +6,8 @@ using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Classes;
 
 [assembly:
-    UIPage(typeof(FormEditSection), "crm-sync-listing", typeof(CRMSyncItemListing),
-        "CRM synchronization", TemplateNames.LISTING, 1000, Icons.IntegrationScheme)]
+    UIPage(parentType: typeof(FormEditSection), slug: "crm-sync-listing", uiPageType: typeof(CRMSyncItemListing),
+        name: "CRM synchronization", templateName: TemplateNames.LISTING, order: 1000, icon: Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 

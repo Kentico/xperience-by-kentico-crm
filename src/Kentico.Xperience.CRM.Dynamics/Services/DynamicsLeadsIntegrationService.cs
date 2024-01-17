@@ -88,7 +88,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     {
         try
         {
-            var syncItem = syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
+            var syncItem = await syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
             
             if (syncItem is null)
             {
@@ -169,7 +169,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
 
         var leadId = await serviceClient.CreateAsync(leadEntity);
         
-        syncItemService.LogFormLeadCreateItem(bizFormItem, leadId.ToString(), CRMType.Dynamics);  
+        await syncItemService.LogFormLeadCreateItem(bizFormItem, leadId.ToString(), CRMType.Dynamics);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
@@ -186,7 +186,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
 
         await serviceClient.UpdateAsync(leadEntity);
         
-        syncItemService.LogFormLeadUpdateItem(bizFormItem, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
+        await syncItemService.LogFormLeadUpdateItem(bizFormItem, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }

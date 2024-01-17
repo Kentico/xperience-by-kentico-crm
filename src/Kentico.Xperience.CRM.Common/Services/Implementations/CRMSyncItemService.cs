@@ -12,15 +12,15 @@ internal class CRMSyncItemService : ICRMSyncItemService
         this.crmSyncItemInfoProvider = crmSyncItemInfoProvider;
     }
 
-    public void LogFormLeadCreateItem(BizFormItem bizFormItem, string crmId, string crmName)
-        => LogFormLeadSyncItem(bizFormItem, crmId, crmName, true);
+    public async Task LogFormLeadCreateItem(BizFormItem bizFormItem, string crmId, string crmName)
+        => await LogFormLeadSyncItem(bizFormItem, crmId, crmName, true);
 
-    public void LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName)
-        => LogFormLeadSyncItem(bizFormItem, crmId, crmName, false);
+    public async Task LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName)
+        => await LogFormLeadSyncItem(bizFormItem, crmId, crmName, false);
 
-    private void LogFormLeadSyncItem(BizFormItem bizFormItem, string crmId, string crmName, bool createdByKentico)
+    private async Task LogFormLeadSyncItem(BizFormItem bizFormItem, string crmId, string crmName, bool createdByKentico)
     {
-        var syncItem = GetFormLeadSyncItem(bizFormItem, crmName);
+        var syncItem = await GetFormLeadSyncItem(bizFormItem, crmName);
         if (syncItem is null)
         {
             new CRMSyncItemInfo
@@ -40,12 +40,13 @@ internal class CRMSyncItemService : ICRMSyncItemService
         }
     }
 
-    public CRMSyncItemInfo? GetFormLeadSyncItem(BizFormItem bizFormItem, string crmName)
-        => crmSyncItemInfoProvider.Get()
+    public async Task<CRMSyncItemInfo?> GetFormLeadSyncItem(BizFormItem bizFormItem, string crmName)
+        => (await crmSyncItemInfoProvider.Get()
             .TopN(1)
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityClass), bizFormItem.BizFormClassName)
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityID), bizFormItem.ItemID)
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), crmName)
+            .GetEnumerableTypedResultAsync())
             .FirstOrDefault();
 
 }

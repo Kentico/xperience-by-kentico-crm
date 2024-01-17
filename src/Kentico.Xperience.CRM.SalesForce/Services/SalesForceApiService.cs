@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
+using System.Web;
 using SalesForceApiClient = SalesForce.OpenApi.SalesForceApiClient;
 
 namespace Kentico.Xperience.CRM.SalesForce.Services;
@@ -84,7 +85,7 @@ internal class SalesForceApiService : ISalesForceApiService
         var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
         using var request =
             new HttpRequestMessage(HttpMethod.Get,
-                $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+Lead+WHERE+Email='{email}'+ORDER+BY+CreatedDate+DESC");
+                $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+Lead+WHERE+Email='{HttpUtility.UrlEncode(email)}'+ORDER+BY+CreatedDate+DESC");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         var response = await httpClient.SendAsync(request);
 
