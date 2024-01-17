@@ -39,10 +39,6 @@ internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegra
 
             lead.LeadSource ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
             lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
-            // if (bizFormMappingConfig.ExternalIdFieldName is { Length: > 0 } externalIdFieldName)
-            // {
-            //     lead.AdditionalProperties[externalIdFieldName] = FormatExternalId(bizFormItem);
-            // }
 
             await apiService.CreateLeadAsync(lead);
         }

@@ -13,17 +13,15 @@ namespace Kentico.Xperience.CRM.Common;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds common services for CRM integration. This method is usually used from specific CRM integration library
+    /// Adds common services for BizForm-Leads CRM integration. This method is usually used from specific CRM integration library
     /// </summary>
     /// <param name="services"></param>
     /// <param name="formsMappingConfig"></param>
     /// <typeparam name="TMappingConfiguration"></typeparam>
     /// <returns></returns>
-    public static IServiceCollection AddKenticoCrmCommonFormLeadsIntegration(
-        this IServiceCollection services)
+    public static IServiceCollection AddKenticoCrmCommonFormLeadsIntegration(this IServiceCollection services)
     {
         services.TryAddSingleton<ILeadsIntegrationValidationService, LeadIntegrationValidationService>();
-
         services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
         services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
@@ -31,13 +29,17 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddKenticoCrmCommonContactIntegration<TMappingConfiguration>(
-        this IServiceCollection services, Action<ContactMappingBuilder> contactMappingConfig)
-        where TMappingConfiguration : ContactMappingConfiguration, new()
+    /// <summary>
+    /// Adds common services for Contacts to Leads/Contacts CRM integration. This method is usually used from specific CRM integration library 
+    /// </summary>
+    /// <param name="services"></param>
+    /// <returns></returns>
+    public static IServiceCollection AddKenticoCrmCommonContactIntegration(this IServiceCollection services)
     {
         services.TryAddSingleton<IContactsIntegrationValidationService, ContactsIntegrationValidationService>();
         services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
+        services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
 
         return services;
     }

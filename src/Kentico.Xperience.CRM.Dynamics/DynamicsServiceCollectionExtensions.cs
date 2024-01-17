@@ -4,7 +4,6 @@ using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
-using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.Configuration;
@@ -54,27 +53,35 @@ public static class DynamicsServiceCollectionExtensions
     => serviceCollection.AddDynamicsContactsIntegration(crmType, b => { }, configuration);
 
     public static IServiceCollection AddDynamicsContactsIntegration(this IServiceCollection serviceCollection,
-        ContactCRMType crmType, Action<ContactMappingBuilder> mappingConfig, IConfiguration configuration,
+        ContactCRMType crmType, Action<DynamicsContactMappingBuilder> mappingConfig, IConfiguration? configuration = null,
         bool useDefaultMapping = true)
     {
-        serviceCollection.AddKenticoCrmCommonContactIntegration<DynamicsContactMappingConfiguration>(mappingConfig);
+        serviceCollection.AddKenticoCrmCommonContactIntegration();
+        
+        var mappingBuilder = new DynamicsContactMappingBuilder(serviceCollection);
+        if (useDefaultMapping)
+        {
+            mappingBuilder = crmType == ContactCRMType.Lead ?
+                mappingBuilder.AddDefaultMappingForLead() :
+                mappingBuilder.AddDefaultMappingForContact();
+            mappingConfig(mappingBuilder);
+        }
+
         serviceCollection.TryAddSingleton(
-            sp =>
-            {
-                var mappingBuilder = new ContactMappingBuilder();
-                if (useDefaultMapping)
-                {
-                    mappingBuilder = crmType == ContactCRMType.Lead ?
-                        mappingBuilder.AddDefaultMappingForLead() :
-                        mappingBuilder.AddDefaultMappingForContact();
-                    mappingConfig(mappingBuilder);
-                }
+            _ => mappingBuilder.Build());
 
-                return mappingBuilder.Build<DynamicsContactMappingConfiguration>();
-            });
-
-        serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
-            .PostConfigure(s => s.ContactType = crmType);
+        if (configuration is null)
+        {
+            serviceCollection.AddOptions<DynamicsIntegrationSettings>()
+                .Configure<ISettingsService>(ConfigureWithCMSSettings)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+        else
+        {
+            serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+        
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsContactsIntegrationService, DynamicsContactsIntegrationService>();
 
@@ -108,6 +115,9 @@ public static class DynamicsServiceCollectionExtensions
     {
         settings.FormLeadsEnabled =
             ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsFormLeadsEnabled], false);
+        
+        settings.ContactsEnabled =
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceContactsEnabled], false);
 
         settings.IgnoreExistingRecords = 
             ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsIgnoreExistingRecords], false);

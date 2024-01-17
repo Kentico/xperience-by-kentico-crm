@@ -298,6 +298,22 @@ public class CRMModuleInstaller : ICRMModuleInstaller
             SettingsKeyInfo.Provider.Set(settingsIgnoreExisting);
         }
         
+        if (settingFormsEnabled is null)
+        {
+            settingFormsEnabled = new SettingsKeyInfo
+            {
+                KeyName = $"CMS{crmType}CRMIntegrationContactsEnabled",
+                KeyDisplayName = "Contact synchronization enabled",
+                KeyDescription = "",
+                KeyType = "boolean",
+                KeyCategoryID = crmCategory.CategoryID,
+                KeyIsCustom = true,
+                KeyExplanationText = "",
+            };
+            
+            SettingsKeyInfo.Provider.Set(settingFormsEnabled);
+        }
+        
         var settingUrl = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegration{crmType}Url");
         if (settingUrl is null)
         {

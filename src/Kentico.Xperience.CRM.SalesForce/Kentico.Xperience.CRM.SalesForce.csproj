@@ -33,5 +33,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Kentico.Xperience.CRM.Common\Kentico.Xperience.CRM.Common.csproj" />
+		<ProjectReference Include="..\Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj" />
 	</ItemGroup>
 </Project>

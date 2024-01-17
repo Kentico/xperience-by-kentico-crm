@@ -1,36 +1,46 @@
 ﻿using CMS.ContactManagement;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
+using Kentico.Xperience.CRM.Common.Services;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Kentico.Xperience.CRM.Common.Configuration;
 
-public class ContactMappingBuilder
+public abstract class ContactMappingBuilder<TBuilder>
+where TBuilder : ContactMappingBuilder<TBuilder>
 {
-    private List<ContactFieldToCRMMapping> fieldMappings = new();
-    
-    public ContactMappingBuilder MapField(string contactFieldName, string crmFieldName)
+    private readonly IServiceCollection serviceCollection;
+    protected readonly List<ContactFieldToCRMMapping> fieldMappings = new();
+    protected readonly List<Type> converters = new();
+
+    protected ContactMappingBuilder(IServiceCollection serviceCollection)
     {
-        fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldNameMapping(contactFieldName), new CRMFieldNameMapping(crmFieldName)));
-        return this;
+        this.serviceCollection = serviceCollection;
     }
 
-    public ContactMappingBuilder MapField(Func<ContactInfo, object> mappingFunc, string crmFieldName)
+    public TBuilder MapField(string contactFieldName, string crmFieldName)
+    {
+        fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldNameMapping(contactFieldName), new CRMFieldNameMapping(crmFieldName)));
+        return (TBuilder)this;
+    }
+
+    public TBuilder MapField(Func<ContactInfo, object> mappingFunc, string crmFieldName)
     {
         fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldMappingFunction(mappingFunc), new CRMFieldNameMapping(crmFieldName)));
-        return this;
+        return (TBuilder)this;
     }
     
-    public ContactMappingBuilder AddMapping(ContactFieldToCRMMapping mapping)
+    /// <summary>
+    /// Adds custom service for BizForm item validation before sending to CRM
+    /// </summary>
+    /// <param name="services"></param>
+    /// <typeparam name="TService"></typeparam>
+    /// <returns></returns>
+    public TBuilder AddCustomValidation<TService>()
+        where TService : class, ILeadsIntegrationValidationService
     {
-        fieldMappings.Add(mapping);
-        return this;
-    }
-    
-    public TContactMappingConfiguration Build<TContactMappingConfiguration>()
-        where TContactMappingConfiguration : ContactMappingConfiguration, new()
-    {
-        return new TContactMappingConfiguration
-        {
-            FieldsMapping = fieldMappings
-        };
+        serviceCollection.AddSingleton<ILeadsIntegrationValidationService, TService>();
+
+        return (TBuilder)this;
     }
 }

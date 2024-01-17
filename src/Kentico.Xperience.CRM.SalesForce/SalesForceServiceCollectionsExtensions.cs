@@ -58,25 +58,22 @@ public static class SalesForceServiceCollectionsExtensions
 
     public static IServiceCollection AddSalesForceContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType,
-        Action<ContactMappingBuilder> mappingConfig,
+        Action<SalesForceContactMappingBuilder> mappingConfig,
         IConfiguration configuration,
         bool useDefaultMapping = true)
     {
-        serviceCollection.AddKenticoCrmCommonContactIntegration<SalesForceContactMappingConfiguration>(mappingConfig);
-        serviceCollection.TryAddSingleton(
-            sp =>
-            {
-                var mappingBuilder = new ContactMappingBuilder();
-                if (useDefaultMapping)
-                {
-                    mappingBuilder = crmType == ContactCRMType.Lead ?
-                        mappingBuilder.AddDefaultMappingForLead() :
-                        mappingBuilder.AddDefaultMappingForContact();
-                    mappingConfig(mappingBuilder);
-                }
+        serviceCollection.AddKenticoCrmCommonContactIntegration();
+        
+        var mappingBuilder = new SalesForceContactMappingBuilder(serviceCollection);
+        if (useDefaultMapping)
+        {
+            mappingBuilder = crmType == ContactCRMType.Lead ?
+                mappingBuilder.AddDefaultMappingForLead() :
+                mappingBuilder.AddDefaultMappingForContact();
+            mappingConfig(mappingBuilder);
+        }
 
-                return mappingBuilder.Build<SalesForceContactMappingConfiguration>();
-            });
+        serviceCollection.TryAddSingleton(_ => mappingBuilder.Build());
 
         serviceCollection.AddOptions<SalesForceIntegrationSettings>().Bind(configuration)
             .PostConfigure(s => s.ContactType = crmType);
@@ -131,6 +128,9 @@ public static class SalesForceServiceCollectionsExtensions
     {
         settings.FormLeadsEnabled =
             ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceFormLeadsEnabled], false);
+
+        settings.ContactsEnabled =
+            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceContactsEnabled], false);
 
         settings.IgnoreExistingRecords = 
             ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceIgnoreExistingRecords], false);
