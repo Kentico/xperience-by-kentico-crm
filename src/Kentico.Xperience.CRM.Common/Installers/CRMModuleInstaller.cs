@@ -14,7 +14,7 @@ namespace Kentico.Xperience.CRM.Common.Installers;
 /// Custom settings are created
 /// Objects are created when not exists on start.
 /// </summary>
-public class CRMModuleInstaller : ICRMModuleInstaller
+internal class CRMModuleInstaller : ICRMModuleInstaller
 {
     private readonly IResourceInfoProvider resourceInfoProvider;
 
@@ -25,12 +25,9 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
     public void Install(string crmtype)
     {
-        using (new CMSActionContext { ContinuousIntegrationAllowObjectSerialization = false })
-        {
-            var resourceInfo = InstallModule();
-            InstallModuleClasses(resourceInfo);
-            InstallSettings(resourceInfo, crmtype);
-        }
+        var resourceInfo = InstallModule();
+        InstallModuleClasses(resourceInfo);
+        InstallSettings(resourceInfo, crmtype);
     }
 
     private ResourceInfo InstallModule()
@@ -57,25 +54,25 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
     {
-        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo("kenticocrmcommon.crmsyncitem");
+        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(CRMSyncItemInfo.OBJECT_TYPE);
         if (failedSyncItemClass is not null)
         {
             return;
         }
 
-        failedSyncItemClass = DataClassInfo.New("kenticocrmcommon.crmsyncitem");
+        failedSyncItemClass = DataClassInfo.New(CRMSyncItemInfo.OBJECT_TYPE);
 
-        failedSyncItemClass.ClassName = "kenticocrmcommon.crmsyncitem";
-        failedSyncItemClass.ClassTableName = "kenticocrmcommon.crmsyncitem".Replace(".", "_");
+        failedSyncItemClass.ClassName = CRMSyncItemInfo.TYPEINFO.ObjectClassName;
+        failedSyncItemClass.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         failedSyncItemClass.ClassDisplayName = "CRM sync item";
         failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
         failedSyncItemClass.ClassType = ClassType.OTHER;
 
-        var formInfo = FormHelper.GetBasicFormDefinition("CRMSyncItemID");
+        var formInfo = FormHelper.GetBasicFormDefinition(nameof(CRMSyncItemInfo.CRMSyncItemID));
 
         var formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemEntityClass",
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemEntityClass),
             Visible = false,
             Precision = 0,
             Size = 100,
@@ -86,7 +83,7 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemEntityID",
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemEntityID),
             Visible = false,
             Precision = 0,
             Size = 50,
@@ -97,7 +94,7 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemCRMID",
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemCRMID),
             Visible = false,
             Precision = 0,
             Size = 50,
@@ -108,7 +105,7 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemEntityCRM",
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM),
             Visible = false,
             Precision = 0,
             Size = 50,
@@ -119,13 +116,13 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemCreatedByKentico", Visible = false, DataType = "boolean", Enabled = true
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemCreatedByKentico), Visible = false, DataType = "boolean", Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMSyncItemLastModified",
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemLastModified),
             Visible = false,
             Precision = 0,
             DataType = "datetime",
@@ -148,8 +145,8 @@ public class CRMModuleInstaller : ICRMModuleInstaller
 
         failedSyncItemClass = DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
 
-        failedSyncItemClass.ClassName = FailedSyncItemInfo.OBJECT_TYPE;
-        failedSyncItemClass.ClassTableName = FailedSyncItemInfo.OBJECT_TYPE.Replace(".", "_");
+        failedSyncItemClass.ClassName = FailedSyncItemInfo.TYPEINFO.ObjectClassName;
+        failedSyncItemClass.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         failedSyncItemClass.ClassDisplayName = "Failed sync item";
         failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
         failedSyncItemClass.ClassType = ClassType.OTHER;

@@ -83,7 +83,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
     {
         try
         {
-            var syncItem = syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.SalesForce);
+            var syncItem = await syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.SalesForce);
 
             if (syncItem is null)
             {
@@ -163,7 +163,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
 
         var result = await apiService.CreateLeadAsync(lead);
 
-        syncItemService.LogFormLeadCreateItem(bizFormItem, result.Id!, CRMType.SalesForce);
+        await syncItemService.LogFormLeadCreateItem(bizFormItem, result.Id!, CRMType.SalesForce);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
@@ -179,7 +179,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
 
         await apiService.UpdateLeadAsync(leadId, lead);
 
-        syncItemService.LogFormLeadUpdateItem(bizFormItem, leadId, CRMType.SalesForce);
+        await syncItemService.LogFormLeadUpdateItem(bizFormItem, leadId, CRMType.SalesForce);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }

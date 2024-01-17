@@ -65,7 +65,7 @@ ConfigureMembershipServices(builder.Services);
 
 builder.Services.AddDynamicsFormLeadsIntegration(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
-            .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.EMailAddress1))
+            .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
 
 //builder.Services.AddSalesForceFormLeadsIntegration(builder =>

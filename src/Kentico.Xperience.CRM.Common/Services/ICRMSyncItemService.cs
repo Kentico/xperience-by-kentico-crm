@@ -5,7 +5,7 @@ namespace Kentico.Xperience.CRM.Common.Services;
 
 public interface ICRMSyncItemService
 {
-    void LogFormLeadCreateItem(BizFormItem bizFormItem, string crmId, string crmName);
-    void LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName);
-    CRMSyncItemInfo? GetFormLeadSyncItem(BizFormItem bizFormItem, string crmName);
+    Task LogFormLeadCreateItem(BizFormItem bizFormItem, string crmId, string crmName);
+    Task LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName);
+    Task<CRMSyncItemInfo?> GetFormLeadSyncItem(BizFormItem bizFormItem, string crmName);
 }
