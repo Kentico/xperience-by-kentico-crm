@@ -29,12 +29,18 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
     private ILogger<DynamicsIntegrationGlobalEvents> logger = null!;
 
-    protected override void OnInit()
+    protected override void OnInit(ModuleInitParameters parameters)
     {
-        base.OnInit();
-
+        base.OnInit(parameters);
+        
+        var services = parameters.Services;
+        
+        logger = services.GetRequiredService<ILogger<DynamicsIntegrationGlobalEvents>>();
+        services.GetRequiredService<ICRMModuleInstaller>().Install(CRMType.Dynamics);
+        
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
+        
         logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
         Service.Resolve<ICRMModuleInstaller>().Install(CRMType.Dynamics);
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>

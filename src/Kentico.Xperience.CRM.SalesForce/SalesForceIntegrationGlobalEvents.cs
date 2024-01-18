@@ -29,14 +29,18 @@ internal class SalesForceIntegrationGlobalEvents : Module
     {
     }
 
-    protected override void OnInit()
+    protected override void OnInit(ModuleInitParameters parameters)
     {
         base.OnInit();
-
+        
+        var services = parameters.Services;
+        
+        logger = services.GetRequiredService<ILogger<SalesForceIntegrationGlobalEvents>>();
+        Service.Resolve<ICRMModuleInstaller>().Install(CRMType.SalesForce);
+        
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
-        logger = Service.Resolve<ILogger<SalesForceIntegrationGlobalEvents>>();
-        Service.Resolve<ICRMModuleInstaller>().Install(CRMType.SalesForce);
+        
         ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
         
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>

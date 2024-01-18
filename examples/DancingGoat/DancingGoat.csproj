@@ -32,4 +32,7 @@
     <PackageReference Include="kentico.xperience.imageprocessing" />
     <PackageReference Include="kentico.xperience.webapp" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Classes\KenticoCRMCommon\CRMIntegrationSettings\" />
+  </ItemGroup>
 </Project>
