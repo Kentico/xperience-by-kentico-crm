@@ -1,4 +1,6 @@
-﻿using CMS.DataEngine;
+﻿using System.Collections.Generic;
+
+using CMS.DataEngine;
 using CMS.DataProtection;
 
 namespace Samples.DancingGoat
@@ -16,19 +18,28 @@ namespace Samples.DancingGoat
         /// <returns><see cref="PersonalDataCollectorResult"/> containing personal data.</returns>
         public PersonalDataCollectorResult Collect(IEnumerable<BaseInfo> identities, string outputFormat)
         {
-            using var writer = CreateWriter(outputFormat);
-            var dataCollector = new SampleMemberDataCollectorCore(writer);
-            return new PersonalDataCollectorResult
+            using (var writer = CreateWriter(outputFormat))
             {
-                Text = dataCollector.CollectData(identities)
-            };
+                var dataCollector = new SampleMemberDataCollectorCore(writer);
+                return new PersonalDataCollectorResult
+                {
+                    Text = dataCollector.CollectData(identities)
+                };
+            }
         }
 
 
-        private IPersonalDataWriter CreateWriter(string outputFormat) => outputFormat.ToLowerInvariant() switch
+        private IPersonalDataWriter CreateWriter(string outputFormat)
         {
-            PersonalDataFormat.MACHINE_READABLE => new XmlPersonalDataWriter(),
-            _ => new HumanReadablePersonalDataWriter(),
-        };
+            switch (outputFormat.ToLowerInvariant())
+            {
+                case PersonalDataFormat.MACHINE_READABLE:
+                    return new XmlPersonalDataWriter();
+
+                case PersonalDataFormat.HUMAN_READABLE:
+                default:
+                    return new HumanReadablePersonalDataWriter();
+            }
+        }
     }
 }

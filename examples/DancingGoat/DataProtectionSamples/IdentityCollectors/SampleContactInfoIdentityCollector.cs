@@ -1,4 +1,7 @@
-﻿using CMS.ContactManagement;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using CMS.ContactManagement;
 using CMS.DataEngine;
 using CMS.DataProtection;
 
@@ -16,7 +19,10 @@ namespace Samples.DancingGoat
         /// Initializes a new instance of the <see cref="SampleContactInfoIdentityCollector"/> class.
         /// </summary>
         /// <param name="contactInfoProvider">Contact info provider.</param>
-        public SampleContactInfoIdentityCollector(IContactInfoProvider contactInfoProvider) => this.contactInfoProvider = contactInfoProvider;
+        public SampleContactInfoIdentityCollector(IContactInfoProvider contactInfoProvider)
+        {
+            this.contactInfoProvider = contactInfoProvider;
+        }
 
 
         /// <summary>
@@ -35,7 +41,7 @@ namespace Samples.DancingGoat
                 return;
             }
 
-            string email = dataSubjectIdentifiersFilter["email"] as string;
+            var email = dataSubjectIdentifiersFilter["email"] as string;
             if (string.IsNullOrWhiteSpace(email))
             {
                 return;

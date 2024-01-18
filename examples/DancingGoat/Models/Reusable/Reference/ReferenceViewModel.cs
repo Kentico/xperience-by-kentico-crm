@@ -1,4 +1,6 @@
-﻿namespace DancingGoat.Models
+﻿using System.Linq;
+
+namespace DancingGoat.Models
 {
     public record ReferenceViewModel(string Name, string Description, string Text, string ImageUrl, string ImageShortDescription)
     {
@@ -13,10 +15,10 @@
             }
 
             return new ReferenceViewModel(
-                reference.ReferenceName,
-                reference.ReferenceDescription,
-                reference.ReferenceText,
-                reference.ReferenceImage.FirstOrDefault()?.ImageFile.Url,
+                reference.ReferenceName, 
+                reference.ReferenceDescription, 
+                reference.ReferenceText, 
+                reference.ReferenceImage.FirstOrDefault()?.ImageFile.Url, 
                 reference.ReferenceImage.FirstOrDefault()?.ImageShortDescription
              );
         }

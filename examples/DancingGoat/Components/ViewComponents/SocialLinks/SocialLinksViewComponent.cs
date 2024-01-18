@@ -1,4 +1,7 @@
-﻿using DancingGoat.Models;
+﻿using System.Linq;
+using System.Threading.Tasks;
+
+using DancingGoat.Models;
 
 using Kentico.Content.Web.Mvc.Routing;
 
@@ -20,7 +23,7 @@ namespace DancingGoat.ViewComponents
 
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            string languageName = currentLanguageRetriever.Get();
+            var languageName = currentLanguageRetriever.Get();
 
             var socialLinks = await socialLinkRepository.GetSocialLinks(languageName, HttpContext.RequestAborted);
 

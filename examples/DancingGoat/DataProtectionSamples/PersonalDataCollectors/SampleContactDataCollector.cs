@@ -1,4 +1,6 @@
-﻿using CMS.Activities;
+﻿using System.Collections.Generic;
+
+using CMS.Activities;
 using CMS.ContactManagement;
 using CMS.DataEngine;
 using CMS.DataProtection;
@@ -58,20 +60,29 @@ namespace Samples.DancingGoat
         /// <returns><see cref="PersonalDataCollectorResult"/> containing personal data.</returns>
         public PersonalDataCollectorResult Collect(IEnumerable<BaseInfo> identities, string outputFormat)
         {
-            using var writer = CreateWriter(outputFormat);
-            var dataCollector = new SampleContactDataCollectorCore(writer, activityInfoProvider, countryInfoProvider, stateInfoProvider, consentAgreementInfoProvider,
-                accountContactInfoProvider, accountInfoProvider, bizFormInfoProvider);
-            return new PersonalDataCollectorResult
+            using (var writer = CreateWriter(outputFormat))
             {
-                Text = dataCollector.CollectData(identities)
-            };
+                var dataCollector = new SampleContactDataCollectorCore(writer, activityInfoProvider, countryInfoProvider, stateInfoProvider, consentAgreementInfoProvider,
+                    accountContactInfoProvider, accountInfoProvider, bizFormInfoProvider);
+                return new PersonalDataCollectorResult
+                {
+                    Text = dataCollector.CollectData(identities)
+                };
+            }
         }
 
 
-        private IPersonalDataWriter CreateWriter(string outputFormat) => outputFormat.ToLowerInvariant() switch
+        private IPersonalDataWriter CreateWriter(string outputFormat)
         {
-            PersonalDataFormat.MACHINE_READABLE => new XmlPersonalDataWriter(),
-            _ => new HumanReadablePersonalDataWriter(),
-        };
+            switch (outputFormat.ToLowerInvariant())
+            {
+                case PersonalDataFormat.MACHINE_READABLE:
+                    return new XmlPersonalDataWriter();
+
+                case PersonalDataFormat.HUMAN_READABLE:
+                default:
+                    return new HumanReadablePersonalDataWriter();
+            }
+        }
     }
 }

@@ -1,4 +1,10 @@
-﻿using CMS.ContentEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CMS.ContentEngine;
 using CMS.Helpers;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -14,12 +20,15 @@ namespace DancingGoat.Models
 
 
         public CafeRepository(
-            IWebsiteChannelContext websiteChannelContext,
-            IContentQueryExecutor executor,
-            IWebPageQueryResultMapper mapper,
-            IProgressiveCache cache,
+            IWebsiteChannelContext websiteChannelContext, 
+            IContentQueryExecutor executor, 
+            IWebPageQueryResultMapper mapper, 
+            IProgressiveCache cache, 
             ILinkedItemsDependencyAsyncRetriever linkedItemsDependencyRetriever)
-            : base(websiteChannelContext, executor, mapper, cache) => this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+            : base(websiteChannelContext, executor, mapper, cache)
+        {
+            this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+        }
 
         /// <summary>
         /// Returns an enumerable collection of company cafes ordered by a position in the content tree.
@@ -36,12 +45,15 @@ namespace DancingGoat.Models
         }
 
 
-        private static ContentItemQueryBuilder GetQueryBuilder(int count) => new ContentItemQueryBuilder()
+        private static ContentItemQueryBuilder GetQueryBuilder(int count)
+        {
+            return new ContentItemQueryBuilder()
                     .ForContentType(Cafe.CONTENT_TYPE_NAME,
                     config => config
                         .WithLinkedItems(1)
                         .TopN(count)
                         .Where(where => where.WhereTrue(nameof(Cafe.CafeIsCompanyCafe))));
+        }
 
 
         private async Task<ISet<string>> GetDependencyCacheKeys(IEnumerable<Cafe> cafes, CancellationToken cancellationToken)

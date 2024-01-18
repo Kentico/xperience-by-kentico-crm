@@ -1,4 +1,7 @@
-﻿using DancingGoat.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using DancingGoat.Models;
 
 namespace DancingGoat.Widgets
 {
@@ -21,7 +24,7 @@ namespace DancingGoat.Widgets
         public static ProductCardListViewModel GetViewModel(IEnumerable<Coffee> products)
         {
             var productModels = new List<ProductCardViewModel>();
-
+            
             foreach (var product in products.Where(product => product != null))
             {
                 var productModel = ProductCardViewModel.GetViewModel(product);

@@ -1,4 +1,8 @@
-﻿using CMS.Activities;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using CMS.Activities;
 using CMS.ContactManagement;
 using CMS.DataEngine;
 using CMS.DataProtection;
@@ -23,7 +27,7 @@ namespace Samples.DancingGoat
         /// <remarks>
         /// GUIDs are used to select only specific forms on the Dancing Goat sample sites.
         /// </remarks>
-        private readonly Dictionary<Guid, string> dancingGoatForms = new()
+        private readonly Dictionary<Guid, string> dancingGoatForms = new Dictionary<Guid, string>
         {
             // DancingGoatCoreContactUsNew
             { new Guid("0081DC2E-47F4-4ACD-80AE-FE39612F379C"), "UserEmail" },

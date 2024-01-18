@@ -1,9 +1,16 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 using CMS.Core;
+using CMS.DataEngine;
+using CMS.Websites;
+using CMS.Websites.Routing;
 
 using DancingGoat.Models;
 
+using Kentico.Content.Web.Mvc.Routing;
 using Kentico.Membership;
 
 using Microsoft.AspNetCore.Authorization;
@@ -19,33 +26,49 @@ namespace DancingGoat.Controllers
     {
         private readonly IStringLocalizer<SharedResources> localizer;
         private readonly IEventLogService eventLogService;
+        private readonly IInfoProvider<WebsiteChannelInfo> websiteChannelProvider;
+        private readonly IWebPageUrlRetriever webPageUrlRetriever;
+        private readonly IWebsiteChannelContext websiteChannelContext;
+        private readonly IPreferredLanguageRetriever currentLanguageRetriever;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly SignInManager<ApplicationUser> signInManager;
 
 
-        public AccountController(UserManager<ApplicationUser> userManager,
-                                 SignInManager<ApplicationUser> signInManager,
-                                 IStringLocalizer<SharedResources> localizer,
-                                 IEventLogService eventLogService)
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IStringLocalizer<SharedResources> localizer,
+            IEventLogService eventLogService,
+            IInfoProvider<WebsiteChannelInfo> websiteChannelProvider,
+            IWebPageUrlRetriever webPageUrlRetriever,
+            IWebsiteChannelContext websiteChannelContext,
+            IPreferredLanguageRetriever preferredLanguageRetriever)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.localizer = localizer;
             this.eventLogService = eventLogService;
+            this.websiteChannelProvider = websiteChannelProvider;
+            this.webPageUrlRetriever = webPageUrlRetriever;
+            this.websiteChannelContext = websiteChannelContext;
+            this.currentLanguageRetriever = preferredLanguageRetriever;
         }
 
 
         // GET: Account/Login
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult Login() => View();
+        public ActionResult Login()
+        {
+            return View();
+        }
 
 
         // POST: Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<ActionResult> Login(LoginViewModel model, string returnUrl, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -65,14 +88,13 @@ namespace DancingGoat.Controllers
 
             if (signInResult.Succeeded)
             {
-                string decodedReturnUrl = WebUtility.UrlDecode(returnUrl);
+                var decodedReturnUrl = WebUtility.UrlDecode(returnUrl);
                 if (!string.IsNullOrEmpty(decodedReturnUrl) && Url.IsLocalUrl(decodedReturnUrl))
                 {
                     return Redirect(decodedReturnUrl);
                 }
 
-                // There should be redirect to home page URL which cannot be obtained right now.
-                return Redirect("/");
+                return Redirect(await GetHomeWebPageUrl(cancellationToken));
             }
 
             ModelState.AddModelError(string.Empty, localizer["Your sign-in attempt was not successful. Please try again."].ToString());
@@ -85,22 +107,24 @@ namespace DancingGoat.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Logout()
+        public async Task<ActionResult> Logout(CancellationToken cancellationToken = default)
         {
-            signInManager.SignOutAsync();
-            // There should be redirect to home page URL which cannot be obtained right now.
-            return Redirect("/");
+            await signInManager.SignOutAsync();
+            return Redirect(await GetHomeWebPageUrl(cancellationToken));
         }
 
 
         // GET: Account/Register
-        public ActionResult Register() => View();
+        public ActionResult Register()
+        {
+            return View();
+        }
 
 
         // POST: Account/Register
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<ActionResult> Register(RegisterViewModel model, CancellationToken cancellationToken = default)
         {
             if (!ModelState.IsValid)
             {
@@ -132,7 +156,7 @@ namespace DancingGoat.Controllers
 
                 if (signInResult.Succeeded)
                 {
-                    return Redirect("/");
+                    return Redirect(await GetHomeWebPageUrl(cancellationToken));
                 }
             }
 
@@ -142,6 +166,34 @@ namespace DancingGoat.Controllers
             }
 
             return View(model);
+        }
+
+
+        private async Task<string> GetHomeWebPageUrl(CancellationToken cancellationToken)
+        {
+            var websiteChannelId = websiteChannelContext.WebsiteChannelID;
+            var websiteChannel = await websiteChannelProvider.GetAsync(websiteChannelId, cancellationToken);
+
+            if (websiteChannel == null)
+            {
+                return string.Empty;
+            }
+
+            var homePageUrl = await webPageUrlRetriever.Retrieve(
+                websiteChannel.WebsiteChannelHomePage, 
+                websiteChannelContext.WebsiteChannelName, 
+                currentLanguageRetriever.Get(), 
+                websiteChannelContext.IsPreview, 
+                cancellationToken
+            );
+
+            if (string.IsNullOrEmpty(homePageUrl?.RelativePath))
+            {
+                return "/";
+            }
+
+            return homePageUrl.RelativePath;
+
         }
     }
 }

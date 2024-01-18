@@ -1,4 +1,7 @@
-﻿using System.Data;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Xml;
 
 using CMS.Activities;
@@ -26,8 +29,7 @@ namespace Samples.DancingGoat
         private readonly IBizFormInfoProvider bizFormInfoProvider;
 
         // Lists store Tuples of database column names and their corresponding display names.
-        private readonly List<CollectedColumn> contactInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> contactInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ContactFirstName", "First name"),
             new CollectedColumn("ContactMiddleName", "Middle name"),
             new CollectedColumn("ContactLastName", "Last name"),
@@ -51,31 +53,27 @@ namespace Samples.DancingGoat
         };
 
 
-        private readonly List<CollectedColumn> consentAgreementInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> consentAgreementInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ConsentAgreementGuid", "GUID"),
             new CollectedColumn("ConsentAgreementRevoked", "Consent action"),
             new CollectedColumn("ConsentAgreementTime", "Performed on")
         };
 
 
-        private readonly List<CollectedColumn> consentInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> consentInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ConsentGUID", "GUID"),
             new CollectedColumn("ConsentDisplayName", "Consent name"),
             new CollectedColumn("ConsentContent", "Full text")
         };
 
 
-        private readonly List<CollectedColumn> consentArchiveInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> consentArchiveInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ConsentArchiveGUID", "GUID"),
             new CollectedColumn("ConsentArchiveContent", "Full text")
         };
 
 
-        private readonly List<CollectedColumn> activityInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> activityInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ActivityId", "ID"),
             new CollectedColumn("ActivityCreated", "Created"),
             new CollectedColumn("ActivityType", "Type"),
@@ -85,8 +83,7 @@ namespace Samples.DancingGoat
         };
 
 
-        private readonly List<CollectedColumn> accountInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> accountInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("AccountName", "Name"),
             new CollectedColumn("AccountAddress1", "Address"),
             new CollectedColumn("AccountAddress2", "Address 2"),
@@ -101,20 +98,17 @@ namespace Samples.DancingGoat
         };
 
 
-        private readonly List<CollectedColumn> countryInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> countryInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("CountryDisplayName", "Country")
         };
 
 
-        private readonly List<CollectedColumn> stateInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> stateInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("StateDisplayName", "State")
         };
 
 
-        private readonly List<CollectedColumn> contactGroupInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> contactGroupInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("ContactGroupGUID", "GUID"),
             new CollectedColumn("ContactGroupName", "Contact group name"),
             new CollectedColumn("ContactGroupDescription", "Contact group description")
@@ -157,7 +151,7 @@ namespace Samples.DancingGoat
 
         // Dancing Goat specific forms definitions
         // GUIDs are used to select only specific forms on the Dancing Goat sample site
-        private readonly Dictionary<Guid, FormDefinition> dancingGoatForms = new()
+        private readonly Dictionary<Guid, FormDefinition> dancingGoatForms = new Dictionary<Guid, FormDefinition>()
         {
             {
                 // BusinessCustomerRegistration
@@ -267,13 +261,17 @@ namespace Samples.DancingGoat
         {
             if (columnName.Equals("ContactGender", StringComparison.InvariantCultureIgnoreCase))
             {
-                int? gender = columnValue as int?;
-                return gender switch
+                var gender = columnValue as int?;
+                switch (gender)
                 {
-                    1 => "male",
-                    2 => "female",
-                    _ => "undefined",
-                };
+                    case 1:
+                        return "male";
+                    case 2:
+                        return "female";
+                    case 0:
+                    default:
+                        return "undefined";
+                }
             }
 
             return columnValue;
@@ -286,13 +284,13 @@ namespace Samples.DancingGoat
                 columnName.Equals("ConsentArchiveContent", StringComparison.InvariantCultureIgnoreCase))
             {
                 var consentXml = new XmlDocument();
-                consentXml.LoadXml((columnValue as string) ?? string.Empty);
+                consentXml.LoadXml((columnValue as string) ?? String.Empty);
 
                 // Select the first <FullText> node
                 var xmlNode = consentXml.SelectSingleNode("/ConsentContent/ConsentLanguageVersions/ConsentLanguageVersion/FullText");
 
                 // Strip HTML tags
-                string result = HTMLHelper.StripTags(xmlNode?.InnerText);
+                var result = HTMLHelper.StripTags(xmlNode?.InnerText);
 
                 return result;
             }
@@ -305,7 +303,7 @@ namespace Samples.DancingGoat
         {
             if (columnName.Equals("ConsentAgreementRevoked", StringComparison.InvariantCultureIgnoreCase))
             {
-                bool revoked = (bool)columnValue;
+                var revoked = (bool)columnValue;
 
                 return revoked ? "Revoked" : "Agreed";
             }
@@ -399,8 +397,8 @@ namespace Samples.DancingGoat
                 writer.WriteStartSection(ContactInfo.OBJECT_TYPE, "Contact");
                 writer.WriteBaseInfo(contactInfo, contactInfoColumns, TransformGenderValue);
 
-                int countryID = contactInfo.ContactCountryID;
-                int stateID = contactInfo.ContactStateID;
+                var countryID = contactInfo.ContactCountryID;
+                var stateID = contactInfo.ContactStateID;
                 if (countryID != 0)
                 {
                     writer.WriteBaseInfo(countryInfoProvider.Get(countryID), countryInfoColumns);
@@ -446,7 +444,8 @@ namespace Samples.DancingGoat
             {
                 var consentAgreementInfo = new ConsentAgreementInfo(row);
 
-                if (!consents.TryGetValue(consentAgreementInfo.ConsentAgreementConsentID, out var consentInfo))
+                ConsentInfo consentInfo;
+                if (!consents.TryGetValue(consentAgreementInfo.ConsentAgreementConsentID, out consentInfo))
                 {
                     consentInfo = new ConsentInfo(row);
                     consents.Add(consentAgreementInfo.ConsentAgreementConsentID, consentInfo);
@@ -481,7 +480,8 @@ namespace Samples.DancingGoat
         /// <param name="consentId">Consent ID.</param>
         private static List<ConsentAgreementInfo> GetRevocationsOfSameConsent(Dictionary<int, List<ConsentAgreementInfo>> consentRevocations, int consentId)
         {
-            if (!consentRevocations.TryGetValue(consentId, out var revocationsOfSameConsent))
+            List<ConsentAgreementInfo> revocationsOfSameConsent;
+            if (!consentRevocations.TryGetValue(consentId, out revocationsOfSameConsent))
             {
                 revocationsOfSameConsent = new List<ConsentAgreementInfo>();
                 consentRevocations.Add(consentId, revocationsOfSameConsent);
@@ -499,7 +499,8 @@ namespace Samples.DancingGoat
         /// <param name="consentHash">Consent hash.</param>
         private static List<ConsentAgreementInfo> GetAgreementsOfSameConsentContent(Dictionary<string, List<ConsentAgreementInfo>> consentContentAgreements, string consentHash)
         {
-            if (!consentContentAgreements.TryGetValue(consentHash, out var agreementsOfSameConsent))
+            List<ConsentAgreementInfo> agreementsOfSameConsent;
+            if (!consentContentAgreements.TryGetValue(consentHash, out agreementsOfSameConsent))
             {
                 agreementsOfSameConsent = new List<ConsentAgreementInfo>();
                 consentContentAgreements.Add(consentHash, agreementsOfSameConsent);
@@ -514,7 +515,10 @@ namespace Samples.DancingGoat
         /// </summary>
         /// <param name="consentAgreementInfo">Consent agreement.</param>
         /// <param name="consentInfo">Consent.</param>
-        private static bool IsAgreementOfDifferentConsentContent(ConsentAgreementInfo consentAgreementInfo, ConsentInfo consentInfo) => consentAgreementInfo.ConsentAgreementConsentHash != consentInfo.ConsentHash;
+        private static bool IsAgreementOfDifferentConsentContent(ConsentAgreementInfo consentAgreementInfo, ConsentInfo consentInfo)
+        {
+            return consentAgreementInfo.ConsentAgreementConsentHash != consentInfo.ConsentHash;
+        }
 
 
         /// <summary>
@@ -533,9 +537,11 @@ namespace Samples.DancingGoat
 
                 var consentInfo = consents[consentAgreement.ConsentAgreementConsentID];
 
-                consentContentArchives.TryGetValue(consentAgreement.ConsentAgreementConsentHash, out var consentArchiveInfo);
+                ConsentArchiveInfo consentArchiveInfo;
+                consentContentArchives.TryGetValue(consentAgreement.ConsentAgreementConsentHash, out consentArchiveInfo);
 
-                consentRevocations.TryGetValue(consentAgreement.ConsentAgreementConsentID, out var revocationsOfSameConsent);
+                List<ConsentAgreementInfo> revocationsOfSameConsent;
+                consentRevocations.TryGetValue(consentAgreement.ConsentAgreementConsentID, out revocationsOfSameConsent);
 
                 WriteConsent(consentInfo, consentArchiveInfo, agreementsOfSameConsentContent, revocationsOfSameConsent);
             }
@@ -655,8 +661,10 @@ namespace Samples.DancingGoat
 
             foreach (var accountInfo in accountInfos)
             {
-                countryInfos.TryGetValue(accountInfo.AccountCountryID, out var countryInfo);
-                stateInfos.TryGetValue(accountInfo.AccountStateID, out var stateInfo);
+                CountryInfo countryInfo;
+                StateInfo stateInfo;
+                countryInfos.TryGetValue(accountInfo.AccountCountryID, out countryInfo);
+                stateInfos.TryGetValue(accountInfo.AccountStateID, out stateInfo);
 
                 writer.WriteStartSection(AccountInfo.OBJECT_TYPE, "Account");
 

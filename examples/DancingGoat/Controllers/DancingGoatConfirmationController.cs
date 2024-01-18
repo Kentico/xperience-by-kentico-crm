@@ -1,4 +1,6 @@
-﻿using DancingGoat;
+﻿using System.Threading.Tasks;
+
+using DancingGoat;
 using DancingGoat.Controllers;
 using DancingGoat.Models;
 
@@ -27,8 +29,8 @@ namespace DancingGoat.Controllers
 
         public async Task<IActionResult> Index()
         {
-            int webPageItemId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
-            string languageName = currentLanguageRetriever.Get();
+            var webPageItemId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
+            var languageName = currentLanguageRetriever.Get();
 
             var confirmationPage = await confirmationPageRepository.GetConfirmationPage(webPageItemId, languageName, cancellationToken: HttpContext.RequestAborted);
 
