@@ -220,25 +220,26 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     
     private void InstallCRMIntegrationSettingsClass(ResourceInfo resourceInfo)
     {
-        var settingsCRM = DataClassInfoProvider.GetDataClassInfo("kenticocrmcommon.crmintegrationsettings");
+        var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
         if (settingsCRM is not null)
         {
             return;
         }
 
-        settingsCRM = DataClassInfo.New("kenticocrmcommon.crmintegrationsettings");
+        settingsCRM = DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
 
-        settingsCRM.ClassName = "KenticoCRMCommon.CRMIntegrationSettings";
-        settingsCRM.ClassTableName = "KenticoCRMCommon_CRMIntegrationSettings";
+        settingsCRM.ClassName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName;
+        settingsCRM.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         settingsCRM.ClassDisplayName = "CRM integration settings";
         settingsCRM.ClassResourceID = resourceInfo.ResourceID;
         settingsCRM.ClassType = ClassType.OTHER;
 
-        var formInfo = FormHelper.GetBasicFormDefinition("CRMIntegrationSettingsItemID");
+        var formInfo =
+            FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
         
         var formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsFormsEnabled",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsFormsEnabled),
             Caption = "Forms enabled",
             Visible = true,
             DataType = "boolean",
@@ -248,7 +249,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsContactsEnabled",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsEnabled),
             Caption = "Contacts enabled",
             Visible = false,
             DataType = "boolean",
@@ -258,7 +259,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsIgnoreExistingRecords",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsIgnoreExistingRecords),
             Caption = "Ignore existing records",
             Visible = true,
             DataType = "boolean",
@@ -268,7 +269,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsUrl",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsUrl),
             Caption = "CRM URL",
             Visible = true,
             Precision = 0,
@@ -280,7 +281,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsClientId",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientId),
             Caption = "Client ID",
             Visible = true,
             Precision = 0,
@@ -292,7 +293,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsClientSecret",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientSecret),
             Caption = "Client Secret",
             Visible = true,
             Precision = 0,
@@ -304,7 +305,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "CRMIntegrationSettingsCRMType",
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsCRMName),
             Visible = false,
             Precision = 0,
             Size = 50,

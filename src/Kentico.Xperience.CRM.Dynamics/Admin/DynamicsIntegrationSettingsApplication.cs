@@ -13,7 +13,7 @@ using Kentico.Xperience.CRM.Dynamics.Admin;
 
 namespace Kentico.Xperience.CRM.Dynamics.Admin;
 
-public class DynamicsIntegrationSettingsApplication : ApplicationPage
+internal class DynamicsIntegrationSettingsApplication : ApplicationPage
 {
     public const string IDENTIFIER = "Kentico.Xperience.CRM.Dynamics.IntegrationSettings";
 }

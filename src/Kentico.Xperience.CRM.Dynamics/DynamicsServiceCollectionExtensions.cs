@@ -2,6 +2,7 @@
 using CMS.Helpers;
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +35,7 @@ public static class DynamicsServiceCollectionExtensions
         if (configuration is null)
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings);
         }
         else
         {
@@ -69,16 +70,15 @@ public static class DynamicsServiceCollectionExtensions
         return new ServiceClient(connectionString, logger);
     }
 
-    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ISettingsService settingsService)
+    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ICRMSettingsService settingsService)
     {
-        settings.FormLeadsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsFormLeadsEnabled], false);
+        var settingsInfo = settingsService.GetSettings(CRMType.Dynamics);
+        settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
 
-        settings.IgnoreExistingRecords = 
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsIgnoreExistingRecords], false);
+        settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 
-        settings.ApiConfig.DynamicsUrl = settingsService[SettingKeys.DynamicsUrl];
-        settings.ApiConfig.ClientId = settingsService[SettingKeys.DynamicsClientId];
-        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.DynamicsClientSecret];
+        settings.ApiConfig.DynamicsUrl = settingsInfo?.CRMIntegrationSettingsUrl;
+        settings.ApiConfig.ClientId = settingsInfo?.CRMIntegrationSettingsClientId;
+        settings.ApiConfig.ClientSecret = settingsInfo?.CRMIntegrationSettingsClientSecret;
     }
 }

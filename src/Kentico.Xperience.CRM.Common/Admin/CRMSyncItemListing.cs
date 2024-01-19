@@ -14,7 +14,7 @@ namespace Kentico.Xperience.CRM.Common.Admin;
 /// <summary>
 /// Admin listing page for displaying synced items in CMS for selected form
 /// </summary>
-public class CRMSyncItemListing : ListingPage
+internal class CRMSyncItemListing : ListingPage
 {
     private BizFormInfo? editedForm;
     private DataClassInfo? dataClassInfo;
@@ -23,7 +23,7 @@ public class CRMSyncItemListing : ListingPage
     /// <summary>ID of the edited form.</summary>
     [PageParameter(typeof(IntPageModelBinder), typeof(FormEditSection))]
     public int FormId { get; set; }
-
+    
     private BizFormInfo EditedForm =>
         this.editedForm ??= AbstractInfo<BizFormInfo, IBizFormInfoProvider>.Provider.Get(FormId);
 
@@ -42,6 +42,6 @@ public class CRMSyncItemListing : ListingPage
             q.WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityClass), DataClassInfo.ClassName)
                 .OrderByDescending(nameof(CRMSyncItemInfo.CRMSyncItemLastModified)));
 
-        return Task.CompletedTask;
+        return base.ConfigurePage();
     }
 }

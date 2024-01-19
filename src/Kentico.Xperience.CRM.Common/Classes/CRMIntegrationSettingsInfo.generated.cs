@@ -113,10 +113,10 @@ namespace Kentico.Xperience.CRM.Common.Classes
         /// CRM integration settings CRM type.
         /// </summary>
         [DatabaseField]
-        public virtual string CRMIntegrationSettingsCRMType
+        public virtual string CRMIntegrationSettingsCRMName
         {
-            get => ValidationHelper.GetString(GetValue(nameof(CRMIntegrationSettingsCRMType)), String.Empty);
-            set => SetValue(nameof(CRMIntegrationSettingsCRMType), value);
+            get => ValidationHelper.GetString(GetValue(nameof(CRMIntegrationSettingsCRMName)), String.Empty);
+            set => SetValue(nameof(CRMIntegrationSettingsCRMName), value);
         }
 
 

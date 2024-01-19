@@ -1,8 +1,8 @@
 ﻿using CMS.Core;
-using CMS.Helpers;
 using Duende.AccessTokenManagement;
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +37,7 @@ public static class SalesForceServiceCollectionsExtensions
         if (configuration is null)
         {
             serviceCollection.AddOptions<SalesForceIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings);
         }
         else
         {
@@ -90,17 +90,15 @@ public static class SalesForceServiceCollectionsExtensions
             .AddClientCredentialsTokenHandler("salesforce.api.client");
     }
 
-    private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings,
-        ISettingsService settingsService)
+    private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings, ICRMSettingsService settingsService)
     {
-        settings.FormLeadsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceFormLeadsEnabled], false);
+        var settingsInfo = settingsService.GetSettings(CRMType.SalesForce);
+        settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
 
-        settings.IgnoreExistingRecords = 
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceIgnoreExistingRecords], false);
+        settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 
-        settings.ApiConfig.SalesForceUrl = settingsService[SettingKeys.SalesForceUrl];
-        settings.ApiConfig.ClientId = settingsService[SettingKeys.SalesForceClientId];
-        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.SalesForceClientSecret];
+        settings.ApiConfig.SalesForceUrl = settingsInfo?.CRMIntegrationSettingsUrl;
+        settings.ApiConfig.ClientId = settingsInfo?.CRMIntegrationSettingsClientId;
+        settings.ApiConfig.ClientSecret = settingsInfo?.CRMIntegrationSettingsClientSecret;
     }
 }
