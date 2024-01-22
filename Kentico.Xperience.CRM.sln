@@ -37,6 +37,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{62
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DancingGoat", "examples\DancingGoat\DancingGoat.csproj", "{A512E2C5-03C4-4707-800F-4BC6AA4C875C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{DDCE1F24-20E6-4AF4-8D37-E90B2F6C6A2C}"
+	ProjectSection(SolutionItems) = preProject
+		docs\Usage-Guide.md = docs\Usage-Guide.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

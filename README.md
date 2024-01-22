@@ -11,8 +11,8 @@ Xperience by Kentico integrations with Microsoft Dynamics and Salesforce Sales C
 The versions of this library are supported by the following versions of Xperience by Kentico
 
 | Xperience Version | Library Version |
-| ----------------- | --------------- |
-| >= 27.0.1         | 1.x             |
+|-------------------|-----------------|
+| >= 28.0.0         | 0.9             |
 
 ### Dependencies
 
@@ -37,6 +37,10 @@ Add the package to your application using the .NET CLI
 dotnet add package Kentico.Xperience.CRM.SalesForce
 ```
 
+## Screenshots
+
+![Dynamics settings](/images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
+
 ## Quick Start
 
 1. Fill CRM (Dynamics/SalesForce) settings (in CMS or appsettings.json)
@@ -48,52 +52,7 @@ dotnet add package Kentico.Xperience.CRM.SalesForce
 There are 2 options how to fill settings:
 - use CMS settings: CRM integration settings category is created after first run.
 This is primary option when you don't specify IConfiguration section during services registration. 
-- use application settings: appsettings.json (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
-
-Integration uses OAuth client credentials scheme, so you have to setup your CRM environment to enable for using API with
-client id and client secret:
-- [Dynamics](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth)
-- [SalesForce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
-
-#### Dynamics settings
-Fill settings in CMS or use this appsettings:
-```json
-{
-  "CMSDynamicsCRMIntegration": {
-    "FormLeadsEnabled": true,
-    "IgnoreExistingRecords": false,
-    "ApiConfig": {
-      "DynamicsUrl": "",
-      "ClientId": "",
-      "ClientSecret": ""
-    }
-  }
-}
-```
-
-#### SalesForce settings
-Fill settings in CMS or use this app settings:
-```json
-{
-  "CMSSalesForceCRMIntegration": {
-    "FormLeadsEnabled": true,
-    "IgnoreExistingRecords": false,
-    "ApiConfig": {
-      "SalesForceUrl": "",
-      "ClientId": "",
-      "ClientSecret": ""
-    }
-  }
-}
-```
-
-You can also set specific API version for SalesForce REST API (default version is 59).
-
-```json
-{
-  "CMSSalesForceCRMIntegration:ApiConfig:ApiVersion": 59
-}
-```
+- use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 
 ### Forms data - Leads integration
 
@@ -109,32 +68,6 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
  // ...
  builder.Services.AddDynamicsFormLeadsIntegration(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
-```
-
-Same example but with using app setting in code (**CMS setting are ignored!**):
-
-```csharp
- // Program.cs
-
- var builder = WebApplication.CreateBuilder(args);
-
- // ...
- builder.Services.AddDynamicsFormLeadsIntegration(builder =>
-    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME), 
-    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
-```
-
-Example how to add form with auto mapping combined with custom mapping and custom validation:
-```csharp
- // Program.cs
-
- var builder = WebApplication.CreateBuilder(args);
-
- // ...
- builder.Services.AddDynamicsFormLeadsIntegration(builder =>
-    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
-            .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.EMailAddress1))
-           .AddCustomValidation<CustomFormLeadsValidationService>());
 ```
 
 Example how to add form with own mapping:
@@ -180,32 +113,6 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
-Same example but with using app setting in code (**CMS setting are ignored!**):
-
-```csharp
- // Program.cs
-
- var builder = WebApplication.CreateBuilder(args);
-
- // ...
- builder.Services.AddSalesForceFormLeadsIntegration(builder =>
-    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME),
-    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName));
-```
-
-Example how to add form with auto mapping combined with custom mapping and custom validation:
-```csharp
- // Program.cs
-
- var builder = WebApplication.CreateBuilder(args);
-
- // ...
- builder.Services.AddSalesForceFormLeadsIntegration(builder =>
-    builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
-            .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
-        .AddCustomValidation<CustomFormLeadsValidationService>());
-```
-
 Example how to add form with own mapping:
 ```csharp
  // Program.cs
@@ -235,6 +142,19 @@ Use this option when you need complex logic and need to use another service via 
  builder.Services.AddSalesForceFormLeadsIntegration(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```
+
+## Full Instructions
+
+View the [Usage Guide](./docs/Usage-Guide.md) for more detailed instructions.
+
+## Projects
+
+| Project                              | Description                                                                              |
+|--------------------------------------|------------------------------------------------------------------------------------------|
+| src/Kentico.Xperience.CRM.Dynamics   | Xperience by Kentico Dynamics Sales CRM integration library                              |
+| src/Kentico.Xperience.CRM.SalesForce | Xperience by Kentico SalesForce CRM integration library                                  |
+| src/Kentico.Xperience.CRM.Common     | Xperience by Kentico common integration functionality (used by Dynamics/SalesForce libs) |
+| examples/DancingGoat                 | Example project to showcase CRM integration                                              |
 
 ## Contributing
 
