@@ -7,12 +7,12 @@ using Kentico.Xperience.CRM.SalesForce.Admin;
 using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.IFormItemCollectionProvider;
 
 [assembly: UIPage(
-    parentType: typeof(SalesForceIntegrationSettingApplication),
-    slug: "edit",
+    parentType: typeof(CRMIntegrationSettingsApplication),
+    slug: "salesforce-settings-edit",
     uiPageType: typeof(SalesForceIntegrationSettingsEdit),
-    name: "Edit settings",
+    name: "Salesforce CRM",
     templateName: TemplateNames.EDIT,
-    order: UIPageOrder.First)]
+    order: 200)]
 
 namespace Kentico.Xperience.CRM.SalesForce.Admin;
 
