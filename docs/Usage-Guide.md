@@ -16,6 +16,17 @@ client id and client secret:
 - [Dynamics](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth)
 - [SalesForce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
 
+### CRM settings description
+
+| Setting                 | Description                                                                          |
+|-------------------------|--------------------------------------------------------------------------------------|
+| Forms enabled           | If enabled form submissions for registered forms are sent to CRM Leads               |
+| Contacts enabled (TBD)  | If enabled online marketing contacts are synced to CRM Leads or Contacts             |
+| Ignore existing records | If enabled then no updates in CRM will be performed on records with same ID or email |
+| CRM URL                 | Base Dynamics / SalesForce instance URL                                              |
+| Client ID               | Client ID for OAuth 2.0 client credentials scheme                                    |
+| Client secret           | Client secret for OAuth 2.0 client credentials scheme                                |
+
 ### Dynamics settings
 Fill settings in CMS or use this appsettings:
 ```json

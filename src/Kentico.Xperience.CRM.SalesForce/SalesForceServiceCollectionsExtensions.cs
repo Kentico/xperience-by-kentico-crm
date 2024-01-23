@@ -1,5 +1,4 @@
-﻿using CMS.Core;
-using Duende.AccessTokenManagement;
+﻿using Duende.AccessTokenManagement;
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Services;

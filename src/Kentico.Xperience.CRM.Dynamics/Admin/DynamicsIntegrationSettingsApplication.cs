@@ -3,12 +3,12 @@ using Kentico.Xperience.Admin.Base.UIPages;
 using Kentico.Xperience.CRM.Dynamics.Admin;
 
 [assembly: UIApplication(
-    identifier: DynamicsIntegrationSettingsApplication.IDENTIFIER, 
+    identifier: DynamicsIntegrationSettingsApplication.IDENTIFIER,
     type: typeof(DynamicsIntegrationSettingsApplication),
     slug: "dynamics-settings",
-    name: "Dynamics CRM Integration Settings", 
+    name: "Dynamics CRM Integration Settings",
     category: BaseApplicationCategories.CONFIGURATION,
-    icon: Icons.IntegrationScheme, 
+    icon: Icons.IntegrationScheme,
     templateName: TemplateNames.SECTION_LAYOUT)]
 
 namespace Kentico.Xperience.CRM.Dynamics.Admin;

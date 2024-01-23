@@ -1,5 +1,4 @@
-﻿using CMS.Base;
-using CMS.DataEngine;
+﻿using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.Modules;
 using Kentico.Xperience.CRM.Common.Classes;
@@ -131,7 +130,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         formInfo.AddFormItem(formItem);
 
         failedSyncItemClass.ClassFormDefinition = formInfo.GetXmlDefinition();
-
+        
         DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
     }
 
