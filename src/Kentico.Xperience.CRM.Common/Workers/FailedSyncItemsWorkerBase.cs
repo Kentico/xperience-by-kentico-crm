@@ -40,7 +40,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
         try
         {
             using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
-            
+
             var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
             if (!settings.FormLeadsEnabled) return;
 
@@ -52,7 +52,7 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
             {
                 leadsIntegrationService ??= serviceScope.ServiceProvider
                     .GetRequiredService<TService>();
-                
+
                 var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
                 if (bizFormItem is null)
                 {

@@ -4,7 +4,7 @@
     string styleAttribute = null;
     if (!string.IsNullOrEmpty(Model.BackgroundImageUrl))
     {
-        styleAttribute = $"style=\"background-image: url('{Url.Content(Model.BackgroundImageUrl)}');\"";
+        styleAttribute = $"style=\"background-image: url('{Url.Content(HTMLHelper.HTMLEncode(Model.BackgroundImageUrl))}');\"";
     }
 }
 

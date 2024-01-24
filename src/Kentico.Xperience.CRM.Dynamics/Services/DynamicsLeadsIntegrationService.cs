@@ -29,7 +29,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     private readonly IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> formsConverters;
 
     public DynamicsLeadsIntegrationService(
-        DynamicsBizFormsMappingConfiguration bizFormMappingConfig, 
+        DynamicsBizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
         ServiceClient serviceClient,
         ILogger<DynamicsLeadsIntegrationService> logger,
@@ -47,7 +47,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         this.settings = settings;
         this.formsConverters = formsConverters;
     }
-    
+
     /// <summary>
     /// Validates BizForm item, then get specific mapping and finally specific implementation is called
     /// from inherited service
@@ -57,7 +57,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     {
         var leadConverters = Enumerable.Empty<ICRMTypeConverter<BizFormItem, Lead>>();
         var leadMapping = Enumerable.Empty<BizFormFieldMapping>();
-        
+
         if (bizFormMappingConfig.FormsConverters.TryGetValue(bizFormItem.BizFormClassName.ToLowerInvariant(),
                 out var formConverters))
         {
@@ -89,7 +89,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         try
         {
             var syncItem = await syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Dynamics);
-            
+
             if (syncItem is null)
             {
                 await UpdateByEmailOrCreate(bizFormItem, fieldMappings, converters);
@@ -134,8 +134,8 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     {
         Lead? existingLead = null;
         var tmpLead = new Lead();
-        MapLead(bizFormItem, tmpLead, fieldMappings, converters);
-        
+        await MapLead(bizFormItem, tmpLead, fieldMappings, converters);
+
         if (!string.IsNullOrWhiteSpace(tmpLead.EMailAddress1))
         {
             existingLead = await GetLeadByEmail(tmpLead.EMailAddress1);
@@ -160,7 +160,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         var leadEntity = new Lead();
-        MapLead(bizFormItem, leadEntity, fieldMappings, converters);
+        await MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
         if (leadEntity.Subject is null)
         {
@@ -168,16 +168,16 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         }
 
         var leadId = await serviceClient.CreateAsync(leadEntity);
-        
+
         await syncItemService.LogFormLeadCreateItem(bizFormItem, leadId.ToString(), CRMType.Dynamics);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
 
     private async Task UpdateLeadAsync(Lead leadEntity, BizFormItem bizFormItem,
-        IEnumerable<BizFormFieldMapping> fieldMappings,  IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
+        IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
-        MapLead(bizFormItem, leadEntity, fieldMappings, converters);
+        await MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
         if (leadEntity.Subject is null)
         {
@@ -185,7 +185,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         }
 
         await serviceClient.UpdateAsync(leadEntity);
-        
+
         await syncItemService.LogFormLeadUpdateItem(bizFormItem, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
         failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
@@ -198,7 +198,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         {
             await converter.Convert(bizFormItem, leadEntity);
         }
-        
+
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.FormFieldMapping.MapFormField(bizFormItem);
@@ -206,7 +206,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
             _ = fieldMapping.CRMFieldMapping switch
             {
                 CRMFieldNameMapping m => leadEntity[m.CrmFieldName] = formFieldValue,
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
                     fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }

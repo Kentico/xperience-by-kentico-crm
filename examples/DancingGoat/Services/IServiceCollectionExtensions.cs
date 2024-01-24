@@ -1,6 +1,8 @@
 ﻿using DancingGoat.Models;
 using DancingGoat.ViewComponents;
 
+using Microsoft.Extensions.DependencyInjection;
+
 namespace DancingGoat
 {
     public static class IServiceCollectionExtensions
@@ -12,7 +14,7 @@ namespace DancingGoat
         {
             AddViewComponentServices(services);
             AddRepositories(services);
-
+            
             services.AddSingleton<ICurrentWebsiteChannelPrimaryLanguageRetriever, CurrentWebsiteChannelPrimaryLanguageRetriever>();
         }
 
@@ -32,6 +34,9 @@ namespace DancingGoat
         }
 
 
-        private static void AddViewComponentServices(IServiceCollection services) => services.AddSingleton<NavigationService>();
+        private static void AddViewComponentServices(IServiceCollection services)
+        {
+            services.AddSingleton<NavigationService>();
+        }
     }
 }

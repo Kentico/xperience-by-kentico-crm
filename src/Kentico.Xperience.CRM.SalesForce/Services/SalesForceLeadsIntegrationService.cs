@@ -130,7 +130,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         string? existingLeadId = null;
 
         var tmpLead = new LeadSObject();
-        MapLead(bizFormItem, tmpLead, fieldMappings, converters);
+        await MapLead(bizFormItem, tmpLead, fieldMappings, converters);
 
         if (!string.IsNullOrWhiteSpace(tmpLead.Email))
         {
@@ -156,7 +156,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         IEnumerable<ICRMTypeConverter<BizFormItem, LeadSObject>> converters)
     {
         var lead = new LeadSObject();
-        MapLead(bizFormItem, lead, fieldMappings, converters);
+        await MapLead(bizFormItem, lead, fieldMappings, converters);
 
         lead.LeadSource ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
         lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
@@ -173,7 +173,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         IEnumerable<ICRMTypeConverter<BizFormItem, LeadSObject>> converters)
     {
         var lead = new LeadSObject();
-        MapLead(bizFormItem, lead, fieldMappings, converters);
+        await MapLead(bizFormItem, lead, fieldMappings, converters);
 
         lead.LeadSource ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
 
@@ -191,7 +191,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         {
             await converter.Convert(bizFormItem, lead);
         }
-        
+
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.FormFieldMapping.MapFormField(bizFormItem);
@@ -199,7 +199,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
             {
                 CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
                 CRMFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
                     fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }

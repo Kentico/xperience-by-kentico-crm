@@ -1,7 +1,6 @@
-﻿using CMS.Core;
-using CMS.Helpers;
-using Kentico.Xperience.CRM.Common;
+﻿using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
@@ -24,7 +23,7 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="formsConfig"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMDynamics(this IServiceCollection serviceCollection,
         Action<DynamicsBizFormsMappingBuilder> formsConfig,
         IConfiguration? configuration = null)
     {
@@ -36,7 +35,7 @@ public static class DynamicsServiceCollectionExtensions
         if (configuration is null)
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings);
         }
         else
         {
@@ -69,17 +68,18 @@ public static class DynamicsServiceCollectionExtensions
 
         serviceCollection.TryAddSingleton(
             _ => mappingBuilder.Build());
-
+        
         if (configuration is null)
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings)
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings)
                 .PostConfigure(s => s.ContactType = crmType);
         }
         else
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
                 .PostConfigure(s => s.ContactType = crmType);
+
         }
         
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
@@ -111,19 +111,16 @@ public static class DynamicsServiceCollectionExtensions
         return new ServiceClient(connectionString, logger);
     }
 
-    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ISettingsService settingsService)
+    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ICRMSettingsService settingsService)
     {
-        settings.FormLeadsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsFormLeadsEnabled], false);
+        var settingsInfo = settingsService.GetSettings(CRMType.Dynamics);
+        settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
+        settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
         
-        settings.ContactsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceContactsEnabled], false);
+        settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 
-        settings.IgnoreExistingRecords = 
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.DynamicsIgnoreExistingRecords], false);
-
-        settings.ApiConfig.DynamicsUrl = settingsService[SettingKeys.DynamicsUrl];
-        settings.ApiConfig.ClientId = settingsService[SettingKeys.DynamicsClientId];
-        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.DynamicsClientSecret];
+        settings.ApiConfig.DynamicsUrl = settingsInfo?.CRMIntegrationSettingsUrl;
+        settings.ApiConfig.ClientId = settingsInfo?.CRMIntegrationSettingsClientId;
+        settings.ApiConfig.ClientSecret = settingsInfo?.CRMIntegrationSettingsClientSecret;
     }
 }

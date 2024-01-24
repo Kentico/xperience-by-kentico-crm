@@ -1,4 +1,7 @@
-﻿using CMS.DataEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using CMS.DataEngine;
 using CMS.Membership;
 
 namespace Samples.DancingGoat
@@ -9,8 +12,7 @@ namespace Samples.DancingGoat
     internal class SampleMemberDataCollectorCore
     {
         // Lists store Tuples of database column names and their corresponding display names.
-        private readonly List<CollectedColumn> memberInfoColumns = new()
-        {
+        private readonly List<CollectedColumn> memberInfoColumns = new List<CollectedColumn> {
             new CollectedColumn("MemberName", "Name"),
             new CollectedColumn("MemberIsExternal", "Is external"),
             new CollectedColumn("MemberEmail", "Email"),
@@ -27,7 +29,10 @@ namespace Samples.DancingGoat
         /// Constructs a new instance of the <see cref="SampleMemberDataCollectorCore"/>.
         /// </summary>
         /// <param name="writer">Writer to format output data.</param>
-        public SampleMemberDataCollectorCore(IPersonalDataWriter writer) => this.writer = writer;
+        public SampleMemberDataCollectorCore(IPersonalDataWriter writer)
+        {
+            this.writer = writer;
+        }
 
 
         /// <summary>

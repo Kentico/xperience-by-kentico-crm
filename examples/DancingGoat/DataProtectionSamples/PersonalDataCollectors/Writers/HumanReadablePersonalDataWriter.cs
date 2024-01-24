@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 using CMS.Base;
@@ -11,7 +13,7 @@ namespace Samples.DancingGoat
     /// </summary>
     internal sealed class HumanReadablePersonalDataWriter : IPersonalDataWriter
     {
-        private static readonly string DECIMAL_PRECISION = new('#', 26);
+        private static readonly string DECIMAL_PRECISION = new string('#', 26);
         private static readonly string DECIMAL_FORMAT = "{0:0.00" + DECIMAL_PRECISION + "}";
 
         private readonly StringBuilder stringBuilder;
@@ -54,7 +56,10 @@ namespace Samples.DancingGoat
         /// <summary>
         /// Writes appropriate indentation.
         /// </summary>
-        private void Indent() => stringBuilder.Append('\t', indentationLevel);
+        private void Indent()
+        {
+            stringBuilder.Append('\t', indentationLevel);
+        }
 
 
         /// <summary>
@@ -76,8 +81,8 @@ namespace Samples.DancingGoat
 
             foreach (var column in columns)
             {
-                string columnName = column.Name;
-                string columnDisplayName = column.DisplayName;
+                var columnName = column.Name;
+                var columnDisplayName = column.DisplayName;
                 if (string.IsNullOrWhiteSpace(columnDisplayName) || columnName.Equals(baseInfo.TypeInfo.IDColumn, StringComparison.Ordinal) || columnName.Equals(baseInfo.TypeInfo.GUIDColumn, StringComparison.Ordinal))
                 {
                     continue;
@@ -159,7 +164,10 @@ namespace Samples.DancingGoat
         /// Gets result of previous write calls.
         /// </summary>
         /// <returns>String containing formatted data.</returns>
-        public string GetResult() => stringBuilder.ToString();
+        public string GetResult()
+        {
+            return stringBuilder.ToString();
+        }
 
 
         /// <summary>
@@ -170,7 +178,6 @@ namespace Samples.DancingGoat
         /// </remarks>
         public void Dispose()
         {
-            // Method intentionally left empty.
         }
     }
 }

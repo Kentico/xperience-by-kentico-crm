@@ -1,5 +1,4 @@
-﻿using CMS.Base;
-using CMS.DataEngine;
+﻿using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.Modules;
 using Kentico.Xperience.CRM.Common.Classes;
@@ -23,11 +22,11 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         this.resourceInfoProvider = resourceInfoProvider;
     }
 
-    public void Install(string crmtype)
+    public void Install(string crmType)
     {
         var resourceInfo = InstallModule();
         InstallModuleClasses(resourceInfo);
-        InstallSettings(resourceInfo, crmtype);
+        InstallCRMIntegrationSettingsClass(resourceInfo);
     }
 
     private ResourceInfo InstallModule()
@@ -116,7 +115,10 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(CRMSyncItemInfo.CRMSyncItemCreatedByKentico), Visible = false, DataType = "boolean", Enabled = true
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemCreatedByKentico),
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
@@ -218,148 +220,105 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
     }
 
-    private void InstallSettings(ResourceInfo resourceInfo, string crmType)
+    private void InstallCRMIntegrationSettingsClass(ResourceInfo resourceInfo)
     {
-        var crmIntegrations = SettingsCategoryInfo.Provider.Get("kenticocrmcommon.crmintegrations");
-        if (crmIntegrations is null)
+        var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
+        if (settingsCRM is not null)
         {
-            var rootSettings = SettingsCategoryInfo.Provider.Get("CMS.Settings");
-            if (rootSettings is null)
-                throw new InvalidOperationException("Category 'CMS.Settings' root not found");
-
-            crmIntegrations = new SettingsCategoryInfo
-            {
-                CategoryName = "kenticocrmcommon.crmintegrations",
-                CategoryDisplayName = "CRM integrations",
-                CategoryParentID = rootSettings.CategoryID,
-                CategoryLevel = 1,
-                CategoryResourceID = resourceInfo.ResourceID,
-                CategoryIsCustom = true,
-                CategoryIsGroup = false,
-                CategoryOrder = SettingsCategoryInfo.Provider.Get()
-                    .Where(c => c.CategoryLevel == 1)
-                    .Max(c => c.CategoryOrder) + 1
-            };
-            
-            SettingsCategoryInfo.Provider.Set(crmIntegrations);
-        }
-        
-        var crmCategory = SettingsCategoryInfo.Provider.Get($"kenticocrmcommon.{crmType}");
-        if (crmCategory is null)
-        {
-            crmCategory = new SettingsCategoryInfo
-            {
-                CategoryName = $"kenticocrmcommon.{crmType}",
-                CategoryDisplayName = $"{crmType} settings",
-                CategoryParentID = crmIntegrations.CategoryID,
-                CategoryLevel = 2,
-                CategoryResourceID = resourceInfo.ResourceID,
-                CategoryIsCustom = true,
-                CategoryIsGroup = true
-            };
-            
-            SettingsCategoryInfo.Provider.Set(crmCategory);
+            return;
         }
 
-        var settingFormsEnabled = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationFormLeadsEnabled");
-        if (settingFormsEnabled is null)
+        settingsCRM = DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
+
+        settingsCRM.ClassName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName;
+        settingsCRM.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        settingsCRM.ClassDisplayName = "CRM integration settings";
+        settingsCRM.ClassResourceID = resourceInfo.ResourceID;
+        settingsCRM.ClassType = ClassType.OTHER;
+
+        var formInfo =
+            FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
+
+        var formItem = new FormFieldInfo
         {
-            settingFormsEnabled = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegrationFormLeadsEnabled",
-                KeyDisplayName = "Form leads enabled",
-                KeyDescription = "",
-                KeyType = "boolean",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingFormsEnabled);
-        }
-        
-        var settingsIgnoreExisting = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationIgnoreExistingRecords");
-        if (settingsIgnoreExisting is null)
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsFormsEnabled),
+            Caption = "Forms enabled",
+            Visible = true,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
         {
-            settingsIgnoreExisting = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegrationIgnoreExistingRecords",
-                KeyDisplayName = "Ignore existing records",
-                KeyDescription = "",
-                KeyType = "boolean",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "If true no existing item with same email or paired record by ID is updated"
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingsIgnoreExisting);
-        }
-        
-        if (settingFormsEnabled is null)
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsEnabled),
+            Caption = "Contacts enabled",
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
         {
-            settingFormsEnabled = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegrationContactsEnabled",
-                KeyDisplayName = "Contact synchronization enabled",
-                KeyDescription = "",
-                KeyType = "boolean",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingFormsEnabled);
-        }
-        
-        var settingUrl = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegration{crmType}Url");
-        if (settingUrl is null)
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsIgnoreExistingRecords),
+            Caption = "Ignore existing records",
+            Visible = true,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
         {
-            settingUrl = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegration{crmType}Url",
-                KeyDisplayName = $"{crmType} URL",
-                KeyDescription = "",
-                KeyType = "string",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingUrl);
-        }
-        
-        var settingClientId = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationClientId");
-        if (settingClientId is null)
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsUrl),
+            Caption = "CRM URL",
+            Visible = true,
+            Precision = 0,
+            Size = 100,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
         {
-            settingClientId = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegrationClientId",
-                KeyDisplayName = "Client ID",
-                KeyDescription = "",
-                KeyType = "string",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingClientId);
-        }
-        
-        var settingClientSecret = SettingsKeyInfo.Provider.Get($"CMS{crmType}CRMIntegrationClientSecret");
-        if (settingClientSecret is null)
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientId),
+            Caption = "Client ID",
+            Visible = true,
+            Precision = 0,
+            Size = 100,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
         {
-            settingClientSecret = new SettingsKeyInfo
-            {
-                KeyName = $"CMS{crmType}CRMIntegrationClientSecret",
-                KeyDisplayName = "Client Secret",
-                KeyDescription = "",
-                KeyType = "string",
-                KeyCategoryID = crmCategory.CategoryID,
-                KeyIsCustom = true,
-                KeyExplanationText = "",
-            };
-            
-            SettingsKeyInfo.Provider.Set(settingClientSecret);
-        }
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientSecret),
+            Caption = "Client Secret",
+            Visible = true,
+            Precision = 0,
+            Size = 100,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsCRMName),
+            Visible = false,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+
+        settingsCRM.ClassFormDefinition = formInfo.GetXmlDefinition();
+
+        DataClassInfoProvider.SetDataClassInfo(settingsCRM);
     }
 }

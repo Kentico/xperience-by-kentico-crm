@@ -30,10 +30,18 @@ internal class DynamicsIntegrationGlobalEvents : Module
     }
 
     private ILogger<DynamicsIntegrationGlobalEvents> logger = null!;
+    private ICRMModuleInstaller? installer;
 
-    protected override void OnInit()
+    protected override void OnInit(ModuleInitParameters parameters)
     {
-        base.OnInit();
+        base.OnInit(parameters);
+
+        var services = parameters.Services;
+
+        logger = services.GetRequiredService<ILogger<DynamicsIntegrationGlobalEvents>>();
+        installer = services.GetRequiredService<ICRMModuleInstaller>();
+
+        ApplicationEvents.Initialized.Execute += InitializeModule;
 
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
@@ -42,6 +50,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
         logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
         Service.Resolve<ICRMModuleInstaller>().Install(CRMType.Dynamics);
+
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
             ContactsSyncQueueWorker.Current.EnsureRunningThread();
@@ -50,6 +59,11 @@ internal class DynamicsIntegrationGlobalEvents : Module
         };
     }
 
+    private void InitializeModule(object? sender, EventArgs e)
+    {
+        installer?.Install(CRMType.Dynamics);
+    }
+    
     private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();

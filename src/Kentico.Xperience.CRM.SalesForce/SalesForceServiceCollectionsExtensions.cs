@@ -1,10 +1,9 @@
-﻿using CMS.Core;
-using CMS.Helpers;
-using Duende.AccessTokenManagement;
+﻿using Duende.AccessTokenManagement;
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
+using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.SalesForce.Configuration;
 using Kentico.Xperience.CRM.SalesForce.Services;
 using Microsoft.Extensions.Configuration;
@@ -25,12 +24,12 @@ public static class SalesForceServiceCollectionsExtensions
     /// <param name="configuration"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static IServiceCollection AddSalesForceFormLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMSalesForce(this IServiceCollection serviceCollection,
         Action<SalesForceBizFormsMappingBuilder> formsConfig,
         IConfiguration? configuration = null)
     {
         serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
-        
+
         var mappingBuilder = new SalesForceBizFormsMappingBuilder(serviceCollection);
         formsConfig(mappingBuilder);
         serviceCollection.TryAddSingleton(
@@ -39,7 +38,7 @@ public static class SalesForceServiceCollectionsExtensions
         if (configuration is null)
         {
             serviceCollection.AddOptions<SalesForceIntegrationSettings>()
-                .Configure<ISettingsService>(ConfigureWithCMSSettings);
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings);
         }
         else
         {
@@ -123,20 +122,16 @@ public static class SalesForceServiceCollectionsExtensions
             .AddClientCredentialsTokenHandler("salesforce.api.client");
     }
 
-    private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings,
-        ISettingsService settingsService)
+    private static void ConfigureWithCMSSettings(SalesForceIntegrationSettings settings, ICRMSettingsService settingsService)
     {
-        settings.FormLeadsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceFormLeadsEnabled], false);
+        var settingsInfo = settingsService.GetSettings(CRMType.SalesForce);
+        settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
+        settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
 
-        settings.ContactsEnabled =
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceContactsEnabled], false);
+        settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 
-        settings.IgnoreExistingRecords = 
-            ValidationHelper.GetBoolean(settingsService[SettingKeys.SalesForceIgnoreExistingRecords], false);
-
-        settings.ApiConfig.SalesForceUrl = settingsService[SettingKeys.SalesForceUrl];
-        settings.ApiConfig.ClientId = settingsService[SettingKeys.SalesForceClientId];
-        settings.ApiConfig.ClientSecret = settingsService[SettingKeys.SalesForceClientSecret];
+        settings.ApiConfig.SalesForceUrl = settingsInfo?.CRMIntegrationSettingsUrl;
+        settings.ApiConfig.ClientId = settingsInfo?.CRMIntegrationSettingsClientId;
+        settings.ApiConfig.ClientSecret = settingsInfo?.CRMIntegrationSettingsClientSecret;
     }
 }
