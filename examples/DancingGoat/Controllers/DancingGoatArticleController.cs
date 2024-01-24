@@ -1,4 +1,7 @@
-﻿using CMS.Websites;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using CMS.Websites;
 
 using DancingGoat;
 using DancingGoat.Controllers;
@@ -6,6 +9,7 @@ using DancingGoat.Models;
 
 using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
+using Kentico.PageBuilder.Web.Mvc.PageTemplates;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,24 +27,24 @@ namespace DancingGoat.Controllers
         private readonly IPreferredLanguageRetriever currentLanguageRetriever;
 
 
-        public DancingGoatArticleController(
-            ArticlePageRepository articlePageRepository,
-            ArticlesSectionRepository articlesSectionRepository,
-            IWebPageUrlRetriever urlRetriever,
-            IWebPageDataContextRetriever webPageDataContextRetriever,
-            IPreferredLanguageRetriever currentLanguageRetriever)
-        {
-            this.articlePageRepository = articlePageRepository;
-            this.articlesSectionRepository = articlesSectionRepository;
-            this.urlRetriever = urlRetriever;
-            this.webPageDataContextRetriever = webPageDataContextRetriever;
-            this.currentLanguageRetriever = currentLanguageRetriever;
-        }
+		public DancingGoatArticleController(
+			ArticlePageRepository articlePageRepository,
+			ArticlesSectionRepository articlesSectionRepository,
+			IWebPageUrlRetriever urlRetriever,
+			IWebPageDataContextRetriever webPageDataContextRetriever,
+			IPreferredLanguageRetriever currentLanguageRetriever)
+		{
+			this.articlePageRepository = articlePageRepository;
+			this.articlesSectionRepository = articlesSectionRepository;
+			this.urlRetriever = urlRetriever;
+			this.webPageDataContextRetriever = webPageDataContextRetriever;
+			this.currentLanguageRetriever = currentLanguageRetriever;
+		}
 
 
-        public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index()
         {
-            string languageName = currentLanguageRetriever.Get();
+            var languageName = currentLanguageRetriever.Get();
 
             var webPage = webPageDataContextRetriever.Retrieve().WebPage;
 
@@ -61,8 +65,8 @@ namespace DancingGoat.Controllers
 
         public async Task<IActionResult> Article()
         {
-            string languageName = currentLanguageRetriever.Get();
-            int webPageItemId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
+            var languageName = currentLanguageRetriever.Get();
+            var webPageItemId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
 
             var article = await articlePageRepository.GetArticle(webPageItemId, languageName, HttpContext.RequestAborted);
 
@@ -71,7 +75,9 @@ namespace DancingGoat.Controllers
                 return NotFound();
             }
 
-            return View(await ArticleDetailViewModel.GetViewModel(article, languageName, articlePageRepository, urlRetriever));
+            var model = await ArticleDetailViewModel.GetViewModel(article, languageName, articlePageRepository, urlRetriever);
+
+            return new TemplateResult(model);
         }
     }
 }

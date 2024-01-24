@@ -1,4 +1,10 @@
-﻿using CMS.ContentEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CMS.ContentEngine;
 using CMS.Helpers;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -16,7 +22,10 @@ namespace DancingGoat.Models
         /// Initializes a new instance of the <see cref="CoffeeRepository"/> class that returns coffees.
         /// </summary>
         public CoffeeRepository(IWebsiteChannelContext websiteChannelContext, IContentQueryExecutor executor, IWebPageQueryResultMapper mapper, IProgressiveCache cache, ILinkedItemsDependencyRetriever linkedItemsDependencyRetriever)
-            : base(websiteChannelContext, executor, mapper, cache) => this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+            : base(websiteChannelContext, executor, mapper, cache)
+        {
+            this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+        }
 
 
         /// <summary>
@@ -32,11 +41,14 @@ namespace DancingGoat.Models
         }
 
 
-        private static ContentItemQueryBuilder GetQueryBuilder(ICollection<Guid> coffeeGuids) => new ContentItemQueryBuilder()
+        private static ContentItemQueryBuilder GetQueryBuilder(ICollection<Guid> coffeeGuids)
+        {
+            return new ContentItemQueryBuilder()
                     .ForContentType(Coffee.CONTENT_TYPE_NAME,
                         config => config
                             .WithLinkedItems(1)
                             .Where(where => where.WhereIn(nameof(IContentQueryDataContainer.ContentItemGUID), coffeeGuids)));
+        }
 
 
         private Task<ISet<string>> GetDependencyCacheKeys(IEnumerable<Coffee> coffees, IEnumerable<Guid> coffeeGuids)

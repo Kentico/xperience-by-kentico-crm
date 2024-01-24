@@ -1,4 +1,8 @@
-﻿using Kentico.PageBuilder.Web.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Kentico.PageBuilder.Web.Mvc;
 
 namespace DancingGoat.Helpers
 {
@@ -12,7 +16,7 @@ namespace DancingGoat.Helpers
         /// </summary>
         public static string[] GetLandingPageRestrictions()
         {
-            string[] allowedScopes = new[] { "Kentico.", "DancingGoat.General.", "DancingGoat.LandingPage." };
+            var allowedScopes = new[] { "Kentico.", "DancingGoat.General.", "DancingGoat.LandingPage." };
 
             return GetWidgetsIdentifiers()
                 .Where(id => allowedScopes.Any(scope => id.StartsWith(scope, StringComparison.OrdinalIgnoreCase)))
@@ -20,8 +24,11 @@ namespace DancingGoat.Helpers
         }
 
 
-        private static IEnumerable<string> GetWidgetsIdentifiers() => new ComponentDefinitionProvider<WidgetDefinition>()
+        private static IEnumerable<string> GetWidgetsIdentifiers()
+        {
+            return new ComponentDefinitionProvider<WidgetDefinition>()
                    .GetAll()
                    .Select(definition => definition.Identifier);
+        }
     }
 }

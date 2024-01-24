@@ -29,5 +29,5 @@ public class BizFormFieldsMappingBuilder
         return this;
     }
 
-    internal List<BizFormFieldMapping> Build() => fieldMappings;
+    public List<BizFormFieldMapping> Build() => fieldMappings;
 }

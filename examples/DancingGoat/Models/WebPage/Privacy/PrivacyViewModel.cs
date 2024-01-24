@@ -1,4 +1,7 @@
-﻿namespace DancingGoat.Models
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace DancingGoat.Models
 {
     public class PrivacyViewModel
     {

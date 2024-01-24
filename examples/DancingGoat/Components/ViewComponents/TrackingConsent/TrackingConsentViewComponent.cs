@@ -1,4 +1,6 @@
-﻿using CMS.ContactManagement;
+﻿using System.Threading.Tasks;
+
+using CMS.ContactManagement;
 using CMS.DataProtection;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -46,7 +48,7 @@ namespace DancingGoat.ViewComponents
 
             if (consent != null)
             {
-                string currentLanguage = currentLanguageRetriever.Get();
+                var currentLanguage = currentLanguageRetriever.Get();
                 var consentModel = new ConsentViewModel
                 {
                     ConsentShortText = (await consent.GetConsentTextAsync(currentLanguage)).ShortText,

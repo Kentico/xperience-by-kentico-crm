@@ -1,4 +1,5 @@
 ﻿using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Kentico.Xperience.CRM.SalesForce.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SalesForce.OpenApi;
@@ -7,6 +8,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
+using System.Web;
 using SalesForceApiClient = SalesForce.OpenApi.SalesForceApiClient;
 
 namespace Kentico.Xperience.CRM.SalesForce.Services;
@@ -15,18 +17,18 @@ internal class SalesForceApiService : ISalesForceApiService
 {
     private readonly HttpClient httpClient;
     private readonly ILogger<SalesForceApiService> logger;
-    private readonly SalesForceIntegrationSettings integrationSettings;
+    private readonly IOptionsSnapshot<SalesForceIntegrationSettings> integrationSettings;
     private readonly SalesForceApiClient apiClient;
 
     public SalesForceApiService(
         HttpClient httpClient,
         ILogger<SalesForceApiService> logger,
-        IOptionsMonitor<SalesForceIntegrationSettings> integrationSettings
-        )
+        IOptionsSnapshot<SalesForceIntegrationSettings> integrationSettings
+    )
     {
         this.httpClient = httpClient;
         this.logger = logger;
-        this.integrationSettings = integrationSettings.CurrentValue;
+        this.integrationSettings = integrationSettings;
 
         apiClient = new SalesForceApiClient(httpClient);
     }
@@ -50,10 +52,10 @@ internal class SalesForceApiService : ISalesForceApiService
     /// <returns></returns>
     public async Task<string?> GetLeadIdByExternalId(string fieldName, string externalId)
     {
-        var apiVersion = (integrationSettings?.ApiConfig?.ApiVersion ?? SalesForceApiConfig.DefaultVersion)
-            .ToString("F1", CultureInfo.InvariantCulture);
+        var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
         using var request =
-            new HttpRequestMessage(HttpMethod.Get, $"/services/data/v{apiVersion}/sobjects/lead/{fieldName}/{externalId}?fields=Id");
+            new HttpRequestMessage(HttpMethod.Get,
+                $"/services/data/v{apiVersion}/sobjects/lead/{fieldName}/{externalId}?fields=Id");
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         var response = await httpClient.SendAsync(request);
 
@@ -67,6 +69,30 @@ internal class SalesForceApiService : ISalesForceApiService
             logger.LogWarning("Lead not found for external field name: '{ExternalFieldName}' and value: '{ExternalId}'",
                 fieldName, externalId);
             return null;
+        }
+        else
+        {
+            string responseMessage = await response.Content.ReadAsStringAsync();
+            throw new ApiException("Unexpected response", (int)response.StatusCode, responseMessage, null!, null);
+        }
+    }
+
+    public async Task<LeadSObject?> GetLeadById(string id, string? fields = null)
+        => await apiClient.LeadGET2Async(id, fields);
+
+    public async Task<string?> GetLeadByEmail(string email)
+    {
+        var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
+        using var request =
+            new HttpRequestMessage(HttpMethod.Get,
+                $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+Lead+WHERE+Email='{HttpUtility.UrlEncode(email)}'+ORDER+BY+CreatedDate+DESC");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+        var response = await httpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<LeadSObject>>();
+            return queryResult?.Records.FirstOrDefault()?.Id;
         }
         else
         {

@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Threading.Tasks;
+
 using DancingGoat.Models;
 using DancingGoat.Widgets;
 
@@ -27,7 +30,10 @@ namespace DancingGoat.Widgets
         /// Creates an instance of <see cref="HeroImageWidgetViewComponent"/> class.
         /// </summary>
         /// <param name="imageRepository">Repository for images.</param>
-        public HeroImageWidgetViewComponent(ImageRepository imageRepository) => this.imageRepository = imageRepository;
+        public HeroImageWidgetViewComponent(ImageRepository imageRepository)
+        {
+            this.imageRepository = imageRepository;
+        }
 
 
         public async Task<ViewViewComponentResult> InvokeAsync(HeroImageWidgetProperties properties)

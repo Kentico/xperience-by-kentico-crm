@@ -26,9 +26,8 @@ namespace Kentico.Xperience.CRM.Common.Classes
         /// <summary>
         /// Type information.
         /// </summary>
-        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(FailedSyncItemInfoProvider), OBJECT_TYPE, "kenticocrmcommon.failedsyncitem", "FailedSyncItemID", "FailedSyncItemLastModified", null, null, null, null, null, null)
+        public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(FailedSyncItemInfoProvider), OBJECT_TYPE, "KenticoCRMCommon.FailedSyncItem", "FailedSyncItemID", "FailedSyncItemLastModified", null, null, null, null, null, null)
         {
-            ModuleName = "Kentic.Xperience.CRM.Common",
             TouchCacheDependencies = true,
         };
 

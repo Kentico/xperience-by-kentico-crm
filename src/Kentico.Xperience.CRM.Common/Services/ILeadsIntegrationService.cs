@@ -8,16 +8,9 @@ namespace Kentico.Xperience.CRM.Common.Services;
 public interface ILeadsIntegrationService
 {
     /// <summary>
-    /// Creates lead in CRM from BizForm item
-    /// </summary>
-    /// <param name="bizFormItem"></param>
-    /// <returns></returns>
-    Task CreateLeadAsync(BizFormItem bizFormItem);
-
-    /// <summary>
     /// Updates lead in CRM from BizForm item
     /// </summary>
     /// <param name="bizFormItem"></param>
     /// <returns></returns>
-    Task UpdateLeadAsync(BizFormItem bizFormItem);
+    Task SynchronizeLeadAsync(BizFormItem bizFormItem);
 }

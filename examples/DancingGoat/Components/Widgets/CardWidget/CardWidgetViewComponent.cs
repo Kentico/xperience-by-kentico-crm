@@ -1,3 +1,6 @@
+using System.Linq;
+using System.Threading.Tasks;
+
 using DancingGoat.Models;
 using DancingGoat.Widgets;
 
@@ -27,7 +30,10 @@ namespace DancingGoat.Widgets
         /// Creates an instance of <see cref="CardWidgetViewComponent"/> class.
         /// </summary>
         /// <param name="imageRepository">Repository for images.</param>
-        public CardWidgetViewComponent(ImageRepository imageRepository) => this.imageRepository = imageRepository;
+        public CardWidgetViewComponent(ImageRepository imageRepository)
+        {
+            this.imageRepository = imageRepository;
+        }
 
 
         public async Task<ViewViewComponentResult> InvokeAsync(CardWidgetProperties properties)

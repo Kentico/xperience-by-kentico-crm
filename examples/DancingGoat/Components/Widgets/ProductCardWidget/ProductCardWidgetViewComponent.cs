@@ -1,4 +1,8 @@
-﻿using DancingGoat.Models;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+using DancingGoat.Models;
 using DancingGoat.Widgets;
 
 using Kentico.PageBuilder.Web.Mvc;
@@ -28,7 +32,10 @@ namespace DancingGoat.Widgets
         /// Creates an instance of <see cref="ProductCardWidgetViewComponent"/> class.
         /// </summary>
         /// <param name="repository">Repository for retrieving products.</param>
-        public ProductCardWidgetViewComponent(CoffeeRepository repository) => this.repository = repository;
+        public ProductCardWidgetViewComponent(CoffeeRepository repository)
+        {
+            this.repository = repository;
+        }
 
 
         public async Task<ViewViewComponentResult> InvokeAsync(ProductCardProperties properties)

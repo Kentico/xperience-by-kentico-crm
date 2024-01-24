@@ -1,4 +1,10 @@
-﻿using CMS.ContentEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CMS.ContentEngine;
 using CMS.Helpers;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -14,7 +20,10 @@ namespace DancingGoat.Models
 
 
         public SocialLinkRepository(IWebsiteChannelContext websiteChannelContext, IContentQueryExecutor executor, IWebPageQueryResultMapper mapper, IProgressiveCache cache, ILinkedItemsDependencyRetriever linkedItemsDependencyRetriever)
-            : base(websiteChannelContext, executor, mapper, cache) => this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+            : base(websiteChannelContext, executor, mapper, cache)
+        {
+            this.linkedItemsDependencyRetriever = linkedItemsDependencyRetriever;
+        }
 
 
         /// <summary>
@@ -30,9 +39,12 @@ namespace DancingGoat.Models
         }
 
 
-        private static ContentItemQueryBuilder GetQueryBuilder(string languageName) => new ContentItemQueryBuilder()
+        private static ContentItemQueryBuilder GetQueryBuilder(string languageName)
+        {
+            return new ContentItemQueryBuilder()
                     .ForContentType(SocialLink.CONTENT_TYPE_NAME, config => config.WithLinkedItems(1))
                     .InLanguage(languageName);
+        }
 
 
         private Task<ISet<string>> GetDependencyCacheKeys(IEnumerable<SocialLink> socialLinks, CancellationToken cancellationToken)
@@ -48,7 +60,7 @@ namespace DancingGoat.Models
 
         private static IEnumerable<string> GetCacheByIdKeys(IEnumerable<int> itemIds)
         {
-            foreach (int id in itemIds)
+            foreach (var id in itemIds)
             {
                 yield return CacheHelper.BuildCacheItemName(new[] { "contentitem", "byid", id.ToString() }, false);
             }
