@@ -15,14 +15,14 @@ namespace Kentico.Xperience.CRM.SalesForce.Converters;
 public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, LeadSObject>
 {
     private readonly IContactFieldFromFormRetriever contactFieldFromFormRetriever;
-    private readonly IInfoByIdProvider<CountryInfo> countries;
-    private readonly IInfoByIdProvider<StateInfo> states;
+    private readonly ICountryInfoProvider countries;
+    private readonly IStateInfoProvider states;
     private readonly IConversionService conversion;
 
     public FormContactMappingToLeadConverter(
         IContactFieldFromFormRetriever contactFieldFromFormRetriever,
-        IInfoByIdProvider<CountryInfo> countries,
-        IInfoByIdProvider<StateInfo> states,
+        ICountryInfoProvider countries,
+        IStateInfoProvider states,
         IConversionService conversion)
     {
         this.contactFieldFromFormRetriever = contactFieldFromFormRetriever;
