@@ -43,12 +43,12 @@
       },
       "NSwag.ApiDescription.Client": {
         "type": "Direct",
-        "requested": "[14.0.2, )",
-        "resolved": "14.0.2",
-        "contentHash": "H/TicFz7WmwvlveyL5YcAhbFqvY1Zh7e++7LwaBfNfq2oAlvXg4e2ZQv9L0+eDt2qpoTbuN7mD0DKmkELq2cpw==",
+        "requested": "[13.20.0, )",
+        "resolved": "13.20.0",
+        "contentHash": "ylDDEqtlSrTUH9oSPttT+ZoRCTusx8U8kbmqjfNuujvfLQz6KGPctkEhXLZYn4Bdy3v5z+a2koPN+DbeyyCxXA==",
         "dependencies": {
           "Microsoft.Extensions.ApiDescription.Client": "6.0.3",
-          "NSwag.MSBuild": "14.0.2"
+          "NSwag.MSBuild": "13.20.0"
         }
       },
       "SonarAnalyzer.CSharp": {
@@ -497,8 +497,8 @@
       },
       "NSwag.MSBuild": {
         "type": "Transitive",
-        "resolved": "14.0.2",
-        "contentHash": "CnW1JgxdO5yKaYV0PxVCMpLv5XC8kN18iH8T1QrKjzTgu8ypNSVUOb+D+kwARiWsjiscebAIjKVvtTYcLS/FSQ=="
+        "resolved": "13.20.0",
+        "contentHash": "3Z+7gCh+hb9DbK7O0iRgt2iDLOeZAVMpGyJ4UQUs/yUClQSNdA+QWmStlnSyx+jCTQX+tAcLSN6H5kw5Q6hCLA=="
       },
       "System.Buffers": {
         "type": "Transitive",
