@@ -1,13 +1,13 @@
-﻿namespace Kentico.Xperience.CRM.SalesForce.Configuration;
+﻿namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 
 /// <summary>
-/// API config for SalesForce API
+/// API config for Salesforce API
 /// </summary>
-public class SalesForceApiConfig
+public class SalesforceApiConfig
 {
     public const decimal DefaultVersion = 59m;
 
-    public string? SalesForceUrl { get; set; }
+    public string? SalesforceUrl { get; set; }
     public string? ClientId { get; set; }
     public string? ClientSecret { get; set; }
 
@@ -18,6 +18,6 @@ public class SalesForceApiConfig
         set => apiVersion = value;
     }
 
-    public bool IsValid() => !string.IsNullOrWhiteSpace(SalesForceUrl) && !string.IsNullOrWhiteSpace(ClientId) &&
+    public bool IsValid() => !string.IsNullOrWhiteSpace(SalesforceUrl) && !string.IsNullOrWhiteSpace(ClientId) &&
                              !string.IsNullOrWhiteSpace(ClientSecret);
 }

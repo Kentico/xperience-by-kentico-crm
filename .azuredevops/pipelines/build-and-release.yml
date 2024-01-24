@@ -71,9 +71,9 @@ stages:
                 - CRMDynamics:
                   artifactName: "Kentico-Xperience-CRM-Dynamics"
                   projectPath: "src/Kentico.Xperience.CRM.Dynamics"
-                - CRMSalesForce:
-                  artifactName: "Kentico-Xperience-CRM-SalesForce"
-                  projectPath: "src/Kentico.Xperience.CRM.SalesForce"
+                - CRMSalesforce:
+                  artifactName: "Kentico-Xperience-CRM-Salesforce"
+                  projectPath: "src/Kentico.Xperience.CRM.Salesforce"
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       - stage: PublishNuGetPackages

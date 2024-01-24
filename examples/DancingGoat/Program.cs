@@ -11,8 +11,8 @@ using Kentico.Web.Mvc;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
-using Kentico.Xperience.CRM.SalesForce;
-using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Kentico.Xperience.CRM.Salesforce;
+using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -75,7 +75,7 @@ builder.Services.AddKenticoCRMDynamics(builder =>
             .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
 
-//builder.Services.AddKenticoCRMSalesForce(builder =>
+//builder.Services.AddKenticoCRMSalesforce(builder =>
 //        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
 //                c => c
 //                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
@@ -84,7 +84,7 @@ builder.Services.AddKenticoCRMDynamics(builder =>
 //                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //option 4: source mapping function general BizFormItem  -> member expression to SObject
 //            ));
 
-builder.Services.AddKenticoCRMSalesForce(builder =>
+builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>());

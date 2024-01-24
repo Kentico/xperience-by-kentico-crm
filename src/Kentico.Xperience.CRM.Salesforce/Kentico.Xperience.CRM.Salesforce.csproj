@@ -1,12 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Product>Xperience by Kentico CRM SalesForce</Product>
+		<Product>Xperience by Kentico CRM Salesforce</Product>
 		<Title>$(Product)</Title>
-		<Description>Xperience By Kentico - SalesForce Sales Cloud integration</Description>
-		<PackageId>Kentico.Xperience.CRM.SalesForce</PackageId>
-		<RootNamespace>Kentico.Xperience.CRM.SalesForce</RootNamespace>
-		<PackageTags>$(PackageTags);salesforce</PackageTags>
+		<Description>Xperience By Kentico - Salesforce Sales Cloud integration</Description>
+		<PackageId>Kentico.Xperience.CRM.Salesforce</PackageId>
+		<RootNamespace>Kentico.Xperience.CRM.Salesforce</RootNamespace>
+		<PackageTags>$(PackageTags);Salesforce</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<OpenApiReference Include=".\ApiClient\salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="SalesForce.OpenApi" ClassName="SalesForceApiClient">
+		<OpenApiReference Include=".\ApiClient\Salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="Salesforce.OpenApi" ClassName="SalesforceApiClient">
 			<Options>/UseBaseUrl:false /JsonLibrary:SystemTextJson /GenerateOptionalParameters:true /GenerateOptionalPropertiesAsNullable:true /GenerateNullableReferenceTypes:true /ExposeJsonSerializerSettings:true</Options>
 		</OpenApiReference>
 	</ItemGroup>

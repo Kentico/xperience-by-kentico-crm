@@ -1,10 +1,10 @@
 ﻿using Kentico.Xperience.CRM.Common.Services;
 
-namespace Kentico.Xperience.CRM.SalesForce.Services;
+namespace Kentico.Xperience.CRM.Salesforce.Services;
 
 /// <summary>
-/// Specific Lead integration service interface for SalesForce Sales
+/// Specific Lead integration service interface for Salesforce Sales
 /// </summary>
-public interface ISalesForceLeadsIntegrationService : ILeadsIntegrationService
+public interface ISalesforceLeadsIntegrationService : ILeadsIntegrationService
 {
 }

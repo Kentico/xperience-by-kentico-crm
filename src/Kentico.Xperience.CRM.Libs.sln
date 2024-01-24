@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Commo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Dynamics", "Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj", "{91405C0F-E95E-4350-8F02-86FDBC9382EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.SalesForce", "Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj", "{F3367A36-DC9B-42B3-B579-3F598F5603F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Salesforce", "Kentico.Xperience.CRM.Salesforce\Kentico.Xperience.CRM.Salesforce.csproj", "{F3367A36-DC9B-42B3-B579-3F598F5603F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

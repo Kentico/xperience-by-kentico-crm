@@ -1,23 +1,23 @@
-﻿using SalesForce.OpenApi;
+﻿using Salesforce.OpenApi;
 
-namespace Kentico.Xperience.CRM.SalesForce.Services;
+namespace Kentico.Xperience.CRM.Salesforce.Services;
 
 /// <summary>
-/// Http typed client for SalesForce REST API
+/// Http typed client for Salesforce REST API
 /// </summary>
-public interface ISalesForceApiService
+public interface ISalesforceApiService
 {
     /// <summary>
-    /// Creates lead entity to SalesForce Leads
+    /// Creates lead entity to Salesforce Leads
     /// </summary>
     /// <param name="lead"></param>
     /// <returns></returns>
     Task<SaveResult> CreateLeadAsync(LeadSObject lead);
 
     /// <summary>
-    /// Updates lead entity to SalesForce Leads 
+    /// Updates lead entity to Salesforce Leads 
     /// </summary>
-    /// <param name="id">SalesForce lead ID</param>
+    /// <param name="id">Salesforce lead ID</param>
     /// <param name="leadSObject"></param>
     /// <returns></returns>
     Task UpdateLeadAsync(string id, LeadSObject leadSObject);
