@@ -20,9 +20,9 @@ public abstract class CRMIntegrationSettingsEdit : ModelEditPage<CRMIntegrationS
     {
         this.crmIntegrationSettingsInfoProvider = crmIntegrationSettingsInfoProvider;
     }
-    
+
     private CRMIntegrationSettingsInfo? settingsInfo;
-    
+
     private CRMIntegrationSettingsInfo? SettingsInfo => settingsInfo ??= crmIntegrationSettingsInfoProvider.Get()
         .WhereEquals(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsCRMName), CRMName)
         .TopN(1)

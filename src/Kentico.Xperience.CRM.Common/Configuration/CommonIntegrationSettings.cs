@@ -11,7 +11,6 @@ public class CommonIntegrationSettings<TApiConfig> where TApiConfig : new()
     /// </summary>
     public bool FormLeadsEnabled { get; set; }
 
-    // @TODO phase 2
     public bool ContactsEnabled { get; set; }
 
     /// <summary>

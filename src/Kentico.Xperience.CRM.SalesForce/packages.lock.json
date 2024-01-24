@@ -4,11 +4,11 @@
     "net6.0": {
       "Duende.AccessTokenManagement.OpenIdConnect": {
         "type": "Direct",
-        "requested": "[2.0.3, )",
-        "resolved": "2.0.3",
-        "contentHash": "lFbbzI95P3tIhuvJfXded66R369hUcsLXX00pSpsBP3yoTTqS28dulhkV2r7/EvZ+pagHLTFbzjzaN7Am/B9XQ==",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "Lgvnsg4WFbw2FUZEp0YMiTcamDoT/jyJMYARUAH3a8Xul9WiIRMZXpqhmJdJ3DzYdqgEs8oa3cyHP0YjLhqE3Q==",
         "dependencies": {
-          "Duende.AccessTokenManagement": "2.0.3",
+          "Duende.AccessTokenManagement": "2.1.0",
           "Microsoft.AspNetCore.Authentication.OpenIdConnect": "6.0.0"
         }
       },
@@ -43,19 +43,19 @@
       },
       "NSwag.ApiDescription.Client": {
         "type": "Direct",
-        "requested": "[13.18.2, )",
-        "resolved": "13.18.2",
-        "contentHash": "uViMdjUscfeqrlDY4q9O2a0t2cMqsOx1kdX9WLyQjTXea1xjAHgQFCYlgE6ibwkYcUDJDlwEYUzvsJelL6SY3g==",
+        "requested": "[14.0.2, )",
+        "resolved": "14.0.2",
+        "contentHash": "H/TicFz7WmwvlveyL5YcAhbFqvY1Zh7e++7LwaBfNfq2oAlvXg4e2ZQv9L0+eDt2qpoTbuN7mD0DKmkELq2cpw==",
         "dependencies": {
           "Microsoft.Extensions.ApiDescription.Client": "6.0.3",
-          "NSwag.MSBuild": "13.18.2"
+          "NSwag.MSBuild": "14.0.2"
         }
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[9.6.0.74858, )",
-        "resolved": "9.6.0.74858",
-        "contentHash": "tBwiOBYcoSyHVUejjz6iH3VOpSFx7gJSuQ3695BQaoqQBcqy0IeRsKAk5FAR4fbm3QLyEM9bimKk1l038TFN2w=="
+        "requested": "[9.17.0.82934, )",
+        "resolved": "9.17.0.82934",
+        "contentHash": "vHMvduSho3HACmC4jIPamuJiWenJKOIxcnvHNZ1vOztvQ0VeIYAAOvvw79BKpzZOEDEpM9uUOJgCSPgBetSzSw=="
       },
       "AngleSharp": {
         "type": "Transitive",
@@ -114,16 +114,16 @@
       },
       "Duende.AccessTokenManagement": {
         "type": "Transitive",
-        "resolved": "2.0.3",
-        "contentHash": "+Gf464caPFzPsprf/oyKHwVLJmiGk404vtjpGsmJVM9VpM4B8I9140ANDJwN2S5ihOcL3zH7mv59re0KT31TfA==",
+        "resolved": "2.1.0",
+        "contentHash": "SZXYF/pS/Tkc3fY7az/S3Y/uODVtKU7KbDyaZBOqNl9y9MSmga+FEAmgDfdjCq+f9wRy9QTkicGKHSSKcwT4HQ==",
         "dependencies": {
-          "IdentityModel": "6.1.0",
+          "IdentityModel": "6.2.0",
           "Microsoft.Extensions.Caching.Abstractions": "6.0.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "6.0.0",
           "Microsoft.Extensions.Http": "6.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "6.0.0",
           "Microsoft.Extensions.Options": "6.0.0",
-          "System.IdentityModel.Tokens.Jwt": "6.15.1"
+          "System.IdentityModel.Tokens.Jwt": "6.15.0"
         }
       },
       "HtmlSanitizer": {
@@ -497,8 +497,8 @@
       },
       "NSwag.MSBuild": {
         "type": "Transitive",
-        "resolved": "13.18.2",
-        "contentHash": "SRQ3mONkfbJWhZxA1yOFMJMXavUvnXwcoYU23qoVqSEY2G+y8jZuq9ErWm76JT0Kn5/Ml5UhG1FWmLhkqd4/+A=="
+        "resolved": "14.0.2",
+        "contentHash": "CnW1JgxdO5yKaYV0PxVCMpLv5XC8kN18iH8T1QrKjzTgu8ypNSVUOb+D+kwARiWsjiscebAIjKVvtTYcLS/FSQ=="
       },
       "System.Buffers": {
         "type": "Transitive",

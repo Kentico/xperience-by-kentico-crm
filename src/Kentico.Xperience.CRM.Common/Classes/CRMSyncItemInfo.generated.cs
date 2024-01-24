@@ -28,7 +28,6 @@ namespace Kentico.Xperience.CRM.Common.Classes
         /// </summary>
         public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(CRMSyncItemInfoProvider), OBJECT_TYPE, "KenticoCRMCommon.CRMSyncItem", "CRMSyncItemID", "CRMSyncItemLastModified", null, null, null, null, null, null)
         {
-            ModuleName = "Kentic.Xperience.CRM.Common",
             TouchCacheDependencies = true,
         };
 

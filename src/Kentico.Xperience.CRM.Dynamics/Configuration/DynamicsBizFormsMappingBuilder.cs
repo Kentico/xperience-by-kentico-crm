@@ -96,7 +96,6 @@ public class DynamicsBizFormsMappingBuilder
     /// <summary>
     /// Adds custom service for BizForm item validation before sending to CRM
     /// </summary>
-    /// <param name="services"></param>
     /// <typeparam name="TService"></typeparam>
     /// <returns></returns>
     public DynamicsBizFormsMappingBuilder AddCustomValidation<TService>()

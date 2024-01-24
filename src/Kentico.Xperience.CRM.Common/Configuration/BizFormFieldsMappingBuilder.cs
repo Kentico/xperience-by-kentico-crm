@@ -28,6 +28,6 @@ public class BizFormFieldsMappingBuilder
         fieldMappings.Add(mapping);
         return this;
     }
-    
+
     public List<BizFormFieldMapping> Build() => fieldMappings;
 }

@@ -22,12 +22,12 @@ public static class SalesForceServiceCollectionsExtensions
     /// <param name="configuration"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"></exception>
-    public static IServiceCollection AddSalesForceFormLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMSalesForce(this IServiceCollection serviceCollection,
         Action<SalesForceBizFormsMappingBuilder> formsConfig,
         IConfiguration? configuration = null)
     {
         serviceCollection.AddKenticoCrmCommonFormLeadsIntegration();
-        
+
         var mappingBuilder = new SalesForceBizFormsMappingBuilder(serviceCollection);
         formsConfig(mappingBuilder);
         serviceCollection.TryAddSingleton(

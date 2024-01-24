@@ -15,8 +15,6 @@ public static class ServiceCollectionExtensions
     /// Adds common services for CRM integration. This method is usually used from specific CRM integration library
     /// </summary>
     /// <param name="services"></param>
-    /// <param name="formsMappingConfig"></param>
-    /// <typeparam name="TMappingConfiguration"></typeparam>
     /// <returns></returns>
     public static IServiceCollection AddKenticoCrmCommonFormLeadsIntegration(
         this IServiceCollection services)

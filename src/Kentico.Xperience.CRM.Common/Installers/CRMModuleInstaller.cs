@@ -22,7 +22,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         this.resourceInfoProvider = resourceInfoProvider;
     }
 
-    public void Install(string crmtype)
+    public void Install(string crmType)
     {
         var resourceInfo = InstallModule();
         InstallModuleClasses(resourceInfo);
@@ -115,7 +115,10 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         formItem = new FormFieldInfo
         {
-            Name = nameof(CRMSyncItemInfo.CRMSyncItemCreatedByKentico), Visible = false, DataType = "boolean", Enabled = true
+            Name = nameof(CRMSyncItemInfo.CRMSyncItemCreatedByKentico),
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
         };
         formInfo.AddFormItem(formItem);
 
@@ -130,7 +133,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         formInfo.AddFormItem(formItem);
 
         failedSyncItemClass.ClassFormDefinition = formInfo.GetXmlDefinition();
-        
+
         DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
     }
 
@@ -216,7 +219,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
     }
-    
+
     private void InstallCRMIntegrationSettingsClass(ResourceInfo resourceInfo)
     {
         var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
@@ -235,7 +238,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
-        
+
         var formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsFormsEnabled),
@@ -245,7 +248,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsEnabled),
@@ -255,7 +258,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsIgnoreExistingRecords),
@@ -277,7 +280,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientId),
@@ -289,7 +292,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsClientSecret),
@@ -301,7 +304,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsCRMName),
@@ -312,7 +315,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
 
         settingsCRM.ClassFormDefinition = formInfo.GetXmlDefinition();
 

@@ -21,7 +21,7 @@ public static class DynamicsServiceCollectionExtensions
     /// <param name="formsConfig"></param>
     /// <param name="configuration"></param>
     /// <returns></returns>
-    public static IServiceCollection AddDynamicsFormLeadsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMDynamics(this IServiceCollection serviceCollection,
         Action<DynamicsBizFormsMappingBuilder> formsConfig,
         IConfiguration? configuration = null)
     {

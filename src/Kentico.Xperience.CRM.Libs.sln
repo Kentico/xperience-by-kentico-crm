@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Common", "Kentico.Xperience.CRM.Common\Kentico.Xperience.CRM.Common.csproj", "{C3608BA1-C86C-4D13-9835-7E1A062BA353}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.Dynamics", "Kentico.Xperience.CRM.Dynamics\Kentico.Xperience.CRM.Dynamics.csproj", "{91405C0F-E95E-4350-8F02-86FDBC9382EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kentico.Xperience.CRM.SalesForce", "Kentico.Xperience.CRM.SalesForce\Kentico.Xperience.CRM.SalesForce.csproj", "{F3367A36-DC9B-42B3-B579-3F598F5603F9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C3608BA1-C86C-4D13-9835-7E1A062BA353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3608BA1-C86C-4D13-9835-7E1A062BA353}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3608BA1-C86C-4D13-9835-7E1A062BA353}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3608BA1-C86C-4D13-9835-7E1A062BA353}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91405C0F-E95E-4350-8F02-86FDBC9382EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91405C0F-E95E-4350-8F02-86FDBC9382EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91405C0F-E95E-4350-8F02-86FDBC9382EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91405C0F-E95E-4350-8F02-86FDBC9382EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3367A36-DC9B-42B3-B579-3F598F5603F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3367A36-DC9B-42B3-B579-3F598F5603F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3367A36-DC9B-42B3-B579-3F598F5603F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3367A36-DC9B-42B3-B579-3F598F5603F9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

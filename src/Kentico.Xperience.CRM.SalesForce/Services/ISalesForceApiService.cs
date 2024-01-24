@@ -34,6 +34,7 @@ public interface ISalesForceApiService
     /// Get Lead by primary Id
     /// </summary>
     /// <param name="id"></param>
+    /// <param name="fields"></param>
     /// <returns></returns>
     Task<LeadSObject?> GetLeadById(string id, string? fields = null);
 

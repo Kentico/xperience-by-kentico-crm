@@ -58,7 +58,7 @@ ConfigureMembershipServices(builder.Services);
 
 //CRM integration registration start
 
-//builder.Services.AddDynamicsFormLeadsIntegration(builder =>
+//builder.Services.AddKenticoCRMDynamics(builder =>
 //        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
 //                c => c
 //                    .MapField("UserFirstName", "firstname")
@@ -70,12 +70,12 @@ ConfigureMembershipServices(builder.Services);
 //    ,
 //    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
 
-builder.Services.AddDynamicsFormLeadsIntegration(builder =>
+builder.Services.AddKenticoCRMDynamics(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
 
-//builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+//builder.Services.AddKenticoCRMSalesForce(builder =>
 //        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
 //                c => c
 //                    .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
@@ -84,7 +84,7 @@ builder.Services.AddDynamicsFormLeadsIntegration(builder =>
 //                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //option 4: source mapping function general BizFormItem  -> member expression to SObject
 //            ));
 
-builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+builder.Services.AddKenticoCRMSalesForce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>());

@@ -11,8 +11,8 @@ Xperience by Kentico integrations with Microsoft Dynamics and Salesforce Sales C
 The versions of this library are supported by the following versions of Xperience by Kentico
 
 | Xperience Version | Library Version |
-|-------------------|-----------------|
-| >= 28.0.0         | 0.9             |
+| ----------------- | --------------- |
+| >= 28.0.0         | 1.0.0           |
 
 ### Dependencies
 
@@ -50,34 +50,38 @@ dotnet add package Kentico.Xperience.CRM.SalesForce
 ### CRM settings
 
 There are 2 options how to fill settings:
-- use CMS settings: CRM integration settings category is created after first run.
-This is primary option when you don't specify IConfiguration section during services registration. 
-- use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
+
+- Use CMS settings: CRM integration settings category is created after first run.
+  This is primary option when you don't specify IConfiguration section during services registration.
+- Use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 
 ### Forms data - Leads integration
 
 Configure mapping for each form between Kentico Form fields and Dynamics Lead entity fields:
 
 #### Dynamics Sales
+
 Added form with auto mapping based on Form field mapping to Contacts atttibutes. Uses CMS settings:
+
 ```csharp
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddDynamicsFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMDynamics(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
 Example how to add form with own mapping:
+
 ```csharp
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddDynamicsFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMDynamics(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                 c => c
                     .MapField("UserFirstName", "firstname")
@@ -96,31 +100,33 @@ Use this option when you need complex logic and need to use another service via 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddDynamicsFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMDynamics(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
 #### SalesForce
 
 Added form with auto mapping based on Form field mapping to Contacts atttibutes. Uses CMS settings:
+
 ```csharp
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMSalesForce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
 Example how to add form with own mapping:
+
 ```csharp
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMSalesForce(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                 c => c
                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
@@ -139,7 +145,7 @@ Use this option when you need complex logic and need to use another service via 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddSalesForceFormLeadsIntegration(builder =>
+ builder.Services.AddKenticoCRMSalesForce(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
@@ -150,7 +156,7 @@ View the [Usage Guide](./docs/Usage-Guide.md) for more detailed instructions.
 ## Projects
 
 | Project                              | Description                                                                              |
-|--------------------------------------|------------------------------------------------------------------------------------------|
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
 | src/Kentico.Xperience.CRM.Dynamics   | Xperience by Kentico Dynamics Sales CRM integration library                              |
 | src/Kentico.Xperience.CRM.SalesForce | Xperience by Kentico SalesForce CRM integration library                                  |
 | src/Kentico.Xperience.CRM.Common     | Xperience by Kentico common integration functionality (used by Dynamics/SalesForce libs) |

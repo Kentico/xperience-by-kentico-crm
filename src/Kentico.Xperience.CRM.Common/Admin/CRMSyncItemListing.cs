@@ -41,8 +41,6 @@ internal class CRMSyncItemListing : ListingPage
 
     public override Task ConfigurePage()
     {
-        var primaryColumnName = new BizFormItem(DataClassInfo.ClassName).TypeInfo.IDColumn;
-
         PageConfiguration.ColumnConfigurations
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityID), formatter: (value, _) =>
             {
