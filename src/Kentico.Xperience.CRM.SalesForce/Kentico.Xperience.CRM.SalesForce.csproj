@@ -4,7 +4,7 @@
 		<Product>Xperience by Kentico CRM SalesForce</Product>
 		<Title>$(Product)</Title>
 		<Description>Xperience By Kentico - SalesForce Sales Cloud integration</Description>
-		<PackageId>Kentico.Xperience.CRM.Dynamics</PackageId>
+		<PackageId>Kentico.Xperience.CRM.SalesForce</PackageId>
 		<RootNamespace>Kentico.Xperience.CRM.SalesForce</RootNamespace>
 		<PackageTags>$(PackageTags);salesforce</PackageTags>
 	</PropertyGroup>
