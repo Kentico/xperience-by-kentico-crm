@@ -18,7 +18,8 @@ variables:
   - name: SIGN_FILE
     value: true
 
-  - artifacts:
+  - name: artifacts
+    value:
       - CRMCommon:
         artifactName: "Kentico-Xperience-CRM-Common"
         projectPath: "src/Kentico.Xperience.CRM.Common"
