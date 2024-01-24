@@ -44,4 +44,42 @@ public interface ISalesForceApiService
     /// <param name="email"></param>
     /// <returns></returns>
     Task<string?> GetLeadByEmail(string email);
+    
+    /// <summary>
+    /// Creates lead entity to SalesForce Leads
+    /// </summary>
+    /// <param name="lead"></param>
+    /// <returns></returns>
+    Task<SaveResult> CreateContactAsync(ContactSObject contact);
+
+    /// <summary>
+    /// Updates lead entity to SalesForce Leads 
+    /// </summary>
+    /// <param name="id">SalesForce lead ID</param>
+    /// <param name="leadSObject"></param>
+    /// <returns></returns>
+    Task UpdateContactAsync(string id, ContactSObject contact);
+
+    /// <summary>
+    /// Get Lead ID for item by external ID
+    /// </summary>
+    /// <param name="fieldName">Custom field for external ID</param>
+    /// <param name="externalId">External ID value</param>
+    /// <returns></returns>
+    Task<string?> GetContactIdByExternalId(string fieldName, string externalId);
+
+    /// <summary>
+    /// Get Lead by primary Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <param name="fields"></param>
+    /// <returns></returns>
+    Task<ContactSObject?> GetContactById(string id, string? fields = null);
+
+    /// <summary>
+    /// Get Lead by email
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    Task<string?> GetContactByEmail(string email);
 }

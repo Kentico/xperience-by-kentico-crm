@@ -100,4 +100,29 @@ internal class SalesForceApiService : ISalesForceApiService
             throw new ApiException("Unexpected response", (int)response.StatusCode, responseMessage, null!, null);
         }
     }
+
+    public Task<SaveResult> CreateContactAsync(ContactSObject contact)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateContactAsync(string id, ContactSObject contact)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string?> GetContactIdByExternalId(string fieldName, string externalId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<ContactSObject?> GetContactById(string id, string? fields = null)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<string?> GetContactByEmail(string email)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -23,6 +23,7 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICRMModuleInstaller, CRMModuleInstaller>();
         services.TryAddSingleton<IFailedSyncItemService, FailedSyncItemService>();
         services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
+        services.TryAddSingleton<ICRMSettingsService, CRMSettingsService>();
 
         return services;
     }

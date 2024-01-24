@@ -47,11 +47,11 @@ public static class DynamicsServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddDynamicsContactsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType, IConfiguration configuration)
-    => serviceCollection.AddDynamicsContactsIntegration(crmType, b => { }, configuration);
+    => serviceCollection.AddKenticoCRMDynamicsContactsIntegration(crmType, b => { }, configuration);
 
-    public static IServiceCollection AddDynamicsContactsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType, Action<DynamicsContactMappingBuilder> mappingConfig, IConfiguration? configuration = null,
         bool useDefaultMapping = true)
     {

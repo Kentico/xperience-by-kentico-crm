@@ -51,11 +51,11 @@ public static class SalesForceServiceCollectionsExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddSalesForceContactsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMSalesForceContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType, IConfiguration configuration)
-        => serviceCollection.AddSalesForceContactsIntegration(crmType, b => { }, configuration);
+        => serviceCollection.AddKenticoCRMSalesForceContactsIntegration(crmType, b => { }, configuration);
 
-    public static IServiceCollection AddSalesForceContactsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMSalesForceContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType,
         Action<SalesForceContactMappingBuilder> mappingConfig,
         IConfiguration configuration,

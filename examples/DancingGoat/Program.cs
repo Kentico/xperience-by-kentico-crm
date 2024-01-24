@@ -94,10 +94,10 @@ builder.Services.AddKenticoCRMSalesForce(builder =>
 // builder.Services.AddDynamicsContactsIntegration(ContactCRMType.Lead,
 //     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
 
-builder.Services.AddDynamicsContactsIntegration(ContactCRMType.Contact,
+builder.Services.AddKenticoCRMDynamicsContactsIntegration(ContactCRMType.Contact,
     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
 
-builder.Services.AddSalesForceContactsIntegration(ContactCRMType.Lead,
+builder.Services.AddKenticoCRMSalesForceContactsIntegration(ContactCRMType.Lead,
     builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName));
 //CRM integration registration end
 

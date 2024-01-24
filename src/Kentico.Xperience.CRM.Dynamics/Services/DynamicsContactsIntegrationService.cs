@@ -1,10 +1,12 @@
 ﻿using CMS.ContactManagement;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
@@ -18,19 +20,31 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
     private readonly IContactsIntegrationValidationService validationService;
     private readonly ServiceClient serviceClient;
     private readonly ILogger<DynamicsContactsIntegrationService> logger;
+    private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
+    private readonly IOptionsSnapshot<DynamicsIntegrationSettings> settings;
+    private readonly IEnumerable<ICRMTypeConverter<ContactInfo, Lead>> contactLeadConverters;
+    private readonly IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters;
 
     public DynamicsContactsIntegrationService(DynamicsContactMappingConfiguration contactMapping,
         IContactsIntegrationValidationService validationService,
         ServiceClient serviceClient,
         ILogger<DynamicsContactsIntegrationService> logger,
-        IFailedSyncItemService failedSyncItemService)
+        ICRMSyncItemService syncItemService,
+        IFailedSyncItemService failedSyncItemService,
+        IOptionsSnapshot<DynamicsIntegrationSettings> settings,
+        IEnumerable<ICRMTypeConverter<ContactInfo, Lead>> contactLeadConverters,
+        IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
         this.serviceClient = serviceClient;
         this.logger = logger;
+        this.syncItemService = syncItemService;
         this.failedSyncItemService = failedSyncItemService;
+        this.settings = settings;
+        this.contactLeadConverters = contactLeadConverters;
+        this.contactContactConverters = contactContactConverters;
     }
 
     public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
@@ -43,12 +57,29 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
                     contactInfo.ContactID);
                 return;
             }
-            var leadEntity = new Lead();
-            MapCRMEntity(contactInfo, leadEntity, contactMapping.FieldsMapping);
 
-            leadEntity.Subject ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
+            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Dynamics);
 
-            await serviceClient.CreateAsync(leadEntity);
+            if (syncItem is null)
+            {
+                await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+            }
+            else
+            {
+                var existingLead = await GetEntityById<Lead>(Guid.Parse(syncItem.CRMSyncItemCRMID), Lead.EntityLogicalName);
+                if (existingLead is null)
+                {
+                    await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                }
+                else if (!settings.Value.IgnoreExistingRecords)
+                {
+                    await UpdateLeadAsync(existingLead, contactInfo, contactMapping.FieldsMapping);
+                }
+                else
+                {
+                    logger.LogInformation("Contact {ContactEmail} ignored", contactInfo.ContactEmail);
+                }
+            }
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
@@ -66,7 +97,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
     }
-    
+
     public async Task SynchronizeContactToContactsAsync(ContactInfo contactInfo)
     {
         try
@@ -77,12 +108,29 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
                     contactInfo.ContactID);
                 return;
             }
-            var leadEntity = new Contact();
-            MapCRMEntity(contactInfo, leadEntity, contactMapping.FieldsMapping);
 
-            //leadEntity.Subject ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
+            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Dynamics);
 
-            await serviceClient.CreateAsync(leadEntity);
+            if (syncItem is null)
+            {
+                await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+            }
+            else
+            {
+                var existingContact = await GetEntityById<Contact>(Guid.Parse(syncItem.CRMSyncItemCRMID), Contact.EntityLogicalName);
+                if (existingContact is null)
+                {
+                    await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                }
+                else if (!settings.Value.IgnoreExistingRecords)
+                {
+                    await UpdateContactAsync(existingContact, contactInfo, contactMapping.FieldsMapping);
+                }
+                else
+                {
+                    logger.LogInformation("Contact {ContactEmail} ignored", contactInfo.ContactEmail);
+                }
+            }
         }
         catch (FaultException<OrganizationServiceFault> e)
         {
@@ -101,9 +149,133 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         }
     }
     
-    protected virtual void MapCRMEntity(ContactInfo contactInfo, Entity leadEntity,
+    private async Task UpdateLeadByEmailOrCreate(ContactInfo contactInfo,
         IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
+        Lead? existingLead = null;
+        var tmpLead = new Lead();
+        await MapCRMEntity(contactInfo, tmpLead, fieldMappings);
+
+        if (!string.IsNullOrWhiteSpace(tmpLead.EMailAddress1))
+        {
+            existingLead = await GetLeadByEmail<Lead>(tmpLead.EMailAddress1, Lead.EntityLogicalName);
+        }
+
+        if (existingLead is null)
+        {
+            await CreateLeadAsync(contactInfo, fieldMappings);
+        }
+        else if (!settings.Value.IgnoreExistingRecords)
+        {
+            await UpdateLeadAsync(existingLead, contactInfo, fieldMappings);
+        }
+        else
+        {
+            logger.LogInformation("Contact {ContactEmail} ignored", contactInfo.ContactEmail);
+        }
+    }
+    
+    private async Task UpdateContactByEmailOrCreate(ContactInfo contactInfo,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        Contact? existingContact = null;
+        var tmpContact = new Contact();
+        await MapCRMEntity(contactInfo, tmpContact, fieldMappings);
+
+        if (!string.IsNullOrWhiteSpace(tmpContact.EMailAddress1))
+        {
+            existingContact = await GetLeadByEmail<Contact>(tmpContact.EMailAddress1, Contact.EntityLogicalName);
+        }
+
+        if (existingContact is null)
+        {
+            await CreateContactAsync(contactInfo, fieldMappings);
+        }
+        else if (!settings.Value.IgnoreExistingRecords)
+        {
+            await UpdateContactAsync(existingContact, contactInfo, fieldMappings);
+        }
+        else
+        {
+            logger.LogInformation("Contact {ContactEmail} ignored", contactInfo.ContactEmail);
+        }
+    }
+
+    private async Task CreateLeadAsync(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        var leadEntity = new Lead();
+        await MapCRMEntity(contactInfo, leadEntity, fieldMappings);
+
+        leadEntity.Subject ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
+
+        var leadId = await serviceClient.CreateAsync(leadEntity);
+
+        await syncItemService.LogContactCreateItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
+        //@TODO
+        // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
+        //     contactInfo.ContactEmail);
+    }
+
+    private async Task UpdateLeadAsync(Lead leadEntity, ContactInfo contactInfo,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        await MapCRMEntity(contactInfo, leadEntity, fieldMappings);
+
+        leadEntity.Subject ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
+
+        await serviceClient.UpdateAsync(leadEntity);
+
+        await syncItemService.LogContactUpdateItem(contactInfo, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
+        //@TODO
+        // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
+        //     contactInfo.ContactEmail);
+    }
+    
+    private async Task CreateContactAsync(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        var contactEntity = new Contact();
+        await MapCRMEntity(contactInfo, contactEntity, fieldMappings);
+
+        var leadId = await serviceClient.CreateAsync(contactEntity);
+
+        await syncItemService.LogContactCreateItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
+        //@TODO
+        // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
+        //     contactInfo.ContactEmail);
+    }
+
+    private async Task UpdateContactAsync(Contact contactEntity, ContactInfo contactInfo,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        await MapCRMEntity(contactInfo, contactEntity, fieldMappings);
+
+        await serviceClient.UpdateAsync(contactEntity);
+
+        await syncItemService.LogContactUpdateItem(contactInfo, contactEntity.ContactId.ToString()!, CRMType.Dynamics);
+        //@TODO
+        // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
+        //     contactInfo.ContactEmail);
+    }
+
+    protected async Task MapCRMEntity(ContactInfo contactInfo, Entity leadEntity,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    {
+        if (leadEntity is Lead lead)
+        {
+            foreach (var converter in contactLeadConverters)
+            {
+                await converter.Convert(contactInfo, lead);
+            }
+        }
+
+        if (leadEntity is Contact contact)
+        {
+            foreach (var converter in contactContactConverters)
+            {
+                await converter.Convert(contactInfo, contact);
+            }
+        }
+
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.ContactFieldMapping.MapContactField(contactInfo);
@@ -135,7 +307,20 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
     {
         var query = new QueryExpression(entityName) { ColumnSet = new ColumnSet(true) };
         query.Criteria.AddCondition("modifiedon", ConditionOperator.GreaterThan, lastSync.ToUniversalTime());
-        
+
         return (await serviceClient.RetrieveMultipleAsync(query)).Entities.Select(e => e.ToEntity<TEntity>());
+    }
+
+    private async Task<TEntity?> GetEntityById<TEntity>(Guid leadId, string logicalName)
+    where TEntity : Entity
+        => (await serviceClient.RetrieveAsync(logicalName, leadId, new ColumnSet(true)))?.ToEntity<TEntity>();
+
+    private async Task<TEntity?> GetLeadByEmail<TEntity>(string email, string logicalName)
+    where TEntity : Entity
+    {
+        var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
+        query.Criteria.AddCondition("emailaddress1", ConditionOperator.Equal, email);
+
+        return (await serviceClient.RetrieveMultipleAsync(query)).Entities.FirstOrDefault()?.ToEntity<TEntity>();
     }
 }
