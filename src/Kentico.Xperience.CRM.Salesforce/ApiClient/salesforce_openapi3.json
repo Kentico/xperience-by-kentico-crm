@@ -1,0 +1,3241 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Lightning Platform REST API",
+    "description": "REST API provides you with programmatic access to your data in Salesforce. The flexibility and scalability of REST API make it an excellent choice for integrating Salesforce into your applications and for performing complex operations on a large scale. You can use REST API tools to create, manipulate, and search data in Salesforce by sending HTTP requests to endpoints in Salesforce. Depending on where you send requests, you access and operate on different pieces of information, called resources. Resources include records, query results, metadata, and more. ",
+    "version": "59.0"
+  },
+  "servers": [
+    {
+      "url": "https://biqbluesoft-dev-ed.develop.my.Salesforce.com/services/data/v59.0"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "oAuth2": []
+    },
+    {
+      "openIDConnectDiscovery": []
+    }
+  ],
+  "paths": {
+    "/sobjects": {
+      "description": "Lists the available objects and their metadata for your organization’s data. In addition, it provides the organization encoding, as well as the maximum batch size permitted in queries. For more information on encoding, see Internationalization and Character Sets.",
+      "get": {
+        "parameters": [
+          {
+            "name": "If-Modified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z. For example: If-Modified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have not been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z. For example: If-Unmodified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/DescribeGlobalResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DescribeGlobalResult"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/xml": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sobjects/Contact": {
+      "description": "Describes the individual metadata for the specified object. Can also be used to create a new record for a given object. For example, this can be used to retrieve the metadata for the Account object using the GET method, or create a new Account object using the POST method.",
+      "get": {
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRootInfo"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "An optional header, which can only be used with POST, specifying the format for the request and response. Possible choices are: Content-Type: application/json Content-Type: application/xml",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactSObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Status Code 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveResult"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sobjects/Contact/{id}": {
+      "description": "Accesses records based on the specified object ID. Retrieves, updates, or deletes records. This resource can also be used to retrieve field values. Use the GET method to retrieve records or fields, the DELETE method to delete records, and the PATCH method to update records.",
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "A comma-delimited list of fields to get values for. For example, ?fields=name,description,numberofemployees,industry. An optional query parameter that can only be used with GET.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Modified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z For example: If-Modified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have not been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z For example: If-Unmodified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContactSObject"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Status Code 204"
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "An optional header, which can only be used with PATCH, specifying the format for the request and response. Possible choices are: Content-Type: application/json Content-Type: application/xml",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ContactSObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Status Code 204"
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sobjects/Lead": {
+      "description": "Describes the individual metadata for the specified object. Can also be used to create a new record for a given object. For example, this can be used to retrieve the metadata for the Account object using the GET method, or create a new Account object using the POST method.",
+      "get": {
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SObjectRootInfo"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "parameters": [
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "An optional header, which can only be used with POST, specifying the format for the request and response. Possible choices are: Content-Type: application/json Content-Type: application/xml",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadSObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Status Code 201",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaveResult"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sobjects/Lead/{id}": {
+      "description": "Accesses records based on the specified object ID. Retrieves, updates, or deletes records. This resource can also be used to retrieve field values. Use the GET method to retrieve records or fields, the DELETE method to delete records, and the PATCH method to update records.",
+      "get": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "description": "A comma-delimited list of fields to get values for. For example, ?fields=name,description,numberofemployees,industry. An optional query parameter that can only be used with GET.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Modified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z For example: If-Modified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have not been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z For example: If-Unmodified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeadSObject"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Status Code 204"
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The identifier of the object. For example, 001R0000005hDFYIA2. A required path parameter for all methods (GET, PATCH, and DELETE).",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Content-Type",
+            "in": "header",
+            "description": "An optional header, which can only be used with PATCH, specifying the format for the request and response. Possible choices are: Content-Type: application/json Content-Type: application/xml",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeadSObject"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "Status Code 204"
+          },
+          "415": {
+            "description": "Status Code 415",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sobjects/{sObject}/describe": {
+      "description": "Completely describes the individual metadata at all levels for the specified object. For example, this can be used to retrieve the fields, URLs, and child relationships for the Account object.",
+      "get": {
+        "parameters": [
+          {
+            "name": "sObject",
+            "in": "path",
+            "description": "The name of the object. For example, Account. A required path parameter.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Modified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z. For example: If-Modified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "If-Unmodified-Since",
+            "in": "header",
+            "description": "An optional header specifying a date and time. The request returns records that have not been modified after that date and time. The format is EEE, dd MMM yyyy HH:mm:ss z. For example: If-Unmodified-Since: Mon, 30 Nov 2020 08:34:54 MST.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "304": {
+            "description": "Status Code 304",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status Code 400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Status Code 401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Status Code 403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Status Code 404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Status Code 500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "Status Code 405",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Status Code 503",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ErrorInfo"
+                  }
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "Status Code 200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DescribeSObjectResult"
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Status Code 412",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestApiError"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DescribeGlobalResult": {
+        "type": "object",
+        "properties": {
+          "sobjects": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "labelPlural": {
+                  "type": "string"
+                },
+                "keyPrefix": {
+                  "type": "string"
+                },
+                "custom": {
+                  "type": "boolean"
+                },
+                "customSetting": {
+                  "type": "boolean"
+                },
+                "activateable": {
+                  "type": "boolean"
+                },
+                "createable": {
+                  "type": "boolean"
+                },
+                "updateable": {
+                  "type": "boolean"
+                },
+                "deletable": {
+                  "type": "boolean"
+                },
+                "undeletable": {
+                  "type": "boolean"
+                },
+                "mergeable": {
+                  "type": "boolean"
+                },
+                "replicateable": {
+                  "type": "boolean"
+                },
+                "triggerable": {
+                  "type": "boolean"
+                },
+                "queryable": {
+                  "type": "boolean"
+                },
+                "retrieveable": {
+                  "type": "boolean"
+                },
+                "searchable": {
+                  "type": "boolean"
+                },
+                "layoutable": {
+                  "type": "boolean"
+                },
+                "feedEnabled": {
+                  "type": "boolean"
+                },
+                "mruEnabled": {
+                  "type": "boolean"
+                },
+                "hasSubtypes": {
+                  "type": "boolean"
+                },
+                "isSubtype": {
+                  "type": "boolean"
+                },
+                "dataTranslationEnabled": {
+                  "type": "boolean"
+                },
+                "isInterface": {
+                  "type": "boolean"
+                },
+                "deepCloneable": {
+                  "type": "boolean"
+                },
+                "associateEntityType": {
+                  "type": "string"
+                },
+                "associateParentEntity": {
+                  "type": "string"
+                },
+                "urls": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                },
+                "deprecatedAndHidden": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "encoding": {
+            "type": "string"
+          },
+          "maxBatchSize": {
+            "type": "integer"
+          }
+        }
+      },
+      "SObjectRootInfo": {
+        "type": "object",
+        "properties": {
+          "objectDescribe": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "labelPlural": {
+                "type": "string"
+              },
+              "keyPrefix": {
+                "type": "string"
+              },
+              "custom": {
+                "type": "boolean"
+              },
+              "customSetting": {
+                "type": "boolean"
+              },
+              "activateable": {
+                "type": "boolean"
+              },
+              "createable": {
+                "type": "boolean"
+              },
+              "updateable": {
+                "type": "boolean"
+              },
+              "deletable": {
+                "type": "boolean"
+              },
+              "undeletable": {
+                "type": "boolean"
+              },
+              "mergeable": {
+                "type": "boolean"
+              },
+              "replicateable": {
+                "type": "boolean"
+              },
+              "triggerable": {
+                "type": "boolean"
+              },
+              "queryable": {
+                "type": "boolean"
+              },
+              "retrieveable": {
+                "type": "boolean"
+              },
+              "searchable": {
+                "type": "boolean"
+              },
+              "layoutable": {
+                "type": "boolean"
+              },
+              "feedEnabled": {
+                "type": "boolean"
+              },
+              "mruEnabled": {
+                "type": "boolean"
+              },
+              "hasSubtypes": {
+                "type": "boolean"
+              },
+              "isSubtype": {
+                "type": "boolean"
+              },
+              "dataTranslationEnabled": {
+                "type": "boolean"
+              },
+              "isInterface": {
+                "type": "boolean"
+              },
+              "deepCloneable": {
+                "type": "boolean"
+              },
+              "associateEntityType": {
+                "type": "string"
+              },
+              "associateParentEntity": {
+                "type": "string"
+              },
+              "urls": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              },
+              "deprecatedAndHidden": {
+                "type": "boolean"
+              }
+            }
+          },
+          "recentItems": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "RestApiError": {
+        "type": "object",
+        "properties": {
+          "errorCode": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ErrorInfo": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "errorCode": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extendedErrorDetails": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "extendedErrorCode": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "DescribeSObjectResult": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "labelPlural": {
+            "type": "string"
+          },
+          "keyPrefix": {
+            "type": "string"
+          },
+          "custom": {
+            "type": "boolean"
+          },
+          "customSetting": {
+            "type": "boolean"
+          },
+          "activateable": {
+            "type": "boolean"
+          },
+          "createable": {
+            "type": "boolean"
+          },
+          "updateable": {
+            "type": "boolean"
+          },
+          "deletable": {
+            "type": "boolean"
+          },
+          "undeletable": {
+            "type": "boolean"
+          },
+          "mergeable": {
+            "type": "boolean"
+          },
+          "replicateable": {
+            "type": "boolean"
+          },
+          "triggerable": {
+            "type": "boolean"
+          },
+          "queryable": {
+            "type": "boolean"
+          },
+          "retrieveable": {
+            "type": "boolean"
+          },
+          "searchable": {
+            "type": "boolean"
+          },
+          "layoutable": {
+            "type": "boolean"
+          },
+          "feedEnabled": {
+            "type": "boolean"
+          },
+          "mruEnabled": {
+            "type": "boolean"
+          },
+          "hasSubtypes": {
+            "type": "boolean"
+          },
+          "isSubtype": {
+            "type": "boolean"
+          },
+          "dataTranslationEnabled": {
+            "type": "boolean"
+          },
+          "isInterface": {
+            "type": "boolean"
+          },
+          "deepCloneable": {
+            "type": "boolean"
+          },
+          "associateEntityType": {
+            "type": "string"
+          },
+          "associateParentEntity": {
+            "type": "string"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "extraTypeInfo": {
+                  "type": "string"
+                },
+                "queryByDistance": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "soapType": {
+                  "type": "string"
+                },
+                "custom": {
+                  "type": "boolean"
+                },
+                "nameField": {
+                  "type": "boolean"
+                },
+                "nillable": {
+                  "type": "boolean"
+                },
+                "defaultedOnCreate": {
+                  "type": "boolean"
+                },
+                "externalId": {
+                  "type": "boolean"
+                },
+                "idLookup": {
+                  "type": "boolean"
+                },
+                "caseSensitive": {
+                  "type": "boolean"
+                },
+                "unique": {
+                  "type": "boolean"
+                },
+                "encrypted": {
+                  "type": "boolean"
+                },
+                "htmlFormatted": {
+                  "type": "boolean"
+                },
+                "defaultValueFormula": {
+                  "type": "string"
+                },
+                "calculated": {
+                  "type": "boolean"
+                },
+                "calculatedFormula": {
+                  "type": "string"
+                },
+                "formulaTreatNullNumberAsZero": {
+                  "type": "boolean"
+                },
+                "length": {
+                  "type": "integer"
+                },
+                "byteLength": {
+                  "type": "integer"
+                },
+                "mask": {
+                  "type": "string"
+                },
+                "maskType": {
+                  "type": "string"
+                },
+                "restrictedPicklist": {
+                  "type": "boolean"
+                },
+                "picklistValues": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string"
+                      },
+                      "value": {
+                        "type": "string"
+                      },
+                      "defaultValue": {
+                        "type": "boolean"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      },
+                      "validFor": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "aiPredictionField": {
+                  "type": "boolean"
+                },
+                "controllerName": {
+                  "type": "string"
+                },
+                "referenceTo": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "referenceTargetField": {
+                  "type": "string"
+                },
+                "relationshipName": {
+                  "type": "string"
+                },
+                "relationshipOrder": {
+                  "type": "integer"
+                },
+                "writeRequiresMasterRead": {
+                  "type": "boolean"
+                },
+                "precision": {
+                  "type": "integer"
+                },
+                "scale": {
+                  "type": "integer"
+                },
+                "digits": {
+                  "type": "integer"
+                },
+                "createable": {
+                  "type": "boolean"
+                },
+                "updateable": {
+                  "type": "boolean"
+                },
+                "filterable": {
+                  "type": "boolean"
+                },
+                "aggregatable": {
+                  "type": "boolean"
+                },
+                "compoundFieldName": {
+                  "type": "string"
+                },
+                "searchPrefilterable": {
+                  "type": "boolean"
+                },
+                "groupable": {
+                  "type": "boolean"
+                },
+                "sortable": {
+                  "type": "boolean"
+                },
+                "inlineHelpText": {
+                  "type": "string"
+                },
+                "permissionable": {
+                  "type": "boolean"
+                },
+                "displayLocationInDecimal": {
+                  "type": "boolean"
+                },
+                "polymorphicForeignKey": {
+                  "type": "boolean"
+                },
+                "dataTranslationEnabled": {
+                  "type": "boolean"
+                },
+                "dependentPicklist": {
+                  "type": "boolean"
+                },
+                "filteredLookupInfo": {
+                  "type": "object",
+                  "properties": {
+                    "controllingFields": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    },
+                    "optionalFilter": {
+                      "type": "boolean"
+                    },
+                    "dependent": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "autoNumber": {
+                  "type": "boolean"
+                },
+                "highScaleNumber": {
+                  "type": "boolean"
+                },
+                "deprecatedAndHidden": {
+                  "type": "boolean"
+                },
+                "cascadeDelete": {
+                  "type": "boolean"
+                },
+                "namePointing": {
+                  "type": "boolean"
+                },
+                "restrictedDelete": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "namedLayoutInfos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "urls": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "compactLayoutable": {
+            "type": "boolean"
+          },
+          "searchLayoutable": {
+            "type": "boolean"
+          },
+          "lookupLayoutable": {
+            "type": "boolean"
+          },
+          "listviewable": {
+            "type": "boolean"
+          },
+          "actionOverrides": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "pageId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "isAvailableInTouch": {
+                  "type": "boolean"
+                },
+                "formFactor": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "defaultImplementation": {
+            "type": "string"
+          },
+          "implementsInterfaces": {
+            "type": "string"
+          },
+          "implementedBy": {
+            "type": "string"
+          },
+          "extendsInterfaces": {
+            "type": "string"
+          },
+          "extendedBy": {
+            "type": "string"
+          },
+          "supportedScopes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "networkScopeFieldName": {
+            "type": "string"
+          },
+          "recordTypeInfos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "available": {
+                  "type": "boolean"
+                },
+                "defaultRecordTypeMapping": {
+                  "type": "boolean"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "developerName": {
+                  "type": "string"
+                },
+                "recordTypeId": {
+                  "type": "string"
+                },
+                "active": {
+                  "type": "boolean"
+                },
+                "master": {
+                  "type": "boolean"
+                },
+                "urls": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "childRelationships": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "relationshipName": {
+                  "type": "string"
+                },
+                "junctionIdListNames": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "junctionReferenceTo": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "childSObject": {
+                  "type": "string"
+                },
+                "field": {
+                  "type": "string"
+                },
+                "deprecatedAndHidden": {
+                  "type": "boolean"
+                },
+                "cascadeDelete": {
+                  "type": "boolean"
+                },
+                "restrictedDelete": {
+                  "type": "boolean"
+                }
+              }
+            }
+          },
+          "urls": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "sobjectDescribeOption": {
+            "type": "string",
+            "enum": ["DEFAULT", "FULL", "DEFERRED"]
+          },
+          "deprecatedAndHidden": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SaveResult": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "statusCode": {
+                  "type": "string"
+                },
+                "extendedErrorDetails": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "extendedErrorCode": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "string"
+                },
+                "extendedDetails": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "extendedErrorCode": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "infos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "statusCode": {
+                  "type": "string"
+                },
+                "extendedDetails": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "extendedErrorCode": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "LeadSObject": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string"
+          },
+          "IsDeleted": {
+            "type": "boolean",
+            "description": "Indicates whether the object has been moved to the Recycle Bin (true) or not (false). Label is Deleted."
+          },
+          "MasterRecordId": {
+            "type": "string",
+            "description": "If this record was deleted as the result of a merge, this field contains the ID of the record that was kept. If this record was deleted for any other reason, or has not been deleted, the value is null.When using Apex triggers to determine which record was deleted in a merge event, this field’s value is the ID of the record that remains in Trigger.old. In Trigger.new, the value is null."
+          },
+          "LastName": {
+            "type": "string",
+            "description": "Required. Last name of the lead up to 80 characters."
+          },
+          "FirstName": {
+            "type": "string",
+            "description": "The lead’s first name up to 40 characters."
+          },
+          "Salutation": {
+            "type": "string",
+            "description": "Salutation for the lead."
+          },
+          "Name": {
+            "type": "string",
+            "description": "Concatenation of FirstName, MiddleName, LastName, and Suffix up to 203 characters, including whitespaces."
+          },
+          "Title": {
+            "type": "string",
+            "description": "Title for the lead, such as CFO or CEO."
+          },
+          "Company": {
+            "type": "string",
+            "description": "Required. The lead’s company. If person account record types have been enabled, and if the value of Company is null, the lead converts to a person account."
+          },
+          "Street": {
+            "type": "string",
+            "description": "Street number and name for the address of the lead."
+          },
+          "City": {
+            "type": "string",
+            "description": "City for the lead’s address."
+          },
+          "State": {
+            "type": "string",
+            "description": "State for the address of the lead."
+          },
+          "PostalCode": {
+            "type": "string",
+            "description": "Postal code for the address of the lead. Label is Zip/Postal Code."
+          },
+          "Country": {
+            "type": "string",
+            "description": "The lead’s country."
+          },
+          "Latitude": {
+            "type": "number",
+            "description": "Used with Longitude to specify the precise geolocation of an address. Acceptable values are numbers between –90 and 90 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "Longitude": {
+            "type": "number",
+            "description": "Used with Latitude to specify the precise geolocation of an address. Acceptable values are numbers between –180 and 180 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "GeocodeAccuracy": {
+            "type": "string",
+            "description": "Accuracy level of the geocode for the address. For details on geolocation compound fields, see ."
+          },
+          "Address": {
+            "type": "object",
+            "description": "The compound form of the address. Read-only. For details on compound address fields, see Address Compound Fields."
+          },
+          "Phone": {
+            "type": "string",
+            "description": "The lead’s phone number."
+          },
+          "MobilePhone": {
+            "type": "string",
+            "description": "The lead’s mobile phone number."
+          },
+          "Fax": {
+            "type": "string",
+            "description": "The lead’s fax number."
+          },
+          "Email": {
+            "type": "string",
+            "description": "The lead’s email address."
+          },
+          "Website": {
+            "type": "string",
+            "description": "Website for the lead."
+          },
+          "PhotoUrl": {
+            "type": "string",
+            "description": "Path to be combined with the URL of a Salesforce instance (Example: https://yourInstance.Salesforce.com/) to generate a URL to request the social network profile image associated with the lead. Generated URL returns an HTTP redirect (code 302) to the social network profile image for the lead. Empty if Social Accounts and Contacts isn't enabled or if Social Accounts and Contacts has been disabled for the requesting user."
+          },
+          "Description": {
+            "type": "string",
+            "description": "The lead’s description."
+          },
+          "LeadSource": {
+            "type": "string",
+            "description": "The lead’s source."
+          },
+          "Status": {
+            "type": "string",
+            "description": "Status code for this converted lead. Status codes are defined in Status and represented in the API by the LeadStatus object."
+          },
+          "Industry": {
+            "type": "string",
+            "description": "Industry in which the lead works."
+          },
+          "Rating": {
+            "type": "string",
+            "description": "Rating of the lead."
+          },
+          "AnnualRevenue": {
+            "type": "number",
+            "description": "Annual revenue for the lead’s company."
+          },
+          "NumberOfEmployees": {
+            "type": "integer",
+            "description": "Number of employees at the lead’s company. Label is Employees."
+          },
+          "OwnerId": {
+            "type": "string",
+            "description": "ID of the lead’s owner."
+          },
+          "IsConverted": {
+            "type": "boolean",
+            "description": "Indicates whether the lead has been converted (true) or not (false). Label is Converted."
+          },
+          "ConvertedDate": {
+            "type": "string",
+            "description": "Date on which this lead was converted.",
+            "format": "date"
+          },
+          "ConvertedAccountId": {
+            "type": "string",
+            "description": "Object reference ID that points to the account into which the lead converted."
+          },
+          "ConvertedContactId": {
+            "type": "string",
+            "description": "Object reference ID that points to the contact into which the lead converted."
+          },
+          "ConvertedOpportunityId": {
+            "type": "string",
+            "description": "Object reference ID that points to the opportunity into which the lead has been converted."
+          },
+          "IsUnreadByOwner": {
+            "type": "boolean",
+            "description": "If true, lead has been assigned, but not yet viewed. See Unread Leads for more information. Label is Unread By Owner."
+          },
+          "CreatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedById": {
+            "type": "string"
+          },
+          "LastModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastModifiedById": {
+            "type": "string"
+          },
+          "SystemModstamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastActivityDate": {
+            "type": "string",
+            "description": "Value is the most recent of either: Due date of the most recent event logged against the record. Due date of the most recently closed task associated with the record.",
+            "format": "date"
+          },
+          "LastViewedDate": {
+            "type": "string",
+            "description": "The timestamp when the current user last viewed this record or list view. If this value is null, the user might have only accessed this record or list view (LastReferencedDate) but not viewed it.",
+            "format": "date-time"
+          },
+          "LastReferencedDate": {
+            "type": "string",
+            "description": "The timestamp when the current user last accessed this record, a record related to this record, or a list view.",
+            "format": "date-time"
+          },
+          "Jigsaw": {
+            "type": "string",
+            "description": "References the ID of a contact in Data.com. If a lead has a value in this field, it means that a contact was imported as a lead from Data.com. If the contact (converted to a lead) was not imported from Data.com, the field value is null. Maximum size is 20 characters. Available in API version 22.0 and later. Label is Data.com Key.The Jigsawfield is exposed in the API to support troubleshooting for import errors and reimporting of corrected data. Do not modify the value in the Jigsaw field."
+          },
+          "JigsawContactId": {
+            "type": "string"
+          },
+          "CleanStatus": {
+            "type": "string",
+            "description": "Indicates the record’s clean status compared with Data.com. Values include: Matched, Different, Acknowledged, NotFound, Inactive, Pending, SelectMatch, or Skipped. Several values for CleanStatus appear with different labels on the lead record. Matched appears as In Sync Acknowledged appears as Reviewed Pending appears as Not Compared"
+          },
+          "CompanyDunsNumber": {
+            "type": "string",
+            "description": "The Data Universal Numbering System (D-U-N-S) number, which is a unique, nine-digit number assigned to every business location in the Dun & Bradstreet database that has a unique, separate, and distinct operation. Industries and companies use D-U-N-S numbers as a global standard for business identification and tracking. Maximum size is 9 characters.This field is only available to organizations that use Data.com Prospector or Data.com Clean."
+          },
+          "DandbCompanyId": {
+            "type": "string"
+          },
+          "EmailBouncedReason": {
+            "type": "string",
+            "description": "If bounce management is activated and an email sent to the lead bounced, the reason for the bounce."
+          },
+          "EmailBouncedDate": {
+            "type": "string",
+            "description": "If bounce management is activated and an email sent to the lead bounced, the date and time of the bounce.",
+            "format": "date-time"
+          },
+          "IndividualId": {
+            "type": "string",
+            "description": "ID of the data privacy record associated with this lead. This field is available if you enabled Data Protection and Privacy in Setup."
+          },
+          "IsPriorityRecord": {
+            "type": "boolean"
+          },
+          "SICCode__c": {
+            "type": "string"
+          },
+          "ProductInterest__c": {
+            "type": "string"
+          },
+          "Primary__c": {
+            "type": "string"
+          },
+          "CurrentGenerators__c": {
+            "type": "string"
+          },
+          "NumberofLocations__c": {
+            "type": "number"
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "description": "Represents a prospect or lead."
+      },
+      "ContactSObject": {
+        "type": "object",
+        "properties": {
+          "Id": {
+            "type": "string"
+          },
+          "IsDeleted": {
+            "type": "boolean",
+            "description": "Indicates whether the object has been moved to the Recycle Bin (true) or not (false). Label is Deleted."
+          },
+          "MasterRecordId": {
+            "type": "string",
+            "description": "If this record was deleted as the result of a merge, this field contains the ID of the record that remains. If this record was deleted for any other reason, or has not been deleted, the value is null."
+          },
+          "AccountId": {
+            "type": "string",
+            "description": "ID of the account that’s the parent of this contact. We recommend that you update up to 50 contacts simultaneously when changing the accounts on contacts enabled for a Customer Portal or partner portal. We also recommend that you make this update after business hours."
+          },
+          "LastName": {
+            "type": "string",
+            "description": "Required. Last name of the contact up to 80 characters."
+          },
+          "FirstName": {
+            "type": "string",
+            "description": "The contact’s first name up to 40 characters."
+          },
+          "Salutation": {
+            "type": "string",
+            "description": "Honorific abbreviation, word, or phrase to be used in front of name in greetings, such as Dr. or Mrs."
+          },
+          "Name": {
+            "type": "string",
+            "description": "Concatenation of FirstName, MiddleName, LastName, and Suffix up to 203 characters, including whitespaces."
+          },
+          "OtherStreet": {
+            "type": "string",
+            "description": "Street for alternate address."
+          },
+          "OtherCity": {
+            "type": "string",
+            "description": "Alternate address details."
+          },
+          "OtherState": {
+            "type": "string",
+            "description": "Alternate address details."
+          },
+          "OtherPostalCode": {
+            "type": "string",
+            "description": "Alternate address details."
+          },
+          "OtherCountry": {
+            "type": "string",
+            "description": "Alternate address details."
+          },
+          "OtherLatitude": {
+            "type": "number",
+            "description": "Used with OtherLongitude to specify the precise geolocation of an alternate address. Acceptable values are numbers between –90 and 90 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "OtherLongitude": {
+            "type": "number",
+            "description": "Used with OtherLatitude to specify the precise geolocation of an alternate address. Acceptable values are numbers between –180 and 180 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "OtherGeocodeAccuracy": {
+            "type": "string",
+            "description": "Accuracy level of the geocode for the other address. For details on geolocation compound fields, see ."
+          },
+          "OtherAddress": {
+            "type": "object",
+            "description": "The compound form of the other address. Read-only. For details on compound address fields, see Address Compound Fields."
+          },
+          "MailingStreet": {
+            "type": "string",
+            "description": "Street address for mailing address."
+          },
+          "MailingCity": {
+            "type": "string",
+            "description": "Mailing address details."
+          },
+          "MailingState": {
+            "type": "string",
+            "description": "Mailing address details."
+          },
+          "MailingPostalCode": {
+            "type": "string",
+            "description": "Mailing address details."
+          },
+          "MailingCountry": {
+            "type": "string",
+            "description": "Mailing address details."
+          },
+          "MailingLatitude": {
+            "type": "number",
+            "description": "Used with MailingLongitude to specify the precise geolocation of a mailing address. Acceptable values are numbers between –90 and 90 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "MailingLongitude": {
+            "type": "number",
+            "description": "Used with MailingLatitude to specify the precise geolocation of a mailing address. Acceptable values are numbers between –180 and 180 up to 15 decimal places. For details on geolocation compound fields, see ."
+          },
+          "MailingGeocodeAccuracy": {
+            "type": "string",
+            "description": "Accuracy level of the geocode for the mailing address. For details on geolocation compound field, see ."
+          },
+          "MailingAddress": {
+            "type": "object",
+            "description": "The compound form of the mailing address. Read-only. For details on compound address fields, see Address Compound Fields."
+          },
+          "Phone": {
+            "type": "string",
+            "description": "Telephone number for the contact. Label is Business Phone."
+          },
+          "Fax": {
+            "type": "string",
+            "description": "The contact’s fax number. Label is Business Fax."
+          },
+          "MobilePhone": {
+            "type": "string",
+            "description": "Contact’s mobile phone number."
+          },
+          "HomePhone": {
+            "type": "string",
+            "description": "The contact’s home telephone number."
+          },
+          "OtherPhone": {
+            "type": "string",
+            "description": "Telephone for alternate address."
+          },
+          "AssistantPhone": {
+            "type": "string",
+            "description": "The assistant’s telephone number."
+          },
+          "ReportsToId": {
+            "type": "string",
+            "description": "This field doesn’t appear if IsPersonAccount is true."
+          },
+          "Email": {
+            "type": "string",
+            "description": "The contact’s email address."
+          },
+          "Title": {
+            "type": "string",
+            "description": "Title of the contact, such as CEO or Vice President."
+          },
+          "Department": {
+            "type": "string",
+            "description": "The contact’s department."
+          },
+          "AssistantName": {
+            "type": "string",
+            "description": "The assistant’s name."
+          },
+          "LeadSource": {
+            "type": "string",
+            "description": "The lead’s source."
+          },
+          "Birthdate": {
+            "type": "string",
+            "description": "The contact’s birthdate. Filter criteria for report filters, list view filters, and SOQL queries ignore the year portion of the Birthdate field. For example, this SOQL query returns contacts with birthdays later in the year than today:SELECT Name, Birthdate FROM Contact WHERE Birthdate > TODAY",
+            "format": "date"
+          },
+          "Description": {
+            "type": "string",
+            "description": "A description of the contact. Label is Contact Description up to 32 KB."
+          },
+          "OwnerId": {
+            "type": "string",
+            "description": "The ID of the owner of the account associated with this contact."
+          },
+          "CreatedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "CreatedById": {
+            "type": "string"
+          },
+          "LastModifiedDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastModifiedById": {
+            "type": "string"
+          },
+          "SystemModstamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastActivityDate": {
+            "type": "string",
+            "description": "Value is the most recent of either: Due date of the most recent event logged against the record. Due date of the most recently closed task associated with the record.",
+            "format": "date"
+          },
+          "LastCURequestDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastCUUpdateDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "LastViewedDate": {
+            "type": "string",
+            "description": "The timestamp when the current user last viewed this record or list view. If this value is null, the user might have only accessed this record or list view (LastReferencedDate) but not viewed it.",
+            "format": "date-time"
+          },
+          "LastReferencedDate": {
+            "type": "string",
+            "description": "The timestamp when the current user last accessed this record, a record related to this record, or a list view.",
+            "format": "date-time"
+          },
+          "EmailBouncedReason": {
+            "type": "string",
+            "description": "If bounce management is activated and an email sent to the contact bounces, the reason for the bounce."
+          },
+          "EmailBouncedDate": {
+            "type": "string",
+            "description": "If bounce management is activated and an email sent to the contact bounces, the date and time of the bounce.",
+            "format": "date-time"
+          },
+          "IsEmailBounced": {
+            "type": "boolean",
+            "description": "If bounce management is activated and an email is sent to a contact, indicates whether the email bounced (true) or not (false)."
+          },
+          "PhotoUrl": {
+            "type": "string",
+            "description": "Path to be combined with the URL of a Salesforce instance (Example: https://yourInstance.Salesforce.com/) to generate a URL to request the social network profile image associated with the contact. Generated URL returns an HTTP redirect (code 302) to the social network profile image for the contact. Empty if Social Accounts and Contacts isn't enabled or if Social Accounts and Contacts is disabled for the requesting user."
+          },
+          "Jigsaw": {
+            "type": "string",
+            "description": "References the company’s ID in Data.com. If an account has a value in this field, it means that the account was imported from Data.com. If the field value is null, the account was not imported from Data.com. Maximum size is 20 characters. Available in API version 22.0 and later. Label is Data.com Key.The Jigsaw field is exposed in the API to support troubleshooting for import errors and reimporting of corrected data. Do not modify this value."
+          },
+          "JigsawContactId": {
+            "type": "string"
+          },
+          "CleanStatus": {
+            "type": "string",
+            "description": "Indicates the record’s clean status as compared with Data.com. Values include: Matched, Different, Acknowledged, NotFound, Inactive, Pending, SelectMatch, or Skipped. Several values for CleanStatus appear with different labels on the contact record. Matched appears as In Sync Acknowledged appears as Reviewed Pending appears as Not Compared"
+          },
+          "IndividualId": {
+            "type": "string",
+            "description": "ID of the data privacy record associated with this contact. This field is available if Data Protection and Privacy is enabled."
+          },
+          "IsPriorityRecord": {
+            "type": "boolean"
+          },
+          "Level__c": {
+            "type": "string"
+          },
+          "Languages__c": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "description": "Represents a contact, which is a person associated with an account."
+      }
+    },
+    "securitySchemes": {
+      "openIDConnectDiscovery": {
+        "type": "openIdConnect",
+        "openIdConnectUrl": "https://login.Salesforce.com/.well-known/openid-configuration"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "description": "Use Session Id or Access Token as valid bearer token to authenticate with Salesforce. Access Token could be retrieved via any supported OAuth2 flows listed or not listed here (e.g. JWT Bearer Token Flow).To obtain a session ID, you can use the SOAP API login() call or through the Salesforce CLI.",
+        "scheme": "bearer"
+      },
+      "oAuth2": {
+        "type": "oauth2",
+        "description": "For more information on all supported OAuth Flows, please see 'https://help.Salesforce.com/articleView?id=remoteaccess_oauth_flows.htm&type=5'. For more information on all available scope options, please see 'https://help.Salesforce.com/articleView?id=remoteaccess_oauth_tokens_scopes.htm&type=5#oauth_scopes'. ",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://login.Salesforce.com/services/oauth2/authorize",
+            "scopes": {
+              "visualforce": "Allows access to customer-created Visualforce pages only. This scope doesn’t allow access to standard Salesforce UIs.",
+              "address": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "custom_permissions": "Allows access to the custom permissions in an org associated with the connected app. This scope also shows whether the current user has each permission enabled.",
+              "openid": "Allows access to the current, logged in user’s unique identifier for OpenID Connect apps. In the OAuth 2.0 user-agent flow and the OAuth 2.0 web server flow, use the openid scope. In addition to the access token, this scope enables you to receive a signed ID token that conforms to the OpenID Connect specifications.",
+              "profile": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "refresh_token": "Allows a refresh token to be returned when the requesting client is eligible to receive one. With a refresh token, the app can interact with the user’s data while the user is offline. This token is synonymous with requesting offline_access.",
+              "wave_api": "Access and manage your Wave data.",
+              "web": "Allows use of the access_token on the web. This scope also includes visualforce, allowing access to customer-created Visualforce pages.",
+              "phone": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "offline_access": "Allows a refresh token to be returned when the requesting client is eligible to receive one. With a refresh token, the app can interact with the user’s data while the user is offline. This token is synonymous with requesting offline_access.",
+              "chatter_api": "Allows access to Connect REST API resources on behalf of the user.",
+              "id": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "api": "Allows access to the current, logged-in user’s account using APIs, such as REST API and Bulk API. This scope also includes chatter_api, which allows access to Connect REST API resources.",
+              "eclair_api": "Access and manage your Eclair data.",
+              "email": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "pardot_api": "Allows access to Pardot API services on behalf of the user. Manage the full extent of accessible services in Pardot.",
+              "full": "Allows access to all data accessible by the logged-in user, and encompasses all other scopes. full doesn’t return a refresh token. You must explicitly request the refresh_token scope to get a refresh token."
+            }
+          },
+          "password": {
+            "tokenUrl": "https://login.Salesforce.com/services/oauth2/token",
+            "scopes": {
+              "api": "Allows access to the current, logged-in user’s account using APIs, such as REST API and Bulk API. This scope also includes chatter_api, which allows access to Connect REST API resources."
+            }
+          },
+          "authorizationCode": {
+            "authorizationUrl": "https://login.Salesforce.com/services/oauth2/authorize",
+            "tokenUrl": "https://login.Salesforce.com/services/oauth2/token",
+            "scopes": {
+              "visualforce": "Allows access to customer-created Visualforce pages only. This scope doesn’t allow access to standard Salesforce UIs.",
+              "address": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "custom_permissions": "Allows access to the custom permissions in an org associated with the connected app. This scope also shows whether the current user has each permission enabled.",
+              "openid": "Allows access to the current, logged in user’s unique identifier for OpenID Connect apps. In the OAuth 2.0 user-agent flow and the OAuth 2.0 web server flow, use the openid scope. In addition to the access token, this scope enables you to receive a signed ID token that conforms to the OpenID Connect specifications.",
+              "profile": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "refresh_token": "Allows a refresh token to be returned when the requesting client is eligible to receive one. With a refresh token, the app can interact with the user’s data while the user is offline. This token is synonymous with requesting offline_access.",
+              "wave_api": "Access and manage your Wave data.",
+              "web": "Allows use of the access_token on the web. This scope also includes visualforce, allowing access to customer-created Visualforce pages.",
+              "phone": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "offline_access": "Allows a refresh token to be returned when the requesting client is eligible to receive one. With a refresh token, the app can interact with the user’s data while the user is offline. This token is synonymous with requesting offline_access.",
+              "chatter_api": "Allows access to Connect REST API resources on behalf of the user.",
+              "id": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "api": "Allows access to the current, logged-in user’s account using APIs, such as REST API and Bulk API. This scope also includes chatter_api, which allows access to Connect REST API resources.",
+              "eclair_api": "Access and manage your Eclair data.",
+              "email": "Allows access to the identity URL service. You can request profile, email, address, or phone individually to get the same result as using id; they are all synonymous.",
+              "pardot_api": "Allows access to Pardot API services on behalf of the user. Manage the full extent of accessible services in Pardot.",
+              "full": "Allows access to all data accessible by the logged-in user, and encompasses all other scopes. full doesn’t return a refresh token. You must explicitly request the refresh_token scope to get a refresh token."
+            }
+          }
+        }
+      }
+    }
+  }
+}

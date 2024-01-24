@@ -1,9 +1,9 @@
 ﻿using Kentico.Xperience.CRM.Common.Services;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 
-namespace Kentico.Xperience.CRM.SalesForce.Services;
+namespace Kentico.Xperience.CRM.Salesforce.Services;
 
-public interface ISalesForceContactsIntegrationService : IContactsIntegrationService
+public interface ISalesforceContactsIntegrationService : IContactsIntegrationService
 {
     Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync);
     Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync);

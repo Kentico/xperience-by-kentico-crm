@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Kentico.Xperience.CRM.SalesForce.Models;
+namespace Kentico.Xperience.CRM.Salesforce.Models;
 
 /// <summary>
 /// Base model for query result

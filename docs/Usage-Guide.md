@@ -16,7 +16,7 @@ Integration uses OAuth client credentials scheme, so you have to setup your CRM 
 client id and client secret:
 
 - [Dynamics](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth)
-- [SalesForce](https://help.salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
+- [Salesforce](https://help.Salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
 
 ### CRM settings description
 
@@ -25,7 +25,7 @@ client id and client secret:
 | Forms enabled           | If enabled form submissions for registered forms are sent to CRM Leads               |
 | Contacts enabled (TBD)  | If enabled online marketing contacts are synced to CRM Leads or Contacts             |
 | Ignore existing records | If enabled then no updates in CRM will be performed on records with same ID or email |
-| CRM URL                 | Base Dynamics / SalesForce instance URL                                              |
+| CRM URL                 | Base Dynamics / Salesforce instance URL                                              |
 | Client ID               | Client ID for OAuth 2.0 client credentials scheme                                    |
 | Client secret           | Client secret for OAuth 2.0 client credentials scheme                                |
 
@@ -47,17 +47,17 @@ Fill settings in CMS or use this appsettings:
 }
 ```
 
-### SalesForce settings
+### Salesforce settings
 
 Fill settings in CMS or use this app settings:
 
 ```json
 {
-  "CMSSalesForceCRMIntegration": {
+  "CMSSalesforceCRMIntegration": {
     "FormLeadsEnabled": true,
     "IgnoreExistingRecords": false,
     "ApiConfig": {
-      "SalesForceUrl": "",
+      "SalesforceUrl": "",
       "ClientId": "",
       "ClientSecret": ""
     }
@@ -65,11 +65,11 @@ Fill settings in CMS or use this app settings:
 }
 ```
 
-You can also set specific API version for SalesForce REST API (default version is 59).
+You can also set specific API version for Salesforce REST API (default version is 59).
 
 ```json
 {
-  "CMSSalesForceCRMIntegration:ApiConfig:ApiVersion": 59
+  "CMSSalesforceCRMIntegration:ApiConfig:ApiVersion": 59
 }
 ```
 
@@ -149,7 +149,7 @@ Use this option when you need complex logic and need to use another service via 
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
-### SalesForce
+### Salesforce
 
 Added form with auto mapping based on Form field mapping to Contacts atttibutes. Uses CMS settings:
 
@@ -159,7 +159,7 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
@@ -171,9 +171,9 @@ Same example but with using app setting in code (**CMS setting are ignored!**):
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME),
-    builder.Configuration.GetSection(SalesForceIntegrationSettings.ConfigKeyName));
+    builder.Configuration.GetSection(SalesforceIntegrationSettings.ConfigKeyName));
 ```
 
 Example how to add form with auto mapping combined with custom mapping and custom validation:
@@ -184,7 +184,7 @@ Example how to add form with auto mapping combined with custom mapping and custo
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>());
@@ -198,7 +198,7 @@ Example how to add form with own mapping:
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                 c => c
                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
@@ -217,6 +217,6 @@ Use this option when you need complex logic and need to use another service via 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```

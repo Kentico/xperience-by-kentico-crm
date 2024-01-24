@@ -1,9 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Description>Xperience By Kentico - SalesForce integrations</Description>
-		<RootNamespace>Kentico.Xperience.CRM.SalesForce</RootNamespace>
-		<PackageTags>$(PackageTags);salesforce</PackageTags>
+		<Product>Xperience by Kentico CRM Salesforce</Product>
+		<Title>$(Product)</Title>
+		<Description>Xperience By Kentico - Salesforce Sales Cloud integration</Description>
+		<PackageId>Kentico.Xperience.CRM.Salesforce</PackageId>
+		<RootNamespace>Kentico.Xperience.CRM.Salesforce</RootNamespace>
+		<PackageTags>$(PackageTags);Salesforce</PackageTags>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<OpenApiReference Include=".\ApiClient\salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="SalesForce.OpenApi" ClassName="SalesForceApiClient">
+		<OpenApiReference Include=".\ApiClient\Salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="Salesforce.OpenApi" ClassName="SalesforceApiClient">
 			<Options>/UseBaseUrl:false /JsonLibrary:SystemTextJson /GenerateOptionalParameters:true /GenerateOptionalPropertiesAsNullable:true /GenerateNullableReferenceTypes:true /ExposeJsonSerializerSettings:true</Options>
 		</OpenApiReference>
 	</ItemGroup>
@@ -24,7 +27,7 @@
 	<ItemGroup>
 		<PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" />
 		<PackageReference Include="Kentico.Xperience.Core" />
-		<PackageReference Include="IdentityModel" />		
+		<PackageReference Include="IdentityModel" />
 		<PackageReference Include="NSwag.ApiDescription.Client">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

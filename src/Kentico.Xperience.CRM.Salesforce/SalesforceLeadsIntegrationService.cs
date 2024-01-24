@@ -3,33 +3,33 @@ using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
-using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 using System.Text.Json;
 
-namespace Kentico.Xperience.CRM.SalesForce.Services;
+namespace Kentico.Xperience.CRM.Salesforce.Services;
 
-internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationService
+internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationService
 {
-    private readonly SalesForceBizFormsMappingConfiguration bizFormMappingConfig;
+    private readonly SalesforceBizFormsMappingConfiguration bizFormMappingConfig;
     private readonly ILeadsIntegrationValidationService validationService;
-    private readonly ISalesForceApiService apiService;
-    private readonly ILogger<SalesForceLeadsIntegrationService> logger;
+    private readonly ISalesforceApiService apiService;
+    private readonly ILogger<SalesforceLeadsIntegrationService> logger;
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
-    private readonly IOptionsSnapshot<SalesForceIntegrationSettings> settings;
+    private readonly IOptionsSnapshot<SalesforceIntegrationSettings> settings;
     private readonly IEnumerable<ICRMTypeConverter<BizFormItem, LeadSObject>> formsConverters;
 
-    public SalesForceLeadsIntegrationService(
-        SalesForceBizFormsMappingConfiguration bizFormMappingConfig,
+    public SalesforceLeadsIntegrationService(
+        SalesforceBizFormsMappingConfiguration bizFormMappingConfig,
         ILeadsIntegrationValidationService validationService,
-        ISalesForceApiService apiService,
-        ILogger<SalesForceLeadsIntegrationService> logger,
+        ISalesforceApiService apiService,
+        ILogger<SalesforceLeadsIntegrationService> logger,
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
-        IOptionsSnapshot<SalesForceIntegrationSettings> settings,
+        IOptionsSnapshot<SalesforceIntegrationSettings> settings,
         IEnumerable<ICRMTypeConverter<BizFormItem, LeadSObject>> formsConverters)
     {
         this.bizFormMappingConfig = bizFormMappingConfig;
@@ -83,7 +83,7 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
     {
         try
         {
-            var syncItem = await syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.SalesForce);
+            var syncItem = await syncItemService.GetFormLeadSyncItem(bizFormItem, CRMType.Salesforce);
 
             if (syncItem is null)
             {
@@ -110,17 +110,17 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
         catch (ApiException<ICollection<RestApiError>> e)
         {
             logger.LogError(e, "Sync lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Salesforce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
             logger.LogError(e, "Sync lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Salesforce);
         }
         catch (ApiException e)
         {
             logger.LogError(e, "Sync lead failed - unexpected api error");
-            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.SalesForce);
+            failedSyncItemService.LogFailedLeadItem(bizFormItem, CRMType.Salesforce);
         }
     }
 
@@ -163,8 +163,8 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
 
         var result = await apiService.CreateLeadAsync(lead);
 
-        await syncItemService.LogFormLeadCreateItem(bizFormItem, result.Id!, CRMType.SalesForce);
-        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
+        await syncItemService.LogFormLeadCreateItem(bizFormItem, result.Id!, CRMType.Salesforce);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
 
@@ -179,8 +179,8 @@ internal class SalesForceLeadsIntegrationService : ISalesForceLeadsIntegrationSe
 
         await apiService.UpdateLeadAsync(leadId, lead);
 
-        await syncItemService.LogFormLeadUpdateItem(bizFormItem, leadId, CRMType.SalesForce);
-        failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, bizFormItem.BizFormClassName,
+        await syncItemService.LogFormLeadUpdateItem(bizFormItem, leadId, CRMType.Salesforce);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, bizFormItem.BizFormClassName,
             bizFormItem.ItemID);
     }
 

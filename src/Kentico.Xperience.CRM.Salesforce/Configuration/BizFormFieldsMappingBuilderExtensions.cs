@@ -1,13 +1,13 @@
 ﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 using System.Linq.Expressions;
 
-namespace Kentico.Xperience.CRM.SalesForce.Configuration;
+namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 
 /// <summary>
-/// Specific extensions for mapping to SalesForce which enables mapping to generated Lead entity class
+/// Specific extensions for mapping to Salesforce which enables mapping to generated Lead entity class
 /// </summary>
 public static class BizFormFieldsMappingBuilderExtensions
 {

@@ -1,37 +1,36 @@
 ﻿using CMS.ContactManagement;
-using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
-using Kentico.Xperience.CRM.SalesForce.Configuration;
+using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 using System.Text.Json;
 
-namespace Kentico.Xperience.CRM.SalesForce.Services;
+namespace Kentico.Xperience.CRM.Salesforce.Services;
 
-internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegrationService
+internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegrationService
 {
-    private readonly SalesForceContactMappingConfiguration contactMapping;
+    private readonly SalesforceContactMappingConfiguration contactMapping;
     private readonly IContactsIntegrationValidationService validationService;
-    private readonly ISalesForceApiService apiService;
-    private readonly ILogger<SalesForceContactsIntegrationService> logger;
+    private readonly ISalesforceApiService apiService;
+    private readonly ILogger<SalesforceContactsIntegrationService> logger;
     private readonly ICRMSyncItemService syncItemService;
     private readonly IFailedSyncItemService failedSyncItemService;
-    private readonly IOptionsSnapshot<SalesForceIntegrationSettings> settings;
+    private readonly IOptionsSnapshot<SalesforceIntegrationSettings> settings;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, LeadSObject>> contactLeadConverters;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters;
 
-    public SalesForceContactsIntegrationService(
-        SalesForceContactMappingConfiguration contactMapping,
+    public SalesforceContactsIntegrationService(
+        SalesforceContactMappingConfiguration contactMapping,
         IContactsIntegrationValidationService validationService,
-        ISalesForceApiService apiService,
-        ILogger<SalesForceContactsIntegrationService> logger,
+        ISalesforceApiService apiService,
+        ILogger<SalesforceContactsIntegrationService> logger,
         ICRMSyncItemService syncItemService,
         IFailedSyncItemService failedSyncItemService,
-        IOptionsSnapshot<SalesForceIntegrationSettings> settings,
+        IOptionsSnapshot<SalesforceIntegrationSettings> settings,
         IEnumerable<ICRMTypeConverter<ContactInfo, LeadSObject>> contactLeadConverters,
         IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters)
     {
@@ -153,7 +152,7 @@ internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegra
 
         var result = await apiService.CreateLeadAsync(lead);
 
-        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.SalesForce);
+        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -169,7 +168,7 @@ internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegra
 
         await apiService.UpdateLeadAsync(leadId, lead);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.SalesForce);
+        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -184,7 +183,7 @@ internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegra
         
         var result = await apiService.CreateContactAsync(contact);
 
-        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.SalesForce);
+        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -200,7 +199,7 @@ internal class SalesForceContactsIntegrationService : ISalesForceContactsIntegra
 
         await apiService.UpdateContactAsync(leadId, contact);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.SalesForce);
+        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);

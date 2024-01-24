@@ -6,21 +6,21 @@ using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 using System.Linq.Expressions;
 
-namespace Kentico.Xperience.CRM.SalesForce.Configuration;
+namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 
-public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceContactMappingBuilder>
+public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceContactMappingBuilder>
 {
     private readonly IServiceCollection serviceCollection;
 
-    public SalesForceContactMappingBuilder(IServiceCollection serviceCollection) : base(serviceCollection)
+    public SalesforceContactMappingBuilder(IServiceCollection serviceCollection) : base(serviceCollection)
     {
         this.serviceCollection = serviceCollection;
     }
 
-    public SalesForceContactMappingBuilder MapLeadField(string contactFieldName,
+    public SalesforceContactMappingBuilder MapLeadField(string contactFieldName,
         Expression<Func<LeadSObject, object?>> expression)
     {
         fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldNameMapping(contactFieldName),
@@ -28,7 +28,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
 
-    public SalesForceContactMappingBuilder MapLeadField(
+    public SalesforceContactMappingBuilder MapLeadField(
         Func<ContactInfo, object> contactInfoMappingFunc,
         Expression<Func<LeadSObject, object?>> expression)
     {
@@ -37,7 +37,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
 
-    public SalesForceContactMappingBuilder MapContactField(string contactFieldName,
+    public SalesforceContactMappingBuilder MapContactField(string contactFieldName,
         Expression<Func<ContactSObject, object?>> expression)
     {
         fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldNameMapping(contactFieldName),
@@ -45,7 +45,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
 
-    public SalesForceContactMappingBuilder MapContactField(
+    public SalesforceContactMappingBuilder MapContactField(
         Func<ContactInfo, object> contactInfoMappingFunc,
         Expression<Func<ContactSObject, object?>> expression)
     {
@@ -54,7 +54,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
 
-    public SalesForceContactMappingBuilder AddDefaultMappingForLead()
+    public SalesforceContactMappingBuilder AddDefaultMappingForLead()
     {
         MapLeadField(c => c.ContactFirstName, l => l.FirstName);
         MapLeadField(c => c.ContactLastName, l => l.LastName);
@@ -74,7 +74,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
     
-    public SalesForceContactMappingBuilder AddDefaultMappingForContact()
+    public SalesforceContactMappingBuilder AddDefaultMappingForContact()
     {
         MapContactField(c => c.ContactFirstName, l => l.FirstName);
         MapContactField(c => c.ContactLastName, l => l.LastName);
@@ -93,7 +93,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
     
-    public SalesForceContactMappingBuilder AddContactToLeadConverter<TConverter>()
+    public SalesforceContactMappingBuilder AddContactToLeadConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Lead>
     {
         converters.Add(typeof(TConverter));
@@ -102,7 +102,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
     
-    public SalesForceContactMappingBuilder AddContactToContactConverter<TConverter>()
+    public SalesforceContactMappingBuilder AddContactToContactConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Contact>
     {
         converters.Add(typeof(TConverter));
@@ -111,7 +111,7 @@ public class SalesForceContactMappingBuilder : ContactMappingBuilder<SalesForceC
         return this;
     }
     
-    public SalesForceContactMappingConfiguration Build() =>
+    public SalesforceContactMappingConfiguration Build() =>
         new()
         {
             FieldsMapping = fieldMappings, 

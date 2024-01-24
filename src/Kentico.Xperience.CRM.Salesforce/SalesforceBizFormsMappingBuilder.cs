@@ -2,23 +2,23 @@
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Services;
-using Kentico.Xperience.CRM.SalesForce.Converters;
+using Kentico.Xperience.CRM.Salesforce.Converters;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 
-namespace Kentico.Xperience.CRM.SalesForce.Configuration;
+namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 
 /// <summary>
-/// Mapping builder for BizForm to SalesForce mapping
+/// Mapping builder for BizForm to Salesforce mapping
 /// </summary>
-public class SalesForceBizFormsMappingBuilder
+public class SalesforceBizFormsMappingBuilder
 {
     private readonly IServiceCollection serviceCollection;
     protected readonly Dictionary<string, BizFormFieldsMappingBuilder> forms = new();
     protected readonly Dictionary<string, List<Type>> converters = new();
 
-    public SalesForceBizFormsMappingBuilder(IServiceCollection serviceCollection)
+    public SalesforceBizFormsMappingBuilder(IServiceCollection serviceCollection)
     {
         this.serviceCollection = serviceCollection;
     }
@@ -30,7 +30,7 @@ public class SalesForceBizFormsMappingBuilder
     /// <param name="configureFields"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public SalesForceBizFormsMappingBuilder AddForm(string formCodeName,
+    public SalesforceBizFormsMappingBuilder AddForm(string formCodeName,
          Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
     {
         if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
@@ -44,10 +44,10 @@ public class SalesForceBizFormsMappingBuilder
     /// </summary>
     /// <param name="formCodeName"></param>
     /// <returns></returns>
-    public SalesForceBizFormsMappingBuilder AddFormWithContactMapping(string formCodeName)
+    public SalesforceBizFormsMappingBuilder AddFormWithContactMapping(string formCodeName)
         => AddFormWithContactMapping(formCodeName, b => b);
 
-    public SalesForceBizFormsMappingBuilder AddFormWithContactMapping(
+    public SalesforceBizFormsMappingBuilder AddFormWithContactMapping(
         string formCodeName,
         Func<BizFormFieldsMappingBuilder, BizFormFieldsMappingBuilder> configureFields)
     {
@@ -66,7 +66,7 @@ public class SalesForceBizFormsMappingBuilder
     /// <typeparam name="TConverter"></typeparam>
     /// <returns></returns>
     /// <exception cref="ArgumentNullException"></exception>
-    public SalesForceBizFormsMappingBuilder AddFormWithConverter<TConverter>(string formCodeName)
+    public SalesforceBizFormsMappingBuilder AddFormWithConverter<TConverter>(string formCodeName)
         where TConverter : class, ICRMTypeConverter<BizFormItem, LeadSObject>
     {
         if (formCodeName is null) throw new ArgumentNullException(nameof(formCodeName));
@@ -90,7 +90,7 @@ public class SalesForceBizFormsMappingBuilder
     /// </summary>
     /// <typeparam name="TService"></typeparam>
     /// <returns></returns>
-    public SalesForceBizFormsMappingBuilder AddCustomValidation<TService>()
+    public SalesforceBizFormsMappingBuilder AddCustomValidation<TService>()
         where TService : class, ILeadsIntegrationValidationService
     {
         serviceCollection.AddSingleton<ILeadsIntegrationValidationService, TService>();
@@ -98,9 +98,9 @@ public class SalesForceBizFormsMappingBuilder
         return this;
     }
 
-    internal SalesForceBizFormsMappingConfiguration Build()
+    internal SalesforceBizFormsMappingConfiguration Build()
     {
-        return new SalesForceBizFormsMappingConfiguration
+        return new SalesforceBizFormsMappingConfiguration
         {
             FormsMappings = forms.Select(f => (f.Key, f.Value.Build()))
                 .ToDictionary(r => r.Key, r => r.Item2),

@@ -6,27 +6,27 @@ using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Installers;
 using Kentico.Xperience.CRM.Common.Services;
-using Kentico.Xperience.CRM.SalesForce;
-using Kentico.Xperience.CRM.SalesForce.Configuration;
-using Kentico.Xperience.CRM.SalesForce.Services;
-using Kentico.Xperience.CRM.SalesForce.Workers;
+using Kentico.Xperience.CRM.Salesforce;
+using Kentico.Xperience.CRM.Salesforce.Configuration;
+using Kentico.Xperience.CRM.Salesforce.Services;
+using Kentico.Xperience.CRM.Salesforce.Workers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-[assembly: RegisterModule(typeof(SalesForceIntegrationGlobalEvents))]
+[assembly: RegisterModule(typeof(SalesforceIntegrationGlobalEvents))]
 
-namespace Kentico.Xperience.CRM.SalesForce;
+namespace Kentico.Xperience.CRM.Salesforce;
 
 /// <summary>
-/// Module with BizFormItem and ContactInfo event handlers for SalesForce integration
+/// Module with BizFormItem and ContactInfo event handlers for Salesforce integration
 /// </summary>
-internal class SalesForceIntegrationGlobalEvents : Module
+internal class SalesforceIntegrationGlobalEvents : Module
 {
-    private ILogger<SalesForceIntegrationGlobalEvents> logger = null!;
+    private ILogger<SalesforceIntegrationGlobalEvents> logger = null!;
     private ICRMModuleInstaller? installer;
 
-    public SalesForceIntegrationGlobalEvents() : base(nameof(SalesForceIntegrationGlobalEvents))
+    public SalesforceIntegrationGlobalEvents() : base(nameof(SalesforceIntegrationGlobalEvents))
     {
     }
 
@@ -36,7 +36,7 @@ internal class SalesForceIntegrationGlobalEvents : Module
 
         var services = parameters.Services;
 
-        logger = services.GetRequiredService<ILogger<SalesForceIntegrationGlobalEvents>>();
+        logger = services.GetRequiredService<ILogger<SalesforceIntegrationGlobalEvents>>();
         installer = services.GetRequiredService<ICRMModuleInstaller>();
 
         ApplicationEvents.Initialized.Execute += InitializeModule;
@@ -54,7 +54,7 @@ internal class SalesForceIntegrationGlobalEvents : Module
 
     private void InitializeModule(object? sender, EventArgs e)
     {
-        installer?.Install(CRMType.SalesForce);
+        installer?.Install(CRMType.Salesforce);
     }
 
     private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
@@ -64,11 +64,11 @@ internal class SalesForceIntegrationGlobalEvents : Module
         {
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
-                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SalesForceIntegrationSettings>>().Value;
+                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SalesforceIntegrationSettings>>().Value;
                 if (!settings.FormLeadsEnabled) return;
 
                 var leadsIntegrationService = serviceScope.ServiceProvider
-                    .GetRequiredService<ISalesForceLeadsIntegrationService>();
+                    .GetRequiredService<ISalesforceLeadsIntegrationService>();
 
                 leadsIntegrationService.SynchronizeLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
             }
@@ -76,7 +76,7 @@ internal class SalesForceIntegrationGlobalEvents : Module
         catch (Exception exception)
         {
             logger.LogError(exception, "Error occured during updating lead");
-            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.SalesForce);
+            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Salesforce);
         }
     }
 }

@@ -30,12 +30,12 @@ Add the package to your application using the .NET CLI
 dotnet add package Kentico.Xperience.CRM.Dynamics
 ```
 
-### SalesForce Sales integration
+### Salesforce Sales integration
 
 Add the package to your application using the .NET CLI
 
 ```powershell
-dotnet add package Kentico.Xperience.CRM.SalesForce
+dotnet add package Kentico.Xperience.CRM.Salesforce
 ```
 
 ## Screenshots
@@ -55,7 +55,6 @@ There are 2 options how to fill settings:
 - Use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 - Use CMS settings: CRM integration settings category is created after first run. It is primarily for testing and demo purposes and we do not recommend it due to low security standards.
   This is primary option when you don't specify IConfiguration section during services registration.
-
 
 ### Forms data - Leads integration
 
@@ -116,7 +115,7 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
@@ -128,7 +127,7 @@ Example how to add form with own mapping:
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
                 c => c
                     .MapField("UserFirstName", "FirstName") //option1: mapping based on source and target field names
@@ -147,7 +146,7 @@ Use this option when you need complex logic and need to use another service via 
  var builder = WebApplication.CreateBuilder(args);
 
  // ...
- builder.Services.AddKenticoCRMSalesForce(builder =>
+ builder.Services.AddKenticoCRMSalesforce(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
 ```
 
@@ -160,8 +159,8 @@ View the [Usage Guide](./docs/Usage-Guide.md) for more detailed instructions.
 | Project                              | Description                                                                              |
 | ------------------------------------ | ---------------------------------------------------------------------------------------- |
 | src/Kentico.Xperience.CRM.Dynamics   | Xperience by Kentico Dynamics Sales CRM integration library                              |
-| src/Kentico.Xperience.CRM.SalesForce | Xperience by Kentico SalesForce CRM integration library                                  |
-| src/Kentico.Xperience.CRM.Common     | Xperience by Kentico common integration functionality (used by Dynamics/SalesForce libs) |
+| src/Kentico.Xperience.CRM.Salesforce | Xperience by Kentico Salesforce CRM integration library                                  |
+| src/Kentico.Xperience.CRM.Common     | Xperience by Kentico common integration functionality (used by Dynamics/Salesforce libs) |
 | examples/DancingGoat                 | Example project to showcase CRM integration                                              |
 
 ## Contributing

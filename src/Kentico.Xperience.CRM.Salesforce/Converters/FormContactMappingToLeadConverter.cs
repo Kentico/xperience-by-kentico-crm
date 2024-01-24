@@ -5,9 +5,9 @@ using CMS.Globalization;
 using CMS.OnlineForms;
 using CMS.OnlineForms.Internal;
 using Kentico.Xperience.CRM.Common.Mapping;
-using SalesForce.OpenApi;
+using Salesforce.OpenApi;
 
-namespace Kentico.Xperience.CRM.SalesForce.Converters;
+namespace Kentico.Xperience.CRM.Salesforce.Converters;
 
 /// <summary>
 /// Converter for mapping BizForm to Lead based on Form-Contact mapping in CMS

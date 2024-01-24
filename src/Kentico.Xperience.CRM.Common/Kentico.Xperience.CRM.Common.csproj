@@ -2,17 +2,18 @@
 
 	<PropertyGroup>
 		<Description>Shared functionality for all Xperience by Kentico CRM platform integrations</Description>
+		<PackageId>Kentico.Xperience.CRM.Common</PackageId>
 		<RootNamespace>Kentico.Xperience.CRM.Common</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Kentico.Xperience.Admin" />
-		<PackageReference Include="Kentico.Xperience.Core" />
+		<AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute">
+		</AssemblyAttribute>
 	</ItemGroup>
 
 	<ItemGroup>
-		<AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute">
-		</AssemblyAttribute>
+		<PackageReference Include="Kentico.Xperience.Admin" />
+		<PackageReference Include="Kentico.Xperience.Core" />
 	</ItemGroup>
 
 </Project>

@@ -1393,21 +1393,22 @@
           "Kentico.Xperience.Core": "[28.0.0, )"
         }
       },
+      "kentico.xperience.crm.dynamics": {
+        "type": "Project",
+        "dependencies": {
+          "Kentico.Xperience.CRM.Common": "[1.0.0-prerelease-1, )",
+          "Kentico.Xperience.Core": "[28.0.0, )",
+          "Microsoft.PowerPlatform.Dataverse.Client": "[1.1.17, )"
+        }
+      },
       "kentico.xperience.crm.salesforce": {
         "type": "Project",
         "dependencies": {
           "Duende.AccessTokenManagement.OpenIdConnect": "[2.1.0, )",
           "IdentityModel": "[6.2.0, )",
           "Kentico.Xperience.CRM.Common": "[1.0.0-prerelease-1, )",
+          "Kentico.Xperience.CRM.Dynamics": "[1.0.0-prerelease-1, )",
           "Kentico.Xperience.Core": "[28.0.0, )"
-        }
-      },
-      "Kentico.Xperience.Dynamics.CRM.Integration": {
-        "type": "Project",
-        "dependencies": {
-          "Kentico.Xperience.CRM.Common": "[1.0.0-prerelease-1, )",
-          "Kentico.Xperience.Core": "[28.0.0, )",
-          "Microsoft.PowerPlatform.Dataverse.Client": "[1.1.17, )"
         }
       },
       "Duende.AccessTokenManagement.OpenIdConnect": {

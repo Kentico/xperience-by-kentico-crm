@@ -1,8 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Description>Xperience By Kentico - Dynamics integrations</Description>
-		<AssemblyName>Kentico.Xperience.Dynamics.CRM.Integration</AssemblyName>
+		<Product>Xperience by Kentico CRM Dynamics</Product>
+		<Title>$(Product)</Title>
+		<Description>Xperience By Kentico - Dynamics CRM integration</Description>
+		<PackageId>Kentico.Xperience.CRM.Dynamics</PackageId>
 		<RootNamespace>Kentico.Xperience.CRM.Dynamics</RootNamespace>
 		<PackageTags>$(PackageTags);dynamics</PackageTags>
 	</PropertyGroup>

@@ -1350,7 +1350,7 @@
           "Kentico.Xperience.Core": "[28.0.0, )"
         }
       },
-      "Kentico.Xperience.Dynamics.CRM.Integration": {
+      "kentico.xperience.crm.dynamics": {
         "type": "Project",
         "dependencies": {
           "Kentico.Xperience.CRM.Common": "[1.0.0-prerelease-1, )",

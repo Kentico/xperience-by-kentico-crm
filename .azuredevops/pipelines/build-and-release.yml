@@ -14,10 +14,6 @@ parameters:
     type: string
     default: " "
 
-variables:
-  - name: SIGN_FILE
-    value: true
-
 stages:
   - stage: Build
     jobs:
@@ -36,8 +32,11 @@ stages:
           - name: Configuration
             value: Release
 
-          - name: ProjectPath
-            value: src/PROJECT_NAME/PROJECT_NAME.csproj
+          - name: SIGN_FILE
+            value: true
+
+          - name: slnPath
+            value: src/Kentico.Xperience.CRM.Libs.sln
 
         steps:
           - task: UseDotNet@2
@@ -50,7 +49,7 @@ stages:
             displayName: Restore dependencies
             inputs:
               command: restore
-              projects: ${{ variables.ProjectPath }}
+              projects: ${{ variables.slnPath }}
               feedsToUse: select
               restoreArguments: --locked-mode
 
@@ -58,24 +57,23 @@ stages:
             displayName: Build
             inputs:
               command: build
-              projects: ${{ variables.ProjectPath }}
+              projects: ${{ variables.slnPath }}
               configuration: ${{ variables.Configuration }}
               arguments: --no-restore
 
-          - task: DotNetCoreCLI@2
-            displayName: Create NuGet package
-            inputs:
-              command: pack
-              packagesToPack: ${{ variables.ProjectPath }}
-              configuration: ${{ variables.Configuration }}
-              packDirectory: $(System.DefaultWorkingDirectory)/packages
-              includesymbols: true
-              nobuild: true
-              versioningScheme: off
-
-          - publish: $(System.DefaultWorkingDirectory)/packages
-            displayName: Publish NuGet package as artifact
-            artifact: artifact
+          - template: steps.yml
+            parameters:
+              Configuration: $(Configuration)
+              artifacts:
+                - CRMCommon:
+                  artifactName: "Kentico-Xperience-CRM-Common"
+                  projectPath: "src/Kentico.Xperience.CRM.Common"
+                - CRMDynamics:
+                  artifactName: "Kentico-Xperience-CRM-Dynamics"
+                  projectPath: "src/Kentico.Xperience.CRM.Dynamics"
+                - CRMSalesforce:
+                  artifactName: "Kentico-Xperience-CRM-Salesforce"
+                  projectPath: "src/Kentico.Xperience.CRM.Salesforce"
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       - stage: PublishNuGetPackages
@@ -114,7 +112,7 @@ stages:
                       displayName: NuGet push
                       inputs:
                         command: push
-                        packagesToPush: $(Pipeline.Workspace)/artifact/*.nupkg
+                        packagesToPush: $(Pipeline.Workspace)/**/*.nupkg
                         nuGetFeedType: external
                         publishFeedCredentials: nuget.org
                         allowPackageConflicts: true

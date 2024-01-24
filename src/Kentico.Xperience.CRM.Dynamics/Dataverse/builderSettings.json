@@ -6,10 +6,7 @@
   "emitvirtualattributes-comment": "When set, includes the Virtual Attributes of entities in the generated code.",
   "emitVirtualAttributes": false,
   "entitynamesfilter-comment": "Filters the list of entities are retrieved when reading data from Dataverse.",
-  "entityNamesFilter": [
-    "lead",
-    "contact"    
-  ],
+  "entityNamesFilter": ["lead", "contact"],
   "entitytypesfolder-comment": "Folder name that contains entities.",
   "entityTypesFolder": "Entities",
   "generateGlobalOptionSets-comment": "Emit all Global OptionSets. Note: If an entity contains a reference to a global optionset, it is emitted even if this switch is not present.",
@@ -25,7 +22,7 @@
   "messagestypesfolder-comment": "Folder name that contains messages.",
   "messagesTypesFolder": "Messages",
   "namespace-comment": "The namespace for the generated code.",
-  "namespace": "Kentico.Xperience.Dynamics.CRM.Integration.Dataverse",
+  "namespace": "Kentico.Xperience.CRM.Dynamics.Dataverse",
   "optionsetstypesfolder-comment": "Folder name that contains option sets.",
   "optionSetsTypesFolder": "OptionSets",
   "serviceContextName-comment": "The name for the generated service context. If a value is passed in, it's used for the Service Context. If not, no Service Context is generated.",
