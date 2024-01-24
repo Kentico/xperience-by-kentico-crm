@@ -18,6 +18,19 @@ variables:
   - name: SIGN_FILE
     value: true
 
+  - artifacts:
+      - CRMCommon:
+        artifactName: "Kentico-Xperience-CRM-Common"
+        projectPath: "src/Kentico.Xperience.CRM.Common"
+      - CRMDynamics:
+        artifactName: "Kentico-Xperience-CRM-Dynamics"
+        projectPath: "src/Kentico.Xperience.CRM.Dynamics"
+      - CRMSalesForce:
+        artifactName: "Kentico-Xperience-CRM-SalesForce"
+        projectPath: "src/Kentico.Xperience.CRM.SalesForce"
+
+  - slnPath: src/Kentico.Xperience.CRM.Libs.sln
+
 stages:
   - stage: Build
     jobs:
@@ -36,9 +49,6 @@ stages:
           - name: Configuration
             value: Release
 
-          - name: ProjectPath
-            value: src/PROJECT_NAME/PROJECT_NAME.csproj
-
         steps:
           - task: UseDotNet@2
             displayName: Select dotnet version
@@ -50,7 +60,7 @@ stages:
             displayName: Restore dependencies
             inputs:
               command: restore
-              projects: ${{ variables.ProjectPath }}
+              projects: ${{ variables.slnPath }}
               feedsToUse: select
               restoreArguments: --locked-mode
 
@@ -58,24 +68,25 @@ stages:
             displayName: Build
             inputs:
               command: build
-              projects: ${{ variables.ProjectPath }}
+              projects: ${{ variables.slnPath }}
               configuration: ${{ variables.Configuration }}
               arguments: --no-restore
 
-          - task: DotNetCoreCLI@2
-            displayName: Create NuGet package
-            inputs:
-              command: pack
-              packagesToPack: ${{ variables.ProjectPath }}
-              configuration: ${{ variables.Configuration }}
-              packDirectory: $(System.DefaultWorkingDirectory)/packages
-              includesymbols: true
-              nobuild: true
-              versioningScheme: off
+          - ${{ each artifact in variables.artifacts }}:
+              - task: DotNetCoreCLI@2
+                displayName: Create NuGet package
+                inputs:
+                  command: pack
+                  packagesToPack: ${{ artifact.projectPath }}/*.csproj
+                  configuration: ${{ variables.Configuration }}
+                  packDirectory: $(System.DefaultWorkingDirectory)/packages/${{ artifact.artifactName }}
+                  includesymbols: true
+                  nobuild: true
+                  versioningScheme: off
 
-          - publish: $(System.DefaultWorkingDirectory)/packages
-            displayName: Publish NuGet package as artifact
-            artifact: artifact
+              - publish: $(System.DefaultWorkingDirectory)/packages/${{ artifact.artifactName }}
+                displayName: Publish Artifact ${{ artifact.artifactName }}
+                artifact: build_${{ artifact.artifactName }}
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       - stage: PublishNuGetPackages
@@ -114,7 +125,7 @@ stages:
                       displayName: NuGet push
                       inputs:
                         command: push
-                        packagesToPush: $(Pipeline.Workspace)/artifact/*.nupkg
+                        packagesToPush: $(Pipeline.Workspace)/**/*.nupkg
                         nuGetFeedType: external
                         publishFeedCredentials: nuget.org
                         allowPackageConflicts: true
