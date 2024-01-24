@@ -63,17 +63,17 @@ stages:
 
           - template: steps.yml
             parameters:
-              - Configuration: $(Configuration)
-              - artifacts:
-                  - CRMCommon:
-                    artifactName: "Kentico-Xperience-CRM-Common"
-                    projectPath: "src/Kentico.Xperience.CRM.Common"
-                  - CRMDynamics:
-                    artifactName: "Kentico-Xperience-CRM-Dynamics"
-                    projectPath: "src/Kentico.Xperience.CRM.Dynamics"
-                  - CRMSalesForce:
-                    artifactName: "Kentico-Xperience-CRM-SalesForce"
-                    projectPath: "src/Kentico.Xperience.CRM.SalesForce"
+              Configuration: $(Configuration)
+              artifacts:
+                - CRMCommon:
+                  artifactName: "Kentico-Xperience-CRM-Common"
+                  projectPath: "src/Kentico.Xperience.CRM.Common"
+                - CRMDynamics:
+                  artifactName: "Kentico-Xperience-CRM-Dynamics"
+                  projectPath: "src/Kentico.Xperience.CRM.Dynamics"
+                - CRMSalesForce:
+                  artifactName: "Kentico-Xperience-CRM-SalesForce"
+                  projectPath: "src/Kentico.Xperience.CRM.SalesForce"
 
   - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/main') }}:
       - stage: PublishNuGetPackages
