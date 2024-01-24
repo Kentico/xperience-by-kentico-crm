@@ -1,7 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Description>Xperience By Kentico - SalesForce integrations</Description>
+		<Product>Xperience by Kentico CRM SalesForce</Product>
+		<Title>$(Product)</Title>
+		<Description>Xperience By Kentico - SalesForce Sales Cloud integration</Description>
+		<PackageId>Kentico.Xperience.CRM.Dynamics</PackageId>
 		<RootNamespace>Kentico.Xperience.CRM.SalesForce</RootNamespace>
 		<PackageTags>$(PackageTags);salesforce</PackageTags>
 	</PropertyGroup>
@@ -24,7 +27,7 @@
 	<ItemGroup>
 		<PackageReference Include="Duende.AccessTokenManagement.OpenIdConnect" />
 		<PackageReference Include="Kentico.Xperience.Core" />
-		<PackageReference Include="IdentityModel" />		
+		<PackageReference Include="IdentityModel" />
 		<PackageReference Include="NSwag.ApiDescription.Client">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
