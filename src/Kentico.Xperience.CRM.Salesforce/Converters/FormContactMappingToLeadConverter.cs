@@ -4,6 +4,7 @@ using CMS.DataEngine;
 using CMS.Globalization;
 using CMS.OnlineForms;
 using CMS.OnlineForms.Internal;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Salesforce.OpenApi;
 
@@ -31,7 +32,7 @@ public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, 
         this.conversion = conversion;
     }
 
-    public Task<LeadSObject> Convert(BizFormItem source, LeadSObject destination)
+    public Task Convert(BizFormItem source, LeadSObject destination)
     {
         var firstName = contactFieldFromFormRetriever.Retrieve(source, nameof(ContactInfo.ContactFirstName));
         if (!string.IsNullOrWhiteSpace(firstName))
@@ -107,6 +108,6 @@ public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, 
             destination.State = state?.StateDisplayName;
         }
 
-        return Task.FromResult(destination);
+        return Task.CompletedTask;
     }
 }

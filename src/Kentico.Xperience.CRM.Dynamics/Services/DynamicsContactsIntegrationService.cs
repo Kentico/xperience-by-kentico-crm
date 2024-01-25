@@ -1,5 +1,6 @@
 ﻿using CMS.ContactManagement;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
@@ -25,6 +26,9 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
     private readonly IOptionsSnapshot<DynamicsIntegrationSettings> settings;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, Lead>> contactLeadConverters;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters;
+    private readonly IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters;
+    private readonly IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters;
+    private readonly IContactInfoProvider contactInfoProvider;
 
     public DynamicsContactsIntegrationService(DynamicsContactMappingConfiguration contactMapping,
         IContactsIntegrationValidationService validationService,
@@ -34,7 +38,10 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         IFailedSyncItemService failedSyncItemService,
         IOptionsSnapshot<DynamicsIntegrationSettings> settings,
         IEnumerable<ICRMTypeConverter<ContactInfo, Lead>> contactLeadConverters,
-        IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters)
+        IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters,
+        IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters,
+        IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters,
+        IContactInfoProvider contactInfoProvider)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
@@ -45,6 +52,9 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         this.settings = settings;
         this.contactLeadConverters = contactLeadConverters;
         this.contactContactConverters = contactContactConverters;
+        this.leadKenticoConverters = leadKenticoConverters;
+        this.contactKenticoConverters = contactKenticoConverters;
+        this.contactInfoProvider = contactInfoProvider;
     }
 
     public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
@@ -66,7 +76,8 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
             }
             else
             {
-                var existingLead = await GetEntityById<Lead>(Guid.Parse(syncItem.CRMSyncItemCRMID), Lead.EntityLogicalName);
+                var existingLead =
+                    await GetEntityById<Lead>(Guid.Parse(syncItem.CRMSyncItemCRMID), Lead.EntityLogicalName);
                 if (existingLead is null)
                 {
                     await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -117,7 +128,8 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
             }
             else
             {
-                var existingContact = await GetEntityById<Contact>(Guid.Parse(syncItem.CRMSyncItemCRMID), Contact.EntityLogicalName);
+                var existingContact =
+                    await GetEntityById<Contact>(Guid.Parse(syncItem.CRMSyncItemCRMID), Contact.EntityLogicalName);
                 if (existingContact is null)
                 {
                     await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -148,7 +160,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
             failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Dynamics);
         }
     }
-    
+
     private async Task UpdateLeadByEmailOrCreate(ContactInfo contactInfo,
         IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
@@ -174,7 +186,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
             logger.LogInformation("Contact {ContactEmail} ignored", contactInfo.ContactEmail);
         }
     }
-    
+
     private async Task UpdateContactByEmailOrCreate(ContactInfo contactInfo,
         IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
@@ -210,7 +222,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         var leadId = await serviceClient.CreateAsync(leadEntity);
 
-        await syncItemService.LogContactCreateItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
+        await syncItemService.LogContactSyncItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
         //     contactInfo.ContactEmail);
@@ -225,12 +237,12 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         await serviceClient.UpdateAsync(leadEntity);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
+        await syncItemService.LogContactSyncItem(contactInfo, leadEntity.LeadId.ToString()!, CRMType.Dynamics);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
         //     contactInfo.ContactEmail);
     }
-    
+
     private async Task CreateContactAsync(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
         var contactEntity = new Contact();
@@ -238,7 +250,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         var leadId = await serviceClient.CreateAsync(contactEntity);
 
-        await syncItemService.LogContactCreateItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
+        await syncItemService.LogContactSyncItem(contactInfo, leadId.ToString(), CRMType.Dynamics);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
         //     contactInfo.ContactEmail);
@@ -251,7 +263,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         await serviceClient.UpdateAsync(contactEntity);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, contactEntity.ContactId.ToString()!, CRMType.Dynamics);
+        await syncItemService.LogContactSyncItem(contactInfo, contactEntity.ContactId.ToString()!, CRMType.Dynamics);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.Dynamics, contactInfo.ClassName,
         //     contactInfo.ContactEmail);
@@ -292,12 +304,12 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         }
     }
 
-    public async Task<IEnumerable<Lead>> GetModifiedLeadsAsync(DateTime lastSync)
+    private async Task<IEnumerable<Lead>> GetModifiedLeadsAsync(DateTime lastSync)
     {
         return await GetModifiedEntitiesAsync<Lead>(lastSync, Lead.EntityLogicalName);
     }
 
-    public async Task<IEnumerable<Contact>> GetModifiedContactsAsync(DateTime lastSync)
+    private async Task<IEnumerable<Contact>> GetModifiedContactsAsync(DateTime lastSync)
     {
         return await GetModifiedEntitiesAsync<Contact>(lastSync, Contact.EntityLogicalName);
     }
@@ -305,22 +317,119 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
     private async Task<IEnumerable<TEntity>> GetModifiedEntitiesAsync<TEntity>(DateTime lastSync, string entityName)
         where TEntity : Entity
     {
-        var query = new QueryExpression(entityName) { ColumnSet = new ColumnSet(true) };
-        query.Criteria.AddCondition("modifiedon", ConditionOperator.GreaterThan, lastSync.ToUniversalTime());
+        try
+        {
+            var query = new QueryExpression(entityName) { ColumnSet = new ColumnSet(true) };
+            query.Criteria.AddCondition("modifiedon", ConditionOperator.GreaterThan, lastSync.ToUniversalTime());
 
-        return (await serviceClient.RetrieveMultipleAsync(query)).Entities.Select(e => e.ToEntity<TEntity>());
+            return (await serviceClient.RetrieveMultipleAsync(query)).Entities.Select(e => e.ToEntity<TEntity>())
+                .ToList();
+        }
+        catch (FaultException<OrganizationServiceFault> e)
+        {
+            logger.LogError(e, "Get modified entities - api error: {ApiResult}", e.Detail);
+            return Enumerable.Empty<TEntity>();
+        }
+        catch (Exception e) when (e.InnerException is FaultException<OrganizationServiceFault> ie)
+        {
+            logger.LogError(e, "Get modified entities - api error: {ApiResult}", ie.Detail);
+            return Enumerable.Empty<TEntity>();
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Get modified entities - unknown api error");
+            return Enumerable.Empty<TEntity>();
+        }
     }
 
     private async Task<TEntity?> GetEntityById<TEntity>(Guid leadId, string logicalName)
-    where TEntity : Entity
+        where TEntity : Entity
         => (await serviceClient.RetrieveAsync(logicalName, leadId, new ColumnSet(true)))?.ToEntity<TEntity>();
 
     private async Task<TEntity?> GetLeadByEmail<TEntity>(string email, string logicalName)
-    where TEntity : Entity
+        where TEntity : Entity
     {
         var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
         query.Criteria.AddCondition("emailaddress1", ConditionOperator.Equal, email);
 
         return (await serviceClient.RetrieveMultipleAsync(query)).Entities.FirstOrDefault()?.ToEntity<TEntity>();
     }
+
+    public async Task SynchronizeLeadsToKenticoAsync()
+    {
+        var leads = await GetModifiedLeadsAsync(DateTime.UtcNow.AddMinutes(-1));
+        foreach (var lead in leads)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(lead.EMailAddress1))
+                {
+                    continue;
+                }
+
+                var contactInfo = (await contactInfoProvider.Get()
+                    .WhereEquals(nameof(ContactInfo.ContactEmail), lead.EMailAddress1)
+                    .TopN(1)
+                    .GetEnumerableTypedResultAsync())?.FirstOrDefault();
+
+                if (contactInfo is null)
+                {
+                    contactInfo = new ContactInfo();
+                }
+
+                foreach (var converter in leadKenticoConverters)
+                {
+                    await converter.Convert(lead, contactInfo);
+                }
+            
+                contactInfoProvider.Set(contactInfo);
+
+                await syncItemService.LogContactSyncItem(contactInfo, lead.Id.ToString(), CRMType.Dynamics);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Syncing to contact info {ContactEmail} failed", lead.EMailAddress1);
+            }
+        }
+    }
+    
+    public async Task SynchronizeContactsToKenticoAsync()
+    {
+        var contacts = await GetModifiedContactsAsync(DateTime.UtcNow.AddMinutes(-1));
+        foreach (var contact in contacts)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(contact.EMailAddress1))
+                {
+                    continue;
+                }
+
+                var contactInfo = (await contactInfoProvider.Get()
+                    .WhereEquals(nameof(ContactInfo.ContactEmail), contact.EMailAddress1)
+                    .TopN(1)
+                    .GetEnumerableTypedResultAsync())?.FirstOrDefault();
+
+                if (contactInfo is null)
+                {
+                    contactInfo = new ContactInfo();
+                }
+
+                foreach (var converter in contactKenticoConverters)
+                {
+                    await converter.Convert(contact, contactInfo);
+                }
+            
+                contactInfoProvider.Set(contactInfo);
+
+                await syncItemService.LogContactSyncItem(contactInfo, contact.Id.ToString(), CRMType.Dynamics);
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Syncing to contact info {ContactEmail} failed", contact.EMailAddress1);
+            }
+        }
+    }
 }
+
+

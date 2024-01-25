@@ -37,9 +37,9 @@ where TBuilder : ContactMappingBuilder<TBuilder>
     /// <typeparam name="TService"></typeparam>
     /// <returns></returns>
     public TBuilder AddCustomValidation<TService>()
-        where TService : class, ILeadsIntegrationValidationService
+        where TService : class, IContactsIntegrationValidationService
     {
-        serviceCollection.AddSingleton<ILeadsIntegrationValidationService, TService>();
+        serviceCollection.AddSingleton<IContactsIntegrationValidationService, TService>();
 
         return (TBuilder)this;
     }

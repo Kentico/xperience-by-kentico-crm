@@ -36,7 +36,6 @@ internal class CRMSyncItemService : ICRMSyncItemService
         else
         {
             syncItem.CRMSyncItemCRMID = crmId;
-            syncItem.CRMSyncItemCreatedByKentico = createdByKentico;
             syncItem.Update();
         }
     }
@@ -50,10 +49,7 @@ internal class CRMSyncItemService : ICRMSyncItemService
             .GetEnumerableTypedResultAsync())
             .FirstOrDefault();
 
-    public Task LogContactCreateItem(ContactInfo contactInfo, string crmId, string crmName)
-        => LogContactSyncItem(contactInfo, crmId, crmName, createdByKentico: true);
-
-    public Task LogContactUpdateItem(ContactInfo contactInfo, string crmId, string crmName)
+    public Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName)
         => LogContactSyncItem(contactInfo, crmId, crmName, createdByKentico: false);
     
     private async Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName, bool createdByKentico)

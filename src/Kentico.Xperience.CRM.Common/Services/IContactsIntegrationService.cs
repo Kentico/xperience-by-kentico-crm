@@ -12,9 +12,21 @@ public interface IContactsIntegrationService
     Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo);
     
     /// <summary>
-    /// 
+    /// Creates contact in CRM from Contact info
     /// </summary>
     /// <param name="contactInfo"></param>
     /// <returns></returns>
     Task SynchronizeContactToContactsAsync(ContactInfo contactInfo);
+    
+    /// <summary>
+    /// Creates or updates contact info from CRM lead
+    /// </summary>
+    /// <returns></returns>
+    Task SynchronizeLeadsToKenticoAsync();
+    
+    /// <summary>
+    /// Creates or updates contact info from CRM contact
+    /// </summary>
+    /// <returns></returns>
+    Task SynchronizeContactsToKenticoAsync();
 }

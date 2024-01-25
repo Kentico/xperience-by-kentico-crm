@@ -1,5 +1,6 @@
 ﻿using CMS.Base;
 using CMS.Core;
+using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,20 +18,30 @@ public class ContactsSyncFromCRMWorker : ThreadWorker<ContactsSyncFromCRMWorker>
     protected override void Process()
     {
         Debug.WriteLine($"Worker {GetType().FullName} running");
-        
-        var settings = Service.Resolve<IOptionsMonitor<DynamicsIntegrationSettings>>().CurrentValue;
-        if (!settings.ContactsEnabled) return;
-        
+
         try
         {
             using (var scope = Service.Resolve<IServiceProvider>().CreateScope())
             {
+                var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<DynamicsIntegrationSettings>>().Value;
+                if (!settings.ContactsEnabled) return;
+                
                 var contactsIntegrationService =
                     scope.ServiceProvider.GetRequiredService<IDynamicsContactsIntegrationService>();
-                //@TODO
-                var contacts = contactsIntegrationService.GetModifiedLeadsAsync(DateTime.UtcNow.AddMinutes(-1))
-                    .GetAwaiter()
-                    .GetResult();
+                
+                if (settings.ContactType == ContactCRMType.Lead)
+                {
+                    contactsIntegrationService.SynchronizeLeadsToKenticoAsync()
+                        .GetAwaiter()
+                        .GetResult();
+                }
+
+                if (settings.ContactType == ContactCRMType.Contact)
+                {
+                    contactsIntegrationService.SynchronizeContactsToKenticoAsync()
+                        .GetAwaiter()
+                        .GetResult();
+                }
             }
         }
         catch (Exception e)

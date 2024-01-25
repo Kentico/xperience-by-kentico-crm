@@ -1,6 +1,7 @@
 ﻿using CMS.ContactManagement;
 using CMS.Globalization;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
@@ -96,7 +97,6 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
     public SalesforceContactMappingBuilder AddContactToLeadConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Lead>
     {
-        converters.Add(typeof(TConverter));
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactInfo, Lead>, TConverter>());
         return this;
@@ -105,7 +105,6 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
     public SalesforceContactMappingBuilder AddContactToContactConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Contact>
     {
-        converters.Add(typeof(TConverter));
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactInfo, Contact>, TConverter>());
         return this;
@@ -114,7 +113,6 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
     public SalesforceContactMappingConfiguration Build() =>
         new()
         {
-            FieldsMapping = fieldMappings, 
-            Converters = converters
+            FieldsMapping = fieldMappings
         };
 }

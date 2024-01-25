@@ -53,17 +53,22 @@ public static class DynamicsServiceCollectionExtensions
 
     public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(this IServiceCollection serviceCollection,
         ContactCRMType crmType, Action<DynamicsContactMappingBuilder> mappingConfig, IConfiguration? configuration = null,
-        bool useDefaultMapping = true)
+        bool useDefaultMappingToCRM = true, bool useDefaultMappingToKentico = true)
     {
         serviceCollection.AddKenticoCrmCommonContactIntegration();
         
         var mappingBuilder = new DynamicsContactMappingBuilder(serviceCollection);
-        if (useDefaultMapping)
+        if (useDefaultMappingToCRM)
         {
             mappingBuilder = crmType == ContactCRMType.Lead ?
                 mappingBuilder.AddDefaultMappingForLead() :
                 mappingBuilder.AddDefaultMappingForContact();
             mappingConfig(mappingBuilder);
+        }
+
+        if (useDefaultMappingToKentico)
+        {
+            //@TODO
         }
 
         serviceCollection.TryAddSingleton(

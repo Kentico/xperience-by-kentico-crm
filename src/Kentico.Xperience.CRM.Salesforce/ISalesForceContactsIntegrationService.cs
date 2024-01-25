@@ -5,6 +5,4 @@ namespace Kentico.Xperience.CRM.Salesforce.Services;
 
 public interface ISalesforceContactsIntegrationService : IContactsIntegrationService
 {
-    Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync);
-    Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync);
 }

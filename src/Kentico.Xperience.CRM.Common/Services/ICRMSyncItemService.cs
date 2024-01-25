@@ -10,7 +10,6 @@ public interface ICRMSyncItemService
     Task LogFormLeadUpdateItem(BizFormItem bizFormItem, string crmId, string crmName);
     Task<CRMSyncItemInfo?> GetFormLeadSyncItem(BizFormItem bizFormItem, string crmName);
     
-    Task LogContactCreateItem(ContactInfo contactInfo, string crmId, string crmName);
-    Task LogContactUpdateItem(ContactInfo contactInfo, string crmId, string crmName);
+    Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName);
     Task<CRMSyncItemInfo?> GetContactSyncItem(ContactInfo contactInfo, string crmName);
 }

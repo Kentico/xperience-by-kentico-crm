@@ -19,6 +19,8 @@ public class CommonIntegrationSettings<TApiConfig> where TApiConfig : new()
     /// </summary>
     public bool ContactsEnabled { get; set; }
 
+    public bool ContactsTwoWaySyncEnabled { get; set; }
+
     /// <summary>
     /// Where to sync contact - Leads/Contacts
     /// </summary>

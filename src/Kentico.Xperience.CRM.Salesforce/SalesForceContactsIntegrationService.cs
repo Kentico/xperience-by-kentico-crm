@@ -1,5 +1,6 @@
 ﻿using CMS.ContactManagement;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
@@ -148,12 +149,22 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         }
     }
 
-    public Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync)
+    public Task SynchronizeLeadsToKenticoAsync()
     {
         throw new NotImplementedException();
     }
 
-    public Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync)
+    public Task SynchronizeContactsToKenticoAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync)
+    {
+        throw new NotImplementedException();
+    }
+
+    private Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync)
     {
         throw new NotImplementedException();
     }
@@ -221,7 +232,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
         var result = await apiService.CreateLeadAsync(lead);
 
-        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.Salesforce);
+        await syncItemService.LogContactSyncItem(contactInfo, result.Id!, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -237,7 +248,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
         await apiService.UpdateLeadAsync(leadId, lead);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.Salesforce);
+        await syncItemService.LogContactSyncItem(contactInfo, leadId, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -252,7 +263,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         
         var result = await apiService.CreateContactAsync(contact);
 
-        await syncItemService.LogContactCreateItem(contactInfo, result.Id!, CRMType.Salesforce);
+        await syncItemService.LogContactSyncItem(contactInfo, result.Id!, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -268,7 +279,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
         await apiService.UpdateContactAsync(leadId, contact);
 
-        await syncItemService.LogContactUpdateItem(contactInfo, leadId, CRMType.Salesforce);
+        await syncItemService.LogContactSyncItem(contactInfo, leadId, CRMType.Salesforce);
         //@TODO
         // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
         //     contactInfo.ItemID);
@@ -279,7 +290,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
     {
         foreach (var converter in contactLeadConverters)
         {
-            lead = await converter.Convert(contactInfo, lead);
+            await converter.Convert(contactInfo, lead);
         }
         
         foreach (var fieldMapping in fieldMappings)
@@ -300,7 +311,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
     {
         foreach (var converter in contactContactConverters)
         {
-            contact = await converter.Convert(contactInfo, contact);
+            await converter.Convert(contactInfo, contact);
         }
         
         foreach (var fieldMapping in fieldMappings)

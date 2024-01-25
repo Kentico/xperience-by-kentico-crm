@@ -91,7 +91,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
     {
         if (args.Object is not ContactInfo contactInfo || !ValidationHelper.IsEmail(contactInfo.ContactEmail))
             return;
-
+        
         ContactsSyncQueueWorker.Current.Enqueue(contactInfo);
     }
 }

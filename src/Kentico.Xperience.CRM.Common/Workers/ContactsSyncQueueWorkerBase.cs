@@ -33,14 +33,15 @@ public abstract class ContactsSyncQueueWorkerBase<TWorker, TService, TSettings, 
         Debug.WriteLine($"Worker {GetType().FullName} running");
         var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
         int processed = 0;
-        var contactList = contacts.ToList();
-        var settings = Service.Resolve<IOptionsMonitor<TSettings>>().CurrentValue;
-        if (!settings.ContactsEnabled || !contactList.Any()) return 0;
         
         try
         {
             using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
             {
+                var contactList = contacts.ToList();
+                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
+                if (!settings.ContactsEnabled || !contactList.Any()) return 0;
+                
                 var contactsIntegrationService = serviceScope.ServiceProvider
                     .GetRequiredService<TService>();
 

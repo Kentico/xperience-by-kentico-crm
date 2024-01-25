@@ -2,7 +2,9 @@
 using CMS.Globalization;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
+using Kentico.Xperience.CRM.Dynamics.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Kentico.Xperience.CRM.Dynamics.Helpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,9 +61,9 @@ public class DynamicsContactMappingBuilder : ContactMappingBuilder<DynamicsConta
         MapField<Lead>(c => c.ContactCity, l => l.Address1_City);
         MapField<Lead>(c => c.ContactZIP, l => l.Address1_PostalCode);
         MapField<Lead>(
-            c => c.ContactCountryID > 0 ?
-                CountryInfo.Provider.Get(c.ContactCountryID)?.CountryDisplayName ?? string.Empty :
-                string.Empty, l => l.Address1_Country);
+            c => c.ContactCountryID > 0
+                ? CountryInfo.Provider.Get(c.ContactCountryID)?.CountryDisplayName ?? string.Empty
+                : string.Empty, l => l.Address1_Country);
         MapField<Lead>(c => c.ContactJobTitle, l => l.JobTitle);
         MapField<Lead>(c => c.ContactMobilePhone, l => l.MobilePhone);
         MapField<Lead>(c => c.ContactBusinessPhone, l => l.Telephone1);
@@ -81,9 +83,9 @@ public class DynamicsContactMappingBuilder : ContactMappingBuilder<DynamicsConta
         MapField<Contact>(c => c.ContactCity, l => l.Address1_City);
         MapField<Contact>(c => c.ContactZIP, l => l.Address1_PostalCode);
         MapField<Contact>(
-            c => c.ContactCountryID > 0 ?
-                CountryInfo.Provider.Get(c.ContactCountryID)?.CountryDisplayName ?? string.Empty :
-                string.Empty, l => l.Address1_Country);
+            c => c.ContactCountryID > 0
+                ? CountryInfo.Provider.Get(c.ContactCountryID)?.CountryDisplayName ?? string.Empty
+                : string.Empty, l => l.Address1_Country);
         MapField<Contact>(c => c.ContactJobTitle, l => l.JobTitle);
         MapField<Contact>(c => c.ContactMobilePhone, l => l.MobilePhone);
         MapField<Contact>(c => c.ContactBusinessPhone, l => l.Telephone1);
@@ -95,25 +97,47 @@ public class DynamicsContactMappingBuilder : ContactMappingBuilder<DynamicsConta
     public DynamicsContactMappingBuilder AddContactToLeadConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Lead>
     {
-        converters.Add(typeof(TConverter));
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactInfo, Lead>, TConverter>());
         return this;
     }
-    
+
     public DynamicsContactMappingBuilder AddContactToContactConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, Contact>
     {
-        converters.Add(typeof(TConverter));
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactInfo, Contact>, TConverter>());
         return this;
     }
 
+    public DynamicsContactMappingBuilder AddDefaultMappingToKenticoContact()
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<Lead, ContactInfo>, LeadToKenticoContactConverter>());
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<Contact, ContactInfo>, ContactToKenticoContactConverter>());
+        
+        return this;
+    }
+    
+    public DynamicsContactMappingBuilder AddLeadToKenticoConverter<TConverter>()
+        where TConverter : class, ICRMTypeConverter<Lead, ContactInfo>
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<Lead, ContactInfo>, TConverter>());
+        
+        return this;
+    }
+    
+    public DynamicsContactMappingBuilder AddContactToKenticoConverter<TConverter>()
+        where TConverter : class, ICRMTypeConverter<Contact, ContactInfo>
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<Contact, ContactInfo>, TConverter>());
+        
+        return this;
+    }
+
     public DynamicsContactMappingConfiguration Build() =>
-        new()
-        {
-            FieldsMapping = fieldMappings, 
-            Converters = converters
-        };
+        new() { FieldsMapping = fieldMappings };
 }
