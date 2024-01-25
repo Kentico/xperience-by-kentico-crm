@@ -1,16 +1,16 @@
 ﻿using Duende.AccessTokenManagement;
 using Kentico.Xperience.CRM.Common;
+using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
-using Kentico.Xperience.CRM.Salesforce.Services;
+using Kentico.Xperience.CRM.Salesforce.Synchronization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using System.Globalization;
 
-namespace Kentico.Xperience.CRM.Salesforce;
+namespace Microsoft.Extensions.DependencyInjection;
 
 public static class SalesforceServiceCollectionsExtensions
 {

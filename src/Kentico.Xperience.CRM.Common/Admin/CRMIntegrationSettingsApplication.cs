@@ -14,7 +14,6 @@ using Kentico.Xperience.CRM.Common.Admin;
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
-
 /// <summary>
 /// Application entry point to CRM integration settings
 /// </summary>

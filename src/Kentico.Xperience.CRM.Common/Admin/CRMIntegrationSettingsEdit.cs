@@ -1,7 +1,5 @@
 ﻿using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.Base.Forms;
-using Kentico.Xperience.CRM.Common.Classes;
-using Kentico.Xperience.CRM.Common.Models;
 using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.IFormItemCollectionProvider;
 
 namespace Kentico.Xperience.CRM.Common.Admin;
