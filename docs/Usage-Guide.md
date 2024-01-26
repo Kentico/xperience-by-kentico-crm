@@ -15,7 +15,7 @@ There are 2 options how to fill settings:
 
 Integration uses OAuth client credentials scheme, so you have to setup your CRM environment to enable for using API with client id and client secret:
 
-- [Salesforce Quick Guide by Kentico](./docs/Salesforce-Quick-Guide.md) or generic [Salesforce documentation](https://help.Salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
+- [Salesforce Quick Guide by Kentico](./Salesforce-Quick-Guide.md) or generic [Salesforce documentation](https://help.Salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
 - [Dynamics](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth)
 
 ### CRM settings description
