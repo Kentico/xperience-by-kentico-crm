@@ -1,5 +1,4 @@
-﻿using CMS.ContactManagement;
-using Kentico.Xperience.CRM.Common.Enums;
+﻿using Kentico.Xperience.CRM.Common.Enums;
 
 namespace Kentico.Xperience.CRM.Common.Configuration;
 

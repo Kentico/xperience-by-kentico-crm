@@ -3,13 +3,12 @@ using CMS.Base;
 using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
+using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Installers;
-using Kentico.Xperience.CRM.Common.Services;
+using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
-using Kentico.Xperience.CRM.Salesforce.Services;
-using Kentico.Xperience.CRM.Salesforce.Workers;
+using Kentico.Xperience.CRM.Salesforce.Synchronization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -32,7 +31,7 @@ internal class SalesforceIntegrationGlobalEvents : Module
 
     protected override void OnInit(ModuleInitParameters parameters)
     {
-        base.OnInit();
+        base.OnInit(parameters);
 
         var services = parameters.Services;
 

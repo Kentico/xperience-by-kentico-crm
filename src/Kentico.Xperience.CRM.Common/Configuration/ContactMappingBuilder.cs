@@ -1,7 +1,7 @@
 ﻿using CMS.ContactManagement;
+using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kentico.Xperience.CRM.Common.Configuration;

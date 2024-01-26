@@ -6,11 +6,15 @@ using CMS.OnlineForms.Internal;
 using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.DigitalMarketing.UIPages;
 using Kentico.Xperience.CRM.Common.Admin;
-using Kentico.Xperience.CRM.Common.Classes;
 
-[assembly:
-    UIPage(parentType: typeof(FormEditSection), slug: "crm-sync-listing", uiPageType: typeof(CRMSyncItemListing),
-        name: "CRM sync", templateName: TemplateNames.LISTING, order: 1000, icon: Icons.IntegrationScheme)]
+[assembly: UIPage(
+    parentType: typeof(FormEditSection),
+    slug: "crm-sync-listing",
+    uiPageType: typeof(CRMSyncItemListing),
+    name: "CRM sync",
+    templateName: TemplateNames.LISTING,
+    order: 1000,
+    icon: Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 

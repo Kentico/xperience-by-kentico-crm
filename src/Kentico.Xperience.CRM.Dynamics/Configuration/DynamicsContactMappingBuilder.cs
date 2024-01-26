@@ -1,9 +1,7 @@
 ﻿using CMS.ContactManagement;
 using CMS.Globalization;
-using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
-using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Dynamics.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Kentico.Xperience.CRM.Dynamics.Helpers;

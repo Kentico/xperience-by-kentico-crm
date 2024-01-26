@@ -1,5 +1,5 @@
 ﻿using CMS.OnlineForms;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
+using Kentico.Xperience.CRM.Common.Mapping;
 
 namespace Kentico.Xperience.CRM.Common.Configuration;
 

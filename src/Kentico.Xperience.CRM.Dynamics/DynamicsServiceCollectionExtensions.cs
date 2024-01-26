@@ -1,10 +1,9 @@
 ﻿using Kentico.Xperience.CRM.Common;
-using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
-using Kentico.Xperience.CRM.Dynamics.Services;
+using Kentico.Xperience.CRM.Dynamics.Synchronization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;

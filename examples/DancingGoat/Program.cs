@@ -12,7 +12,6 @@ using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
-using Kentico.Xperience.CRM.Salesforce;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Abstractions;
