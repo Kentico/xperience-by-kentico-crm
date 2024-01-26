@@ -56,6 +56,8 @@ There are 2 options how to fill settings:
 - Use CMS settings: CRM integration settings category is created after first run. It is primarily for testing and demo purposes and we do not recommend it due to low security standards.
   This is primary option when you don't specify IConfiguration section during services registration.
 
+No API keys? Use our [Salesforce Quick Start Guide](./docs/Salesforce-Quick-Guide.md) to deliver a quick demo with a free Salesforce developer account.
+
 ### Forms data - Leads integration
 
 Configure mapping for each form between Kentico Form fields and Dynamics Lead entity fields:

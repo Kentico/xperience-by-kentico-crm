@@ -2,21 +2,21 @@
 
 ## Screenshots
 
+![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
 ![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## CRM settings
 
 There are 2 options how to fill settings:
 
-- use CMS settings: CRM integration settings category is created after first run.
+- Use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
+- Use CMS settings: CRM integration settings category is created after first run. It is primarily for testing and demo purposes and we do not recommend it due to low security standards.
   This is primary option when you don't specify IConfiguration section during services registration.
-- use application settings: appsettings.json (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 
-Integration uses OAuth client credentials scheme, so you have to setup your CRM environment to enable for using API with
-client id and client secret:
+Integration uses OAuth client credentials scheme, so you have to setup your CRM environment to enable for using API with client id and client secret:
 
+- [Salesforce Quick Guide by Kentico](./docs/Salesforce-Quick-Guide.md) or generic [Salesforce documentation](https://help.Salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
 - [Dynamics](https://learn.microsoft.com/en-us/power-apps/developer/data-platform/authenticate-oauth)
-- [Salesforce](https://help.Salesforce.com/s/articleView?id=sf.remoteaccess_oauth_client_credentials_flow.htm&type=5)
 
 ### CRM settings description
 
