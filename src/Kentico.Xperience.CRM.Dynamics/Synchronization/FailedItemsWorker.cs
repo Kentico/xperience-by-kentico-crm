@@ -8,6 +8,7 @@ namespace Kentico.Xperience.CRM.Dynamics.Synchronization;
 /// Specific thread worker for Dynamics which try to synchronize failed items. It run each 1 minute.
 /// </summary>
 internal class FailedItemsWorker : FailedSyncItemsWorkerBase<FailedItemsWorker, IDynamicsLeadsIntegrationService,
+    IDynamicsContactsIntegrationService,
     DynamicsIntegrationSettings, DataverseApiConfig>
 {
     protected override string CRMName => CRMType.Dynamics;

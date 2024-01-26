@@ -25,6 +25,21 @@ public interface IFailedSyncItemService
     void LogFailedContactItem(ContactInfo contactInfo, string crmName);
     
     /// <summary>
+    /// Creates new record in failed items table or increment TrySyncCount property when record exists.
+    /// Next sync time is planned.
+    /// </summary>
+    /// <param name="bizFormItem">BizForm item</param>
+    /// <param name="crmName">CRM name</param>
+    void LogFailedLeadItems(IEnumerable<BizFormItem> bizFormItems, string crmName);
+
+    /// <summary>
+    /// @TODO
+    /// </summary>
+    /// <param name="contactInfo"></param>
+    /// <param name="crmName"></param>
+    void LogFailedContactItems(IEnumerable<ContactInfo> contactInfos, string crmName);
+    
+    /// <summary>
     /// Get all items waiting for synchronization which can be already synced again (according SyncNextTime property) 
     /// </summary>
     /// <param name="crmName">CRM name</param>
@@ -37,12 +52,12 @@ public interface IFailedSyncItemService
     /// <param name="failedSyncItemInfo"></param>
     /// <returns></returns>
     BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
-
+    
     /// <summary>
     /// Delete record for given CRM, class name and ID
     /// </summary>
-    /// <param name="crmCrmName">CRM name</param>
+    /// <param name="crmName">CRM name</param>
     /// <param name="entityClass">Entity class</param>
     /// <param name="entityId">Entity ID</param>
-    void DeleteFailedSyncItem(string crmCrmName, string entityClass, int entityId);
+    void DeleteFailedSyncItem(string crmName, string entityClass, int entityId);
 }

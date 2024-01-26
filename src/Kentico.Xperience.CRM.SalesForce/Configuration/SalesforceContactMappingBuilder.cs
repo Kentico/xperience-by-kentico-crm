@@ -4,7 +4,6 @@ using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Mapping.Implementations;
-using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Salesforce.OpenApi;
@@ -95,18 +94,46 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
     }
     
     public SalesforceContactMappingBuilder AddContactToLeadConverter<TConverter>()
-        where TConverter : class, ICRMTypeConverter<ContactInfo, Lead>
+        where TConverter : class, ICRMTypeConverter<ContactInfo, LeadSObject>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
-            .Scoped<ICRMTypeConverter<ContactInfo, Lead>, TConverter>());
+            .Scoped<ICRMTypeConverter<ContactInfo, LeadSObject>, TConverter>());
         return this;
     }
     
     public SalesforceContactMappingBuilder AddContactToContactConverter<TConverter>()
-        where TConverter : class, ICRMTypeConverter<ContactInfo, Contact>
+        where TConverter : class, ICRMTypeConverter<ContactInfo, ContactSObject>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
-            .Scoped<ICRMTypeConverter<ContactInfo, Contact>, TConverter>());
+            .Scoped<ICRMTypeConverter<ContactInfo, ContactSObject>, TConverter>());
+        return this;
+    }
+    
+    public SalesforceContactMappingBuilder AddDefaultMappingToKenticoContact()
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<LeadSObject, ContactInfo>, LeadToKenticoContactConverter>());
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<ContactSObject, ContactInfo>, ContactToKenticoContactConverter>());
+        
+        return this;
+    }
+    
+    public SalesforceContactMappingBuilder AddLeadToKenticoConverter<TConverter>()
+        where TConverter : class, ICRMTypeConverter<LeadSObject, ContactInfo>
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<LeadSObject, ContactInfo>, TConverter>());
+        
+        return this;
+    }
+    
+    public SalesforceContactMappingBuilder AddContactToKenticoConverter<TConverter>()
+        where TConverter : class, ICRMTypeConverter<ContactSObject, ContactInfo>
+    {
+        serviceCollection.TryAddEnumerable(ServiceDescriptor
+            .Scoped<ICRMTypeConverter<ContactSObject, ContactInfo>, TConverter>());
+        
         return this;
     }
     

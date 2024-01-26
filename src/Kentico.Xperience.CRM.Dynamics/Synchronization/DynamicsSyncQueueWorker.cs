@@ -4,8 +4,9 @@ using Kentico.Xperience.CRM.Dynamics.Configuration;
 
 namespace Kentico.Xperience.CRM.Dynamics.Synchronization;
 
-internal class ContactsSyncQueueWorker : ContactsSyncQueueWorkerBase<ContactsSyncQueueWorker,
-    IDynamicsContactsIntegrationService, DynamicsIntegrationSettings, DataverseApiConfig>
+internal class DynamicsSyncQueueWorker : CRMSyncQueueWorkerBase<DynamicsSyncQueueWorker,
+    IDynamicsLeadsIntegrationService, IDynamicsContactsIntegrationService, DynamicsIntegrationSettings,
+    DataverseApiConfig>
 {
     protected override string CRMName => CRMType.Dynamics;
 }

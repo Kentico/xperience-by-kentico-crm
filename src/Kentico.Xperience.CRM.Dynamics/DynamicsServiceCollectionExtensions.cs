@@ -46,16 +46,25 @@ public static class DynamicsServiceCollectionExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(this IServiceCollection serviceCollection,
-        ContactCRMType crmType, IConfiguration configuration)
-    => serviceCollection.AddKenticoCRMDynamicsContactsIntegration(crmType, b => { }, configuration);
+    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(
+        this IServiceCollection serviceCollection,
+        ContactCRMType crmType,
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
+        => serviceCollection.AddKenticoCRMDynamicsContactsIntegration(crmType, b => { }, configuration,
+            useDefaultMappingToCRM, useDefaultMappingToKentico);
 
-    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(this IServiceCollection serviceCollection,
-        ContactCRMType crmType, Action<DynamicsContactMappingBuilder> mappingConfig, IConfiguration? configuration = null,
-        bool useDefaultMappingToCRM = true, bool useDefaultMappingToKentico = true)
+    public static IServiceCollection AddKenticoCRMDynamicsContactsIntegration(
+        this IServiceCollection serviceCollection,
+        ContactCRMType crmType,
+        Action<DynamicsContactMappingBuilder> mappingConfig,
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
     {
         serviceCollection.AddKenticoCrmCommonContactIntegration();
-        
+
         var mappingBuilder = new DynamicsContactMappingBuilder(serviceCollection);
         if (useDefaultMappingToCRM)
         {
@@ -67,12 +76,12 @@ public static class DynamicsServiceCollectionExtensions
 
         if (useDefaultMappingToKentico)
         {
-            //@TODO
+            mappingBuilder.AddDefaultMappingToKenticoContact();
         }
 
         serviceCollection.TryAddSingleton(
             _ => mappingBuilder.Build());
-        
+
         if (configuration is null)
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>()
@@ -83,9 +92,8 @@ public static class DynamicsServiceCollectionExtensions
         {
             serviceCollection.AddOptions<DynamicsIntegrationSettings>().Bind(configuration)
                 .PostConfigure(s => s.ContactType = crmType);
-
         }
-        
+
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
         serviceCollection.AddScoped<IDynamicsContactsIntegrationService, DynamicsContactsIntegrationService>();
 
@@ -115,12 +123,13 @@ public static class DynamicsServiceCollectionExtensions
         return new ServiceClient(connectionString, logger);
     }
 
-    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings, ICRMSettingsService settingsService)
+    private static void ConfigureWithCMSSettings(DynamicsIntegrationSettings settings,
+        ICRMSettingsService settingsService)
     {
         var settingsInfo = settingsService.GetSettings(CRMType.Dynamics);
         settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
         settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
-        
+
         settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 
         settings.ApiConfig.DynamicsUrl = settingsInfo?.CRMIntegrationSettingsUrl;

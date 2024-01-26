@@ -47,11 +47,9 @@ internal class CRMSyncItemService : ICRMSyncItemService
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), crmName)
             .GetEnumerableTypedResultAsync())
             .FirstOrDefault();
-
-    public Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName)
-        => LogContactSyncItem(contactInfo, crmId, crmName, createdByKentico: false);
     
-    private async Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName, bool createdByKentico)
+    public async Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName,
+        bool createdByKentico = false)
     {
         var syncItem = await GetContactSyncItem(contactInfo, crmName);
         if (syncItem is null)

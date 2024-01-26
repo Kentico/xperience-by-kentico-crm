@@ -1407,7 +1407,6 @@
           "Duende.AccessTokenManagement.OpenIdConnect": "[2.1.0, )",
           "IdentityModel": "[6.2.0, )",
           "Kentico.Xperience.CRM.Common": "[1.0.0-prerelease-1, )",
-          "Kentico.Xperience.CRM.Dynamics": "[1.0.0-prerelease-1, )",
           "Kentico.Xperience.Core": "[28.0.0, )"
         }
       },

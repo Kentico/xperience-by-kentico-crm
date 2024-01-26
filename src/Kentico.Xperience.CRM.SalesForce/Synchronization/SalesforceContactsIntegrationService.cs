@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+using CMS.Helpers;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
@@ -24,6 +25,9 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
     private readonly IOptionsSnapshot<SalesforceIntegrationSettings> settings;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, LeadSObject>> contactLeadConverters;
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters;
+    private readonly IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters;
+    private readonly IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters;
+    private readonly IContactInfoProvider contactInfoProvider;
 
     public SalesforceContactsIntegrationService(
         SalesforceContactMappingConfiguration contactMapping,
@@ -34,7 +38,10 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         IFailedSyncItemService failedSyncItemService,
         IOptionsSnapshot<SalesforceIntegrationSettings> settings,
         IEnumerable<ICRMTypeConverter<ContactInfo, LeadSObject>> contactLeadConverters,
-        IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters)
+        IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters,
+        IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters,
+        IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters,
+        IContactInfoProvider contactInfoProvider)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
@@ -45,6 +52,9 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         this.settings = settings;
         this.contactLeadConverters = contactLeadConverters;
         this.contactContactConverters = contactContactConverters;
+        this.leadKenticoConverters = leadKenticoConverters;
+        this.contactKenticoConverters = contactKenticoConverters;
+        this.contactInfoProvider = contactInfoProvider;
     }
 
     public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
@@ -58,7 +68,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                 return;
             }
 
-            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Dynamics);
+            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Salesforce);
 
             if (syncItem is null)
             {
@@ -84,17 +94,17 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         catch (ApiException<ICollection<RestApiError>> e)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
             logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
         catch (ApiException e)
         {
             logger.LogError(e, "Create lead failed - unexpected api error");
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
     }
 
@@ -109,7 +119,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                 return;
             }
 
-            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Dynamics);
+            var syncItem = await syncItemService.GetContactSyncItem(contactInfo, CRMType.Salesforce);
 
             if (syncItem is null)
             {
@@ -117,14 +127,14 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemEntityID, nameof(LeadSObject.Id));
-                if (existingLead is null)
+                var existingContact = await apiService.GetContactById(syncItem.CRMSyncItemEntityID, nameof(ContactSObject.Id));
+                if (existingContact is null)
                 {
                     await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateContactAsync(existingLead.Id!, contactInfo, contactMapping.FieldsMapping);
+                    await UpdateContactAsync(existingContact.Id!, contactInfo, contactMapping.FieldsMapping);
                 }
                 else
                 {
@@ -134,41 +144,103 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         }
         catch (ApiException<ICollection<RestApiError>> e)
         {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            logger.LogError(e, "Create contact failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
         catch (ApiException<ICollection<ErrorInfo>> e)
         {
-            logger.LogError(e, "Create lead failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            logger.LogError(e, "Create contact failed - api error: {ApiResult}", JsonSerializer.Serialize(e.Result));
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
         catch (ApiException e)
         {
-            logger.LogError(e, "Create lead failed - unexpected api error");
-            //failedSyncItemService.LogFailedLeadItem(contactInfo, CRMType.SalesForce);
+            logger.LogError(e, "Create contact failed - unexpected api error");
+            failedSyncItemService.LogFailedContactItem(contactInfo, CRMType.Salesforce);
         }
     }
 
-    public Task SynchronizeLeadsToKenticoAsync()
+    public async Task SynchronizeLeadsToKenticoAsync()
     {
-        throw new NotImplementedException();
+        RequestStockHelper.Add("SuppressEvents", true);
+        var leads = await apiService.GetModifiedLeadsAsync(DateTime.Now.AddMinutes(-1));
+        foreach (var lead in leads)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(lead.Email))
+                {
+                    continue;
+                }
+
+                var contactInfo = (await contactInfoProvider.Get()
+                    .WhereEquals(nameof(ContactInfo.ContactEmail), lead.Email)
+                    .TopN(1)
+                    .GetEnumerableTypedResultAsync())?.FirstOrDefault();
+
+                if (contactInfo is null)
+                {
+                    contactInfo = new ContactInfo();
+                }
+
+                foreach (var converter in leadKenticoConverters)
+                {
+                    await converter.Convert(lead, contactInfo);
+                }
+
+                if (contactInfo.HasChanged)
+                {
+                    contactInfoProvider.Set(contactInfo);
+                    await syncItemService.LogContactSyncItem(contactInfo, lead.Id!, CRMType.Salesforce);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Syncing to contact info {ContactEmail} failed", lead.Email);
+            }
+        }
     }
 
-    public Task SynchronizeContactsToKenticoAsync()
+    public async Task SynchronizeContactsToKenticoAsync()
     {
-        throw new NotImplementedException();
-    }
+        RequestStockHelper.Add("SuppressEvents", true);
+        var contacts = await apiService.GetModifiedContactsAsync(DateTime.UtcNow.AddMinutes(-1));
+        foreach (var contact in contacts)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(contact.Email))
+                {
+                    continue;
+                }
 
-    private Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync)
-    {
-        throw new NotImplementedException();
-    }
+                var contactInfo = (await contactInfoProvider.Get()
+                    .WhereEquals(nameof(ContactInfo.ContactEmail), contact.Email)
+                    .TopN(1)
+                    .GetEnumerableTypedResultAsync())?.FirstOrDefault();
 
-    private Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync)
-    {
-        throw new NotImplementedException();
-    }
+                if (contactInfo is null)
+                {
+                    contactInfo = new ContactInfo();
+                }
 
+                foreach (var converter in contactKenticoConverters)
+                {
+                    await converter.Convert(contact, contactInfo);
+                }
+
+                if (contactInfo.HasChanged)
+                {
+                    contactInfoProvider.Set(contactInfo);
+                    await syncItemService.LogContactSyncItem(contactInfo, contact.Id!, CRMType.Salesforce);
+                }
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "Syncing to contact info {ContactEmail} failed", contact.Email);
+            }
+        }
+    }
+    
     private async Task UpdateLeadByEmailOrCreate(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
         string? existingLeadId = null;
@@ -233,9 +305,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         var result = await apiService.CreateLeadAsync(lead);
 
         await syncItemService.LogContactSyncItem(contactInfo, result.Id!, CRMType.Salesforce);
-        //@TODO
-        // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
-        //     contactInfo.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, contactInfo.TypeInfo.ObjectClassName,
+            contactInfo.ContactID);
     }
 
     private async Task UpdateLeadAsync(string leadId, ContactInfo contactInfo,
@@ -249,9 +320,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         await apiService.UpdateLeadAsync(leadId, lead);
 
         await syncItemService.LogContactSyncItem(contactInfo, leadId, CRMType.Salesforce);
-        //@TODO
-        // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
-        //     contactInfo.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, contactInfo.TypeInfo.ObjectClassName,
+            contactInfo.ContactID);
     }
 
     private async Task CreateContactAsync(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
@@ -264,9 +334,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         var result = await apiService.CreateContactAsync(contact);
 
         await syncItemService.LogContactSyncItem(contactInfo, result.Id!, CRMType.Salesforce);
-        //@TODO
-        // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
-        //     contactInfo.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, contactInfo.TypeInfo.ObjectClassName,
+            contactInfo.ContactID);
     }
 
     private async Task UpdateContactAsync(string leadId, ContactInfo contactInfo,
@@ -280,9 +349,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         await apiService.UpdateContactAsync(leadId, contact);
 
         await syncItemService.LogContactSyncItem(contactInfo, leadId, CRMType.Salesforce);
-        //@TODO
-        // failedSyncItemService.DeleteFailedSyncItem(CRMType.SalesForce, contactInfo.BizFormClassName,
-        //     contactInfo.ItemID);
+        failedSyncItemService.DeleteFailedSyncItem(CRMType.Salesforce, contactInfo.TypeInfo.ObjectClassName,
+            contactInfo.ContactID);
     }
 
     protected async Task MapLead(ContactInfo contactInfo, LeadSObject lead,

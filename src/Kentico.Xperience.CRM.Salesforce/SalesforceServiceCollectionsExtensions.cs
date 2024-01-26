@@ -50,20 +50,27 @@ public static class SalesforceServiceCollectionsExtensions
         return serviceCollection;
     }
 
-    public static IServiceCollection AddKenticoCRMSalesforceContactsIntegration(this IServiceCollection serviceCollection,
-        ContactCRMType crmType, IConfiguration configuration)
-        => serviceCollection.AddKenticoCRMSalesForceContactsIntegration(crmType, b => { }, configuration);
+    public static IServiceCollection AddKenticoCRMSalesforceContactsIntegration(
+        this IServiceCollection serviceCollection,
+        ContactCRMType crmType,
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
+        => serviceCollection.AddKenticoCRMSalesForceContactsIntegration(crmType, b => { }, configuration,
+            useDefaultMappingToCRM, useDefaultMappingToKentico);
 
-    public static IServiceCollection AddKenticoCRMSalesForceContactsIntegration(this IServiceCollection serviceCollection,
+    public static IServiceCollection AddKenticoCRMSalesForceContactsIntegration(
+        this IServiceCollection serviceCollection,
         ContactCRMType crmType,
         Action<SalesforceContactMappingBuilder> mappingConfig,
-        IConfiguration configuration,
-        bool useDefaultMapping = true)
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
     {
         serviceCollection.AddKenticoCrmCommonContactIntegration();
-        
+
         var mappingBuilder = new SalesforceContactMappingBuilder(serviceCollection);
-        if (useDefaultMapping)
+        if (useDefaultMappingToCRM)
         {
             mappingBuilder = crmType == ContactCRMType.Lead ?
                 mappingBuilder.AddDefaultMappingForLead() :
@@ -71,10 +78,25 @@ public static class SalesforceServiceCollectionsExtensions
             mappingConfig(mappingBuilder);
         }
 
+        if (useDefaultMappingToKentico)
+        {
+            mappingBuilder.AddDefaultMappingToKenticoContact();
+        }
+
         serviceCollection.TryAddSingleton(_ => mappingBuilder.Build());
 
-        serviceCollection.AddOptions<SalesforceIntegrationSettings>().Bind(configuration)
-            .PostConfigure(s => s.ContactType = crmType);
+        if (configuration is null)
+        {
+            serviceCollection.AddOptions<SalesforceIntegrationSettings>()
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+        else
+        {
+            serviceCollection.AddOptions<SalesforceIntegrationSettings>().Bind(configuration)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+
         AddSalesforceCommonIntegration(serviceCollection);
 
         serviceCollection.AddScoped<ISalesforceContactsIntegrationService, SalesforceContactsIntegrationService>();
@@ -109,7 +131,8 @@ public static class SalesforceServiceCollectionsExtensions
         serviceCollection.AddHttpClient<ISalesforceApiService, SalesforceApiService>((provider, client) =>
             {
                 //cannot use IOptionsSnapshot, so changes in CMS settings needs restarting app to apply immediately
-                var settings = provider.GetRequiredService<IOptionsMonitor<SalesforceIntegrationSettings>>().CurrentValue;
+                var settings = provider.GetRequiredService<IOptionsMonitor<SalesforceIntegrationSettings>>()
+                    .CurrentValue;
 
                 if (!settings.ApiConfig.IsValid())
                     throw new InvalidOperationException("Missing API settings");
@@ -121,7 +144,8 @@ public static class SalesforceServiceCollectionsExtensions
             .AddClientCredentialsTokenHandler("Salesforce.api.client");
     }
 
-    private static void ConfigureWithCMSSettings(SalesforceIntegrationSettings settings, ICRMSettingsService settingsService)
+    private static void ConfigureWithCMSSettings(SalesforceIntegrationSettings settings,
+        ICRMSettingsService settingsService)
     {
         var settingsInfo = settingsService.GetSettings(CRMType.Salesforce);
         settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;

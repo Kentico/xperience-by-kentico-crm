@@ -5,7 +5,7 @@ namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
 /// <summary>
 /// Http typed client for Salesforce REST API
 /// </summary>
-public interface ISalesforceApiService
+internal interface ISalesforceApiService
 {
     /// <summary>
     /// Creates lead entity to Salesforce Leads
@@ -66,4 +66,19 @@ public interface ISalesforceApiService
     /// <param name="email"></param>
     /// <returns></returns>
     Task<string?> GetContactByEmail(string email);
+
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lastSync"></param>
+    /// <returns></returns>
+    Task<IEnumerable<LeadSObject>> GetModifiedLeadsAsync(DateTime lastSync);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="lastSync"></param>
+    /// <returns></returns>
+    Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync);
 }
