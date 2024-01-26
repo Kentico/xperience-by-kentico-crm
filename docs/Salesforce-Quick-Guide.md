@@ -49,4 +49,4 @@ On the detail of the app, click *Manage* button
 
 You will be prompted to verify your email, and then you have your Key and Secret! For the URL use the current domain name from your browser.
 
-![](../images/screenshots/manage_app.png)
+![](../images/screenshots/secrets.png)

@@ -40,7 +40,8 @@ dotnet add package Kentico.Xperience.CRM.Salesforce
 
 ## Screenshots
 
-![Dynamics settings](/images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
+![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
+![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## Quick Start
 
