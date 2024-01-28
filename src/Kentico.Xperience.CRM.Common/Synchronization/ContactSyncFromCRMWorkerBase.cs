@@ -37,8 +37,7 @@ public abstract class
             using (var scope = Service.Resolve<IServiceProvider>().CreateScope())
             {
                 var settings = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
-                //@TODO new setting for 2-way
-                if (!settings.ContactsEnabled) return;
+                if (!settings.ContactsEnabled || !settings.ContactsTwoWaySyncEnabled) return;
 
                 var contactsIntegrationService =
                     scope.ServiceProvider.GetRequiredService<TContactsService>();

@@ -24,7 +24,6 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     {
         var resourceInfo = InstallModule();
         InstallModuleClasses(resourceInfo);
-        InstallCRMIntegrationSettingsClass(resourceInfo);
     }
 
     private ResourceInfo InstallModule()
@@ -47,6 +46,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     {
         InstallSyncedItemClass(resourceInfo);
         InstallFailedSyncItemClass(resourceInfo);
+        InstallCRMIntegrationSettingsClass(resourceInfo);
     }
 
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
@@ -223,10 +223,17 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
         if (settingsCRM is not null)
         {
-            return;
+            // //ensure to incrementaly add new field added after previous releases
+            // if (new FormInfo(settingsCRM.ClassFormDefinition).FieldExists(nameof(CRMIntegrationSettingsInfo
+            //         .CRMIntegrationSettingsContactsTwoWaySyncEnabled)))
+            // {
+            //     return;
+            // }
         }
-
-        settingsCRM = DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
+        else
+        {
+            settingsCRM = DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
+        }
 
         settingsCRM.ClassName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName;
         settingsCRM.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
@@ -251,6 +258,17 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsEnabled),
             Caption = "Contacts enabled",
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+        
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsTwoWaySyncEnabled),
+            Caption = "Contacts two way sync enabled",
+            DefaultValue = "True",
             Visible = false,
             DataType = "boolean",
             Enabled = true

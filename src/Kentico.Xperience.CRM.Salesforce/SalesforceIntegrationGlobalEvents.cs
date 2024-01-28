@@ -50,6 +50,8 @@ internal class SalesforceIntegrationGlobalEvents : Module
         
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
+            SalesforceSyncQueueWorker.Current.EnsureRunningThread();
+            ContactsSyncFromCRMWorker.Current.EnsureRunningThread();
             FailedItemsWorker.Current.EnsureRunningThread();
         };
     }

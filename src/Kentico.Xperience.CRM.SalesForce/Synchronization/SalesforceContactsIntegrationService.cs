@@ -76,7 +76,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemEntityID, nameof(LeadSObject.Id));
+                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
                 if (existingLead is null)
                 {
                     await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -127,7 +127,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
             else
             {
-                var existingContact = await apiService.GetContactById(syncItem.CRMSyncItemEntityID, nameof(ContactSObject.Id));
+                var existingContact = await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
                 if (existingContact is null)
                 {
                     await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -300,7 +300,10 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
         lead.LeadSource ??= $"Contact {contactInfo.ContactEmail} - ID: {contactInfo.ContactID}";
 
-        lead.Company ??= "undefined"; //required field - set to 'undefined' to prevent errors
+        if (string.IsNullOrWhiteSpace(lead.Company))
+        {
+            lead.Company = "undefined"; //required field - set to 'undefined' to prevent errors
+        }
 
         var result = await apiService.CreateLeadAsync(lead);
 
@@ -364,6 +367,11 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.ContactFieldMapping.MapContactField(contactInfo);
+            if (formFieldValue is string val && string.IsNullOrWhiteSpace(val))
+            {
+                //dot not try to set empty value and send them as null to prevent api errors
+                continue;
+            }
             _ = fieldMapping.CRMFieldMapping switch
             {
                 CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,

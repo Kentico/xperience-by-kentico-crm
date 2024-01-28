@@ -150,6 +150,7 @@ public static class SalesforceServiceCollectionsExtensions
         var settingsInfo = settingsService.GetSettings(CRMType.Salesforce);
         settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
         settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
+        settings.ContactsTwoWaySyncEnabled = settingsInfo?.CRMIntegrationSettingsContactsTwoWaySyncEnabled ?? false;
 
         settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 

@@ -129,6 +129,7 @@ public static class DynamicsServiceCollectionExtensions
         var settingsInfo = settingsService.GetSettings(CRMType.Dynamics);
         settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
         settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
+        settings.ContactsTwoWaySyncEnabled = settingsInfo?.CRMIntegrationSettingsContactsTwoWaySyncEnabled ?? true;
 
         settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 

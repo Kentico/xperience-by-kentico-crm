@@ -47,7 +47,7 @@ public abstract class
             using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
 
             var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
-            if (!settings.FormLeadsEnabled) return;
+            if (!settings.FormLeadsEnabled && !settings.ContactsEnabled) return;
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
 
@@ -57,7 +57,7 @@ public abstract class
             foreach (var syncItem in failedSyncItemsService.GetFailedSyncItemsToReSync(CRMName))
             {
                 // contacts
-                if (syncItem.FailedSyncItemEntityClass == ContactInfo.TYPEINFO.ObjectClassName)
+                if (syncItem.FailedSyncItemEntityClass == ContactInfo.TYPEINFO.ObjectClassName && settings.ContactsEnabled)
                 {
                     contactsIntegrationService ??= serviceScope.ServiceProvider.GetRequiredService<TContactsService>();
 
@@ -74,7 +74,7 @@ public abstract class
                         .GetAwaiter().GetResult();
                 }
                 //form submissions
-                else
+                else if (settings.FormLeadsEnabled)
                 {
                     leadsIntegrationService ??= serviceScope.ServiceProvider
                         .GetRequiredService<TFormLeadsService>();

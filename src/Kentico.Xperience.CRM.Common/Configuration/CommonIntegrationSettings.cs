@@ -18,6 +18,9 @@ public class CommonIntegrationSettings<TApiConfig> where TApiConfig : new()
     /// </summary>
     public bool ContactsEnabled { get; set; }
 
+    /// <summary>
+    /// If enabled contacts are synced from CRM to Kentico
+    /// </summary>
     public bool ContactsTwoWaySyncEnabled { get; set; }
 
     /// <summary>

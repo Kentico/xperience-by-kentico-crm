@@ -15,6 +15,14 @@ using System.Diagnostics;
 
 namespace Kentico.Xperience.CRM.Common.Workers;
 
+/// <summary>
+/// Base class for contacts synchronization from CRM to Kentico
+/// </summary>
+/// <typeparam name="TWorker"></typeparam>
+/// <typeparam name="TFormLeadsService"></typeparam>
+/// <typeparam name="TContactsService"></typeparam>
+/// <typeparam name="TSettings"></typeparam>
+/// <typeparam name="TApiConfig"></typeparam>
 public abstract class
     CRMSyncQueueWorkerBase<TWorker, TFormLeadsService, TContactsService, TSettings,
         TApiConfig> : ThreadQueueWorker<BaseInfo, TWorker>

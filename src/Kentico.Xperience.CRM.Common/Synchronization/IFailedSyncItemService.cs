@@ -18,14 +18,15 @@ public interface IFailedSyncItemService
     void LogFailedLeadItem(BizFormItem bizFormItem, string crmName);
 
     /// <summary>
-    /// @TODO
+    /// Creates new record in failed items table or increment TrySyncCount property when record exists.
+    /// Next sync time is planned.
     /// </summary>
     /// <param name="contactInfo"></param>
     /// <param name="crmName"></param>
     void LogFailedContactItem(ContactInfo contactInfo, string crmName);
     
     /// <summary>
-    /// Creates new record in failed items table or increment TrySyncCount property when record exists.
+    /// Creates new records in failed items table or increment TrySyncCount property when record exists.
     /// Next sync time is planned.
     /// </summary>
     /// <param name="bizFormItem">BizForm item</param>
@@ -33,8 +34,8 @@ public interface IFailedSyncItemService
     void LogFailedLeadItems(IEnumerable<BizFormItem> bizFormItems, string crmName);
 
     /// <summary>
-    /// @TODO
-    /// </summary>
+    /// Creates new records in failed items table or increment TrySyncCount property when record exists.
+    /// Next sync time is planned.
     /// <param name="contactInfo"></param>
     /// <param name="crmName"></param>
     void LogFailedContactItems(IEnumerable<ContactInfo> contactInfos, string crmName);
