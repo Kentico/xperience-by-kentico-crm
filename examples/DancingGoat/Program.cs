@@ -95,7 +95,7 @@ builder.Services.AddKenticoCRMSalesforce(builder =>
 
 //builder.Services.AddKenticoCRMDynamicsContactsIntegration(ContactCRMType.Contact);
 
-builder.Services.AddKenticoCRMSalesforceContactsIntegration(ContactCRMType.Contact);
+builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
 //CRM integration registration end
 
 var app = builder.Build();

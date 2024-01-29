@@ -41,17 +41,26 @@ public abstract class
 
                 var contactsIntegrationService =
                     scope.ServiceProvider.GetRequiredService<TContactsService>();
-
+                
+                var dateBeforeSync = DateTime.Now;
+                
                 (settings.ContactType == ContactCRMType.Lead ?
                         contactsIntegrationService.SynchronizeLeadsToKenticoAsync() :
                         contactsIntegrationService.SynchronizeContactsToKenticoAsync())
                     .GetAwaiter().GetResult();
+                
+                
             }
         }
         catch (Exception e)
         {
             logger.LogError(e, "Error occured during contacts sync");
         }
+    }
+
+    private void LogLastSuccessfulSyncTime(DateTime dateTime)
+    {
+        
     }
     
     protected override void Finish() { }

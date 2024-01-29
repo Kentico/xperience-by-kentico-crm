@@ -47,8 +47,9 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         InstallSyncedItemClass(resourceInfo);
         InstallFailedSyncItemClass(resourceInfo);
         InstallCRMIntegrationSettingsClass(resourceInfo);
+        InstallContactsLastSyncTimeClass(resourceInfo);
     }
-
+    
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
     {
         var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(CRMSyncItemInfo.OBJECT_TYPE);
@@ -223,12 +224,12 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
         if (settingsCRM is not null)
         {
-            // //ensure to incrementaly add new field added after previous releases
-            // if (new FormInfo(settingsCRM.ClassFormDefinition).FieldExists(nameof(CRMIntegrationSettingsInfo
-            //         .CRMIntegrationSettingsContactsTwoWaySyncEnabled)))
-            // {
-            //     return;
-            // }
+            //ensure to incrementaly add new field added after previous releases
+            if (new FormInfo(settingsCRM.ClassFormDefinition).FieldExists(nameof(CRMIntegrationSettingsInfo
+                    .CRMIntegrationSettingsContactsTwoWaySyncEnabled)))
+            {
+                return;
+            }
         }
         else
         {
@@ -336,5 +337,52 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         settingsCRM.ClassFormDefinition = formInfo.GetXmlDefinition();
 
         DataClassInfoProvider.SetDataClassInfo(settingsCRM);
+    }
+    
+    private void InstallContactsLastSyncTimeClass(ResourceInfo resourceInfo)
+    {
+        var lastSyncTimeClass = DataClassInfoProvider.GetDataClassInfo("kenticocrmcommon.contactslastsync");
+        if (lastSyncTimeClass is not null)
+        {
+            return;
+        }
+        else
+        {
+            lastSyncTimeClass = DataClassInfo.New("kenticocrmcommon.contactslastsync");
+        }
+
+        lastSyncTimeClass.ClassName = "KenticoCRMCommon.ContactsLastSync";
+        lastSyncTimeClass.ClassTableName = "KenticoCRMCommon.ContactsLastSync".Replace(".", "_");
+        lastSyncTimeClass.ClassDisplayName = "Contacts last sync";
+        lastSyncTimeClass.ClassResourceID = resourceInfo.ResourceID;
+        lastSyncTimeClass.ClassType = ClassType.OTHER;
+
+        var formInfo =
+            FormHelper.GetBasicFormDefinition("ContactsLastSyncItemID");
+
+        var formItem = new FormFieldInfo
+        {
+            Name = "ContactsLastSyncCRM",
+            Visible = true,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+        
+        formItem = new FormFieldInfo
+        {
+            Name = "ContactsLastSyncTime",
+            Visible = true,
+            Precision = 3,
+            DataType = "datetime",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+        
+        lastSyncTimeClass.ClassFormDefinition = formInfo.GetXmlDefinition();
+
+        DataClassInfoProvider.SetDataClassInfo(lastSyncTimeClass);
     }
 }

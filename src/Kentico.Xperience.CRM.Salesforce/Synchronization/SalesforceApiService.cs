@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
+using System.Text.Json;
 using System.Web;
 using SalesforceApiClient = Salesforce.OpenApi.SalesforceApiClient;
 
@@ -17,6 +18,11 @@ internal class SalesforceApiService : ISalesforceApiService
     private readonly ILogger<SalesforceApiService> logger;
     private readonly IOptionsSnapshot<SalesforceIntegrationSettings> integrationSettings;
     private readonly SalesforceApiClient apiClient;
+    
+    private static JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.General)
+    {
+        Converters = { new DateTimeOffsetConverter() }
+    };
 
     public SalesforceApiService(
         HttpClient httpClient,
@@ -74,7 +80,7 @@ internal class SalesforceApiService : ISalesforceApiService
 
         if (response.IsSuccessStatusCode)
         {
-            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<TModel>>();
+            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<TModel>>(SerializerOptions);
             return queryResult?.Records ?? Enumerable.Empty<TModel>();
         }
         else
@@ -94,7 +100,7 @@ internal class SalesforceApiService : ISalesforceApiService
 
         if (response.IsSuccessStatusCode)
         {
-            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<LeadSObject>>();
+            var queryResult = await response.Content.ReadFromJsonAsync<QueryResult<LeadSObject>>(SerializerOptions);
             return queryResult?.Records.FirstOrDefault()?.Id;
         }
         else

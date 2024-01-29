@@ -5,7 +5,7 @@ using Kentico.Xperience.CRM.Salesforce.Synchronization;
 
 namespace Kentico.Xperience.CRM.Salesforce;
 
-public class ContactsSyncFromCRMWorker : ContactSyncFromCRMWorkerBase<ContactsSyncFromCRMWorker,
+internal class ContactsSyncFromCRMWorker : ContactSyncFromCRMWorkerBase<ContactsSyncFromCRMWorker,
     ISalesforceContactsIntegrationService, SalesforceIntegrationSettings, SalesforceApiConfig>
 {
     protected override string CRMName => CRMType.Salesforce;
