@@ -62,7 +62,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         failedSyncItemClass.ClassName = CRMSyncItemInfo.TYPEINFO.ObjectClassName;
         failedSyncItemClass.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        failedSyncItemClass.ClassDisplayName = "CRM sync item";
+        failedSyncItemClass.ClassDisplayName = "CRM Successful sync item";
         failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
         failedSyncItemClass.ClassType = ClassType.OTHER;
 
@@ -148,7 +148,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
         failedSyncItemClass.ClassName = FailedSyncItemInfo.TYPEINFO.ObjectClassName;
         failedSyncItemClass.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        failedSyncItemClass.ClassDisplayName = "Failed sync item";
+        failedSyncItemClass.ClassDisplayName = "CRM Failed sync item";
         failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
         failedSyncItemClass.ClassType = ClassType.OTHER;
 
