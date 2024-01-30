@@ -76,7 +76,16 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                LeadSObject? existingLead = null;
+                try
+                {
+                    existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                }
+                catch (Exception)
+                {
+                    //exception means de-facto 404-NotFound status
+                }
+
                 if (existingLead is null)
                 {
                     await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -127,7 +136,16 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
             else
             {
-                var existingContact = await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
+                ContactSObject? existingContact = null;
+                try
+                {
+                    existingContact = await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
+                }
+                catch (Exception)
+                {
+                    //exception means de-facto 404-NotFound status
+                }
+
                 if (existingContact is null)
                 {
                     await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
@@ -159,10 +177,10 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         }
     }
 
-    public async Task SynchronizeLeadsToKenticoAsync()
+    public async Task SynchronizeLeadsToKenticoAsync(DateTime lastSync)
     {
         RequestStockHelper.Add("SuppressEvents", true);
-        var leads = await apiService.GetModifiedLeadsAsync(DateTime.Now.AddMinutes(-1));
+        var leads = await apiService.GetModifiedLeadsAsync(lastSync);
         foreach (var lead in leads)
         {
             try
@@ -200,10 +218,10 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         }
     }
 
-    public async Task SynchronizeContactsToKenticoAsync()
+    public async Task SynchronizeContactsToKenticoAsync(DateTime lastSync)
     {
         RequestStockHelper.Add("SuppressEvents", true);
-        var contacts = await apiService.GetModifiedContactsAsync(DateTime.UtcNow.AddMinutes(-1));
+        var contacts = await apiService.GetModifiedContactsAsync(lastSync);
         foreach (var contact in contacts)
         {
             try
@@ -240,8 +258,9 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             }
         }
     }
-    
-    private async Task UpdateLeadByEmailOrCreate(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+
+    private async Task UpdateLeadByEmailOrCreate(ContactInfo contactInfo,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
         string? existingLeadId = null;
 
@@ -267,7 +286,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         }
     }
 
-    private async Task UpdateContactByEmailOrCreate(ContactInfo contactInfo, IEnumerable<ContactFieldToCRMMapping> fieldMappings)
+    private async Task UpdateContactByEmailOrCreate(ContactInfo contactInfo,
+        IEnumerable<ContactFieldToCRMMapping> fieldMappings)
     {
         string? existingLeadId = null;
 
@@ -372,6 +392,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                 //dot not try to set empty value and send them as null to prevent api errors
                 continue;
             }
+
             _ = fieldMapping.CRMFieldMapping switch
             {
                 CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,

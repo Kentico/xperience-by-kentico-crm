@@ -91,7 +91,15 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                LeadSObject? existingLead = null;
+                try
+                {
+                    existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                }
+                catch (Exception)
+                {
+                    //exception means de-facto 404-NotFound status
+                }
                 if (existingLead is null)
                 {
                     await UpdateByEmailOrCreate(bizFormItem, fieldMappings, converters);

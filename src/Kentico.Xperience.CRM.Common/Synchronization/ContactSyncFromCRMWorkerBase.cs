@@ -1,5 +1,6 @@
 ﻿using CMS.Base;
 using CMS.Core;
+using Kentic.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Services;
@@ -19,13 +20,15 @@ public abstract class
 {
     protected override int DefaultInterval => 60000;
     private ILogger<TWorker> logger = null!;
-    
+    private IContactsLastSyncInfoProvider lastSyncInfoProvider = null!;
+
     protected abstract string CRMName { get; }
 
     protected override void Initialize()
     {
         base.Initialize();
         logger = Service.Resolve<ILogger<TWorker>>();
+        lastSyncInfoProvider = Service.Resolve<IContactsLastSyncInfoProvider>();
     }
 
     protected override void Process()
@@ -41,15 +44,19 @@ public abstract class
 
                 var contactsIntegrationService =
                     scope.ServiceProvider.GetRequiredService<TContactsService>();
-                
+
+                var lastSync = GetLastSyncInfo();
+                var lastSyncTime = lastSync?.ContactsLastSyncTime ?? DateTime.Now.AddMinutes(-1);
                 var dateBeforeSync = DateTime.Now;
                 
-                (settings.ContactType == ContactCRMType.Lead ?
-                        contactsIntegrationService.SynchronizeLeadsToKenticoAsync() :
-                        contactsIntegrationService.SynchronizeContactsToKenticoAsync())
+                (settings.ContactType == ContactCRMType.Lead
+                        ? contactsIntegrationService.SynchronizeLeadsToKenticoAsync(lastSyncTime)
+                        : contactsIntegrationService.SynchronizeContactsToKenticoAsync(lastSyncTime))
                     .GetAwaiter().GetResult();
-                
-                
+
+                (lastSync ??= new ContactsLastSyncInfo { ContactsLastSyncCRM = CRMName }).ContactsLastSyncTime =
+                    dateBeforeSync;
+                lastSyncInfoProvider.Set(lastSync);
             }
         }
         catch (Exception e)
@@ -58,10 +65,10 @@ public abstract class
         }
     }
 
-    private void LogLastSuccessfulSyncTime(DateTime dateTime)
-    {
-        
-    }
+    private ContactsLastSyncInfo? GetLastSyncInfo() => lastSyncInfoProvider.Get()
+        .WhereEquals(nameof(ContactsLastSyncInfo.ContactsLastSyncCRM), CRMName)
+        .TopN(1)
+        .FirstOrDefault();
     
     protected override void Finish() { }
 }

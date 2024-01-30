@@ -22,11 +22,11 @@ public interface IContactsIntegrationService
     /// Creates or updates contact info from CRM lead
     /// </summary>
     /// <returns></returns>
-    Task SynchronizeLeadsToKenticoAsync();
+    Task SynchronizeLeadsToKenticoAsync(DateTime lastSync);
     
     /// <summary>
     /// Creates or updates contact info from CRM contact
     /// </summary>
     /// <returns></returns>
-    Task SynchronizeContactsToKenticoAsync();
+    Task SynchronizeContactsToKenticoAsync(DateTime lastSync);
 }

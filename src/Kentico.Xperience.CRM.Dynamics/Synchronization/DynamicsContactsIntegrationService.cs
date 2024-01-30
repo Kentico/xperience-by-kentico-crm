@@ -165,10 +165,10 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
     }
 
 
-    public async Task SynchronizeLeadsToKenticoAsync()
+    public async Task SynchronizeLeadsToKenticoAsync(DateTime lastSync)
     {
         RequestStockHelper.Add("SuppressEvents", true);
-        var leads = await GetModifiedLeadsAsync(DateTime.UtcNow.AddMinutes(-1));
+        var leads = await GetModifiedLeadsAsync(lastSync);
         foreach (var lead in leads)
         {
             try
@@ -193,7 +193,6 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
                     await converter.Convert(lead, contactInfo);
                 }
 
-
                 if (contactInfo.HasChanged)
                 {
                     contactInfoProvider.Set(contactInfo);
@@ -207,10 +206,10 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         }
     }
 
-    public async Task SynchronizeContactsToKenticoAsync()
+    public async Task SynchronizeContactsToKenticoAsync(DateTime lastSync)
     {
         RequestStockHelper.Add("SuppressEvents", true);
-        var contacts = await GetModifiedContactsAsync(DateTime.UtcNow.AddMinutes(-1));
+        var contacts = await GetModifiedContactsAsync(lastSync);
         foreach (var contact in contacts)
         {
             try
@@ -258,7 +257,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         if (!string.IsNullOrWhiteSpace(tmpLead.EMailAddress1))
         {
-            existingLead = await GetLeadByEmail<Lead>(tmpLead.EMailAddress1, Lead.EntityLogicalName);
+            existingLead = await GetEntityByEmail<Lead>(tmpLead.EMailAddress1, Lead.EntityLogicalName);
         }
 
         if (existingLead is null)
@@ -284,7 +283,7 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
 
         if (!string.IsNullOrWhiteSpace(tmpContact.EMailAddress1))
         {
-            existingContact = await GetLeadByEmail<Contact>(tmpContact.EMailAddress1, Contact.EntityLogicalName);
+            existingContact = await GetEntityByEmail<Contact>(tmpContact.EMailAddress1, Contact.EntityLogicalName);
         }
 
         if (existingContact is null)
@@ -428,10 +427,10 @@ public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationSe
         where TEntity : Entity
         => (await serviceClient.RetrieveAsync(logicalName, leadId, new ColumnSet(true)))?.ToEntity<TEntity>();
 
-    private async Task<TEntity?> GetLeadByEmail<TEntity>(string email, string logicalName)
+    private async Task<TEntity?> GetEntityByEmail<TEntity>(string email, string logicalName)
         where TEntity : Entity
     {
-        var query = new QueryExpression(Lead.EntityLogicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
+        var query = new QueryExpression(logicalName) { ColumnSet = new ColumnSet(true), TopCount = 1 };
         query.Criteria.AddCondition("emailaddress1", ConditionOperator.Equal, email);
 
         return (await serviceClient.RetrieveMultipleAsync(query)).Entities.FirstOrDefault()?.ToEntity<TEntity>();

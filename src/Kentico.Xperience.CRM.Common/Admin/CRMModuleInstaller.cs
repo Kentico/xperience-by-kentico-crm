@@ -341,28 +341,26 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     
     private void InstallContactsLastSyncTimeClass(ResourceInfo resourceInfo)
     {
-        var lastSyncTimeClass = DataClassInfoProvider.GetDataClassInfo("kenticocrmcommon.contactslastsync");
+        var lastSyncTimeClass = DataClassInfoProvider.GetDataClassInfo(ContactsLastSyncInfo.OBJECT_TYPE);
         if (lastSyncTimeClass is not null)
         {
             return;
         }
-        else
-        {
-            lastSyncTimeClass = DataClassInfo.New("kenticocrmcommon.contactslastsync");
-        }
 
-        lastSyncTimeClass.ClassName = "KenticoCRMCommon.ContactsLastSync";
-        lastSyncTimeClass.ClassTableName = "KenticoCRMCommon.ContactsLastSync".Replace(".", "_");
-        lastSyncTimeClass.ClassDisplayName = "Contacts last sync";
+        lastSyncTimeClass = DataClassInfo.New(ContactsLastSyncInfo.OBJECT_TYPE);
+
+        lastSyncTimeClass.ClassName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName;
+        lastSyncTimeClass.ClassTableName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        lastSyncTimeClass.ClassDisplayName = "CRM Contacts last sync";
         lastSyncTimeClass.ClassResourceID = resourceInfo.ResourceID;
         lastSyncTimeClass.ClassType = ClassType.OTHER;
 
         var formInfo =
-            FormHelper.GetBasicFormDefinition("ContactsLastSyncItemID");
+            FormHelper.GetBasicFormDefinition(nameof(ContactsLastSyncInfo.ContactsLastSyncItemID));
 
         var formItem = new FormFieldInfo
         {
-            Name = "ContactsLastSyncCRM",
+            Name = nameof(ContactsLastSyncInfo.ContactsLastSyncCRM),
             Visible = true,
             Precision = 0,
             Size = 50,
@@ -373,7 +371,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         
         formItem = new FormFieldInfo
         {
-            Name = "ContactsLastSyncTime",
+            Name = nameof(ContactsLastSyncInfo.ContactsLastSyncTime),
             Visible = true,
             Precision = 3,
             DataType = "datetime",
