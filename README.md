@@ -7,13 +7,19 @@
 
 Xperience by Kentico CRM integration Starter kit for general CRM integrations. Plus plug-and-play packages for Microsoft Dynamics Sales and Salesforce Sales Cloud. This integration enables sending form submissions from Xperience by Kentico to a CRM as leads and checking synchronizatino status in the admin UI.
 
+## Screenshots
+
+![Dynamics settings](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
+
+![Form CRM sync list](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/form-submission-sync-record.jpg "Form CRM sync list")
+
 ## Library Version Matrix
 
 The versions of this library are supported by the following versions of Xperience by Kentico
 
 | Xperience Version | Library Version |
 | ----------------- | --------------- |
-| >= 28.0.0         | 1.0.0           |
+| >= 28.0.0         | >= 1.0.0        |
 
 ### Dependencies
 
@@ -37,10 +43,6 @@ Add the package to your application using the .NET CLI
 ```powershell
 dotnet add package Kentico.Xperience.CRM.Salesforce
 ```
-
-## Screenshots
-
-![Dynamics settings](/images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## Quick Start
 
