@@ -312,7 +312,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     }
 
     /// <summary>
-    /// Ensure that the form is not upserted with any existing form
+    /// Ensure that the form is upserted with any existing form
     /// </summary>
     /// <param name="info"></param>
     /// <param name="form"></param>
