@@ -52,19 +52,13 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
 
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
     {
-        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(CRMSyncItemInfo.OBJECT_TYPE);
-        if (failedSyncItemClass is not null)
-        {
-            return;
-        }
+        var info = DataClassInfoProvider.GetDataClassInfo(CRMSyncItemInfo.OBJECT_TYPE) ?? DataClassInfo.New(CRMSyncItemInfo.OBJECT_TYPE);
 
-        failedSyncItemClass = DataClassInfo.New(CRMSyncItemInfo.OBJECT_TYPE);
-
-        failedSyncItemClass.ClassName = CRMSyncItemInfo.TYPEINFO.ObjectClassName;
-        failedSyncItemClass.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        failedSyncItemClass.ClassDisplayName = "CRM Successful sync item";
-        failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
-        failedSyncItemClass.ClassType = ClassType.OTHER;
+        info.ClassName = CRMSyncItemInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM Successful sync item";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.OTHER;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(CRMSyncItemInfo.CRMSyncItemID));
 
@@ -131,26 +125,23 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         };
         formInfo.AddFormItem(formItem);
 
-        failedSyncItemClass.ClassFormDefinition = formInfo.GetXmlDefinition();
+        SetFormDefinition(info, formInfo);
 
-        DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
+        }
     }
 
     private void InstallFailedSyncItemClass(ResourceInfo resourceInfo)
     {
-        var failedSyncItemClass = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE);
-        if (failedSyncItemClass is not null)
-        {
-            return;
-        }
+        var info = DataClassInfoProvider.GetDataClassInfo(FailedSyncItemInfo.OBJECT_TYPE) ?? DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
 
-        failedSyncItemClass = DataClassInfo.New(FailedSyncItemInfo.OBJECT_TYPE);
-
-        failedSyncItemClass.ClassName = FailedSyncItemInfo.TYPEINFO.ObjectClassName;
-        failedSyncItemClass.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        failedSyncItemClass.ClassDisplayName = "CRM Failed sync item";
-        failedSyncItemClass.ClassResourceID = resourceInfo.ResourceID;
-        failedSyncItemClass.ClassType = ClassType.OTHER;
+        info.ClassName = FailedSyncItemInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM Failed sync item";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.OTHER;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(FailedSyncItemInfo.FailedSyncItemID));
 
@@ -214,26 +205,23 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         };
         formInfo.AddFormItem(formItem);
 
-        failedSyncItemClass.ClassFormDefinition = formInfo.GetXmlDefinition();
+        SetFormDefinition(info, formInfo);
 
-        DataClassInfoProvider.SetDataClassInfo(failedSyncItemClass);
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
+        }
     }
 
     private void InstallCRMIntegrationSettingsClass(ResourceInfo resourceInfo)
     {
-        var settingsCRM = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE);
-        if (settingsCRM is not null)
-        {
-            return;
-        }
+        var info = DataClassInfoProvider.GetDataClassInfo(CRMIntegrationSettingsInfo.OBJECT_TYPE) ?? DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
 
-        settingsCRM = DataClassInfo.New(CRMIntegrationSettingsInfo.OBJECT_TYPE);
-
-        settingsCRM.ClassName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName;
-        settingsCRM.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        settingsCRM.ClassDisplayName = "CRM integration settings";
-        settingsCRM.ClassResourceID = resourceInfo.ResourceID;
-        settingsCRM.ClassType = ClassType.OTHER;
+        info.ClassName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM integration settings";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.OTHER;
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
@@ -315,9 +303,30 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         };
         formInfo.AddFormItem(formItem);
 
+        SetFormDefinition(info, formInfo);
 
-        settingsCRM.ClassFormDefinition = formInfo.GetXmlDefinition();
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
+        }
+    }
 
-        DataClassInfoProvider.SetDataClassInfo(settingsCRM);
+    /// <summary>
+    /// Ensure that the form is not upserted with any existing form
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="form"></param>
+    private static void SetFormDefinition(DataClassInfo info, FormInfo form)
+    {
+        if (info.ClassID > 0)
+        {
+            var existingForm = new FormInfo(info.ClassFormDefinition);
+            existingForm.CombineWithForm(form, new());
+            info.ClassFormDefinition = existingForm.GetXmlDefinition();
+        }
+        else
+        {
+            info.ClassFormDefinition = form.GetXmlDefinition();
+        }
     }
 }
