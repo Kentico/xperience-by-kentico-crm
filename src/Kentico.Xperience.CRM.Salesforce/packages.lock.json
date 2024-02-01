@@ -43,7 +43,7 @@
       },
       "NSwag.ApiDescription.Client": {
         "type": "Direct",
-        "requested": "[13.20.0, )",
+        "requested": "[13.20.0, 14.0.0)",
         "resolved": "13.20.0",
         "contentHash": "ylDDEqtlSrTUH9oSPttT+ZoRCTusx8U8kbmqjfNuujvfLQz6KGPctkEhXLZYn4Bdy3v5z+a2koPN+DbeyyCxXA==",
         "dependencies": {

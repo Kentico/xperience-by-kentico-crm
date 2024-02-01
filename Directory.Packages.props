@@ -15,11 +15,11 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageVersion Include="NUnit" Version="4.0.1" />
     <PackageVersion Include="NUnit3TestAdapter" Version="4.5.0" />
-    <PackageVersion Include="NUnit.Analyzers" Version="3.10.0" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.0.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.1.17" />
     <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.0" />
     <PackageVersion Include="IdentityModel" Version="6.2.0" />
-    <PackageVersion Include="NSwag.ApiDescription.Client" Version="13.20.0" />
+    <PackageVersion Include="NSwag.ApiDescription.Client" Version="[13.20.0, 14.0.0)" />
   </ItemGroup>
 </Project>
