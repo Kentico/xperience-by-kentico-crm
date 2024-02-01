@@ -29,6 +29,10 @@ namespace Kentico.Xperience.CRM.Common
         public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(CRMIntegrationSettingsInfoProvider), OBJECT_TYPE, "KenticoCRMCommon.CRMIntegrationSettings", "CRMIntegrationSettingsItemID", null, null, null, null, null, null, null)
         {
             TouchCacheDependencies = true,
+            ContinuousIntegrationSettings =
+            {
+                Enabled = true
+            }
         };
 
 
