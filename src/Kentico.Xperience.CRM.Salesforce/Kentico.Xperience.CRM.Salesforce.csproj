@@ -19,7 +19,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<OpenApiReference Include=".\ApiClient\Salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="Salesforce.OpenApi" ClassName="SalesforceApiClient">
+		<OpenApiReference Include=".\ApiClient\salesforce_openapi3.json" CodeGenerator="NSwagCSharp" Namespace="Salesforce.OpenApi" ClassName="SalesforceApiClient">
 			<Options>/UseBaseUrl:false /JsonLibrary:SystemTextJson /GenerateOptionalParameters:true /GenerateOptionalPropertiesAsNullable:true /GenerateNullableReferenceTypes:true /ExposeJsonSerializerSettings:true</Options>
 		</OpenApiReference>
 	</ItemGroup>

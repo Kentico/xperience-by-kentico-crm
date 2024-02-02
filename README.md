@@ -9,9 +9,9 @@ Xperience by Kentico CRM integration Starter kit for general CRM integrations. P
 
 ## Screenshots
 
-![Dynamics settings](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
+![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
 
-![Form CRM sync list](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/form-submission-sync-record.jpg "Form CRM sync list")
+![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## Library Version Matrix
 
@@ -57,6 +57,8 @@ There are 2 options how to fill settings:
 - Use application settings: [appsettings.json](./docs/Usage-Guide.md#crm-settings) (API config is recommended to have in [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-6.0&tabs=windows))
 - Use CMS settings: CRM integration settings category is created after first run. It is primarily for testing and demo purposes and we do not recommend it due to low security standards.
   This is primary option when you don't specify IConfiguration section during services registration.
+
+No API keys? Use our [Salesforce Quick Start Guide](./docs/Salesforce-Quick-Guide.md) to deliver a quick demo with a free Salesforce developer account.
 
 ### Forms data - Leads integration
 

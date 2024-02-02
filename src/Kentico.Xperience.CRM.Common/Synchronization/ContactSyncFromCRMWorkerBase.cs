@@ -1,6 +1,5 @@
 ﻿using CMS.Base;
 using CMS.Core;
-using Kentic.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Services;
