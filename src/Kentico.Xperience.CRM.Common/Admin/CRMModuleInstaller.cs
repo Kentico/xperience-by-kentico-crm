@@ -49,7 +49,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         InstallCRMIntegrationSettingsClass(resourceInfo);
         InstallContactsLastSyncTimeClass(resourceInfo);
     }
-    
+
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
     {
         var info = DataClassInfoProvider.GetDataClassInfo(CRMSyncItemInfo.OBJECT_TYPE) ?? DataClassInfo.New(CRMSyncItemInfo.OBJECT_TYPE);
@@ -245,7 +245,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsTwoWaySyncEnabled),
@@ -340,22 +340,16 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             info.ClassFormDefinition = form.GetXmlDefinition();
         }
     }
-    
+
     private void InstallContactsLastSyncTimeClass(ResourceInfo resourceInfo)
     {
-        var lastSyncTimeClass = DataClassInfoProvider.GetDataClassInfo(ContactsLastSyncInfo.OBJECT_TYPE);
-        if (lastSyncTimeClass is not null)
-        {
-            return;
-        }
+        var info = DataClassInfoProvider.GetDataClassInfo(ContactsLastSyncInfo.OBJECT_TYPE) ?? DataClassInfo.New(ContactsLastSyncInfo.OBJECT_TYPE);
 
-        lastSyncTimeClass = DataClassInfo.New(ContactsLastSyncInfo.OBJECT_TYPE);
-
-        lastSyncTimeClass.ClassName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName;
-        lastSyncTimeClass.ClassTableName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
-        lastSyncTimeClass.ClassDisplayName = "CRM Contacts last sync";
-        lastSyncTimeClass.ClassResourceID = resourceInfo.ResourceID;
-        lastSyncTimeClass.ClassType = ClassType.OTHER;
+        info.ClassName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM Contacts last sync";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.OTHER;
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(ContactsLastSyncInfo.ContactsLastSyncItemID));
@@ -370,7 +364,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
+
         formItem = new FormFieldInfo
         {
             Name = nameof(ContactsLastSyncInfo.ContactsLastSyncTime),
@@ -380,9 +374,12 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Enabled = true
         };
         formInfo.AddFormItem(formItem);
-        
-        lastSyncTimeClass.ClassFormDefinition = formInfo.GetXmlDefinition();
 
-        DataClassInfoProvider.SetDataClassInfo(lastSyncTimeClass);
+        SetFormDefinition(info, formInfo);
+
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
+        }
     }
 }
