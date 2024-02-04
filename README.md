@@ -72,7 +72,6 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
-
  // ...
  builder.Services.AddKenticoCRMDynamics(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
@@ -84,7 +83,6 @@ Example how to add form with own mapping:
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
-
  // ...
  builder.Services.AddKenticoCRMDynamics(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
@@ -103,7 +101,6 @@ Use this option when you need complex logic and need to use another service via 
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
-
  // ...
  builder.Services.AddKenticoCRMDynamics(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
@@ -117,7 +114,6 @@ Added form with auto mapping based on Form field mapping to Contacts atttibutes.
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
-
  // ...
  builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME));
@@ -129,7 +125,6 @@ Example how to add form with own mapping:
  // Program.cs
 
  var builder = WebApplication.CreateBuilder(args);
-
  // ...
  builder.Services.AddKenticoCRMSalesforce(builder =>
         builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
@@ -152,6 +147,34 @@ Use this option when you need complex logic and need to use another service via 
  // ...
  builder.Services.AddKenticoCRMSalesforce(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
+```
+
+### Contacts integration
+You can enable synchronization of online marketing contacts (OM_Contact table).
+You can choose between Lead and Contact entities in CRM where to sync data (but only one option is supported at any given time).
+
+#### Dynamics Sales
+
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ // Add sync to Leads
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Lead);
+ // Add sync to Contacts
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact);
+```
+
+#### Salesforce
+
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ // Add sync to Leads
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead);
+ // Add sync to Contacts 
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
 ```
 
 ## Full Instructions

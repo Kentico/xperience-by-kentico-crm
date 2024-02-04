@@ -140,11 +140,18 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
         var tmpLead = new LeadSObject();
         await MapLead(bizFormItem, tmpLead, fieldMappings, converters);
 
-        if (!string.IsNullOrWhiteSpace(tmpLead.Email))
+        string? emailAddress = tmpLead.Email;
+        if (string.IsNullOrWhiteSpace(emailAddress))
         {
-            existingLeadId = await apiService.GetLeadByEmail(tmpLead.Email);
+            emailAddress = tmpLead.AdditionalProperties.TryGetValue(nameof(LeadSObject.Email), out var email) ?
+                email as string :
+                null;
         }
-
+        if (!string.IsNullOrWhiteSpace(emailAddress))
+        {
+            existingLeadId = await apiService.GetLeadByEmail(emailAddress!);
+        }
+        
         if (existingLeadId is null)
         {
             await CreateLeadAsync(bizFormItem, fieldMappings, converters);

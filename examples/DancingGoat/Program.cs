@@ -93,7 +93,7 @@ builder.Services.AddKenticoCRMSalesforce(builder =>
 // builder.Services.AddDynamicsContactsIntegration(ContactCRMType.Lead,
 //     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
 
-//builder.Services.AddKenticoCRMDynamicsContactsIntegration(ContactCRMType.Contact);
+builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact);
 
 builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
 //CRM integration registration end

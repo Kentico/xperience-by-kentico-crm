@@ -139,7 +139,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                 ContactSObject? existingContact = null;
                 try
                 {
-                    existingContact = await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
+                    existingContact =
+                        await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
                 }
                 catch (Exception)
                 {
@@ -267,9 +268,16 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         var tmpLead = new LeadSObject();
         await MapLead(contactInfo, tmpLead, fieldMappings);
 
-        if (!string.IsNullOrWhiteSpace(tmpLead.Email))
+        string? emailAddress = tmpLead.Email;
+        if (string.IsNullOrWhiteSpace(emailAddress))
         {
-            existingLeadId = await apiService.GetLeadByEmail(tmpLead.Email);
+            emailAddress = tmpLead.AdditionalProperties.TryGetValue(nameof(LeadSObject.Email), out var email) ?
+                email as string :
+                null;
+        }
+        if (!string.IsNullOrWhiteSpace(emailAddress))
+        {
+            existingLeadId = await apiService.GetLeadByEmail(emailAddress!);
         }
 
         if (existingLeadId is null)
@@ -294,9 +302,16 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         var tmpLead = new ContactSObject();
         await MapContact(contactInfo, tmpLead, fieldMappings);
 
-        if (!string.IsNullOrWhiteSpace(tmpLead.Email))
+        string? emailAddress = tmpLead.Email;
+        if (string.IsNullOrWhiteSpace(emailAddress))
         {
-            existingLeadId = await apiService.GetContactByEmail(tmpLead.Email);
+            emailAddress = tmpLead.AdditionalProperties.TryGetValue(nameof(ContactSObject.Email), out var email) ?
+                email as string :
+                null;
+        }
+        if (!string.IsNullOrWhiteSpace(emailAddress))
+        {
+            existingLeadId = await apiService.GetContactByEmail(emailAddress);
         }
 
         if (existingLeadId is null)

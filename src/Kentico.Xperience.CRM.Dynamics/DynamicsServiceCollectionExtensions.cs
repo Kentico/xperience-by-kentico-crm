@@ -71,8 +71,8 @@ public static class DynamicsServiceCollectionExtensions
             mappingBuilder = crmType == ContactCRMType.Lead ?
                 mappingBuilder.AddDefaultMappingForLead() :
                 mappingBuilder.AddDefaultMappingForContact();
-            mappingConfig(mappingBuilder);
         }
+        mappingConfig(mappingBuilder);
 
         if (useDefaultMappingToKentico)
         {

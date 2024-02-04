@@ -56,10 +56,10 @@ public static class SalesforceServiceCollectionsExtensions
         IConfiguration? configuration = null,
         bool useDefaultMappingToCRM = true,
         bool useDefaultMappingToKentico = true)
-        => serviceCollection.AddKenticoCRMSalesForceContactsIntegration(crmType, b => { }, configuration,
+        => serviceCollection.AddKenticoCRMSalesforceContactsIntegration(crmType, b => { }, configuration,
             useDefaultMappingToCRM, useDefaultMappingToKentico);
 
-    public static IServiceCollection AddKenticoCRMSalesForceContactsIntegration(
+    public static IServiceCollection AddKenticoCRMSalesforceContactsIntegration(
         this IServiceCollection serviceCollection,
         ContactCRMType crmType,
         Action<SalesforceContactMappingBuilder> mappingConfig,
@@ -75,8 +75,8 @@ public static class SalesforceServiceCollectionsExtensions
             mappingBuilder = crmType == ContactCRMType.Lead ?
                 mappingBuilder.AddDefaultMappingForLead() :
                 mappingBuilder.AddDefaultMappingForContact();
-            mappingConfig(mappingBuilder);
         }
+        mappingConfig(mappingBuilder);
 
         if (useDefaultMappingToKentico)
         {
