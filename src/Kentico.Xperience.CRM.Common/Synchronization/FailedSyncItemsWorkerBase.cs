@@ -17,6 +17,7 @@ namespace Kentico.Xperience.CRM.Common.Synchronization;
 /// </summary>
 /// <typeparam name="TWorker"></typeparam>
 /// <typeparam name="TFormLeadsService"></typeparam>
+/// <typeparam name="TContactsService"></typeparam>
 /// <typeparam name="TSettings"></typeparam>
 /// <typeparam name="TApiConfig"></typeparam>
 public abstract class

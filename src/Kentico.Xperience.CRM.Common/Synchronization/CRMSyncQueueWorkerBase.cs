@@ -4,7 +4,6 @@ using CMS.Core;
 using CMS.DataEngine;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Configuration;
-using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;

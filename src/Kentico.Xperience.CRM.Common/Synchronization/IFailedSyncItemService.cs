@@ -24,22 +24,23 @@ public interface IFailedSyncItemService
     /// <param name="contactInfo"></param>
     /// <param name="crmName"></param>
     void LogFailedContactItem(ContactInfo contactInfo, string crmName);
-    
+
     /// <summary>
     /// Creates new records in failed items table or increment TrySyncCount property when record exists.
     /// Next sync time is planned.
     /// </summary>
-    /// <param name="bizFormItem">BizForm item</param>
+    /// <param name="bizFormItems"></param>
     /// <param name="crmName">CRM name</param>
     void LogFailedLeadItems(IEnumerable<BizFormItem> bizFormItems, string crmName);
 
     /// <summary>
     /// Creates new records in failed items table or increment TrySyncCount property when record exists.
     /// Next sync time is planned.
-    /// <param name="contactInfo"></param>
+    /// </summary>
+    /// <param name="contactInfos"></param>
     /// <param name="crmName"></param>
     void LogFailedContactItems(IEnumerable<ContactInfo> contactInfos, string crmName);
-    
+
     /// <summary>
     /// Get all items waiting for synchronization which can be already synced again (according SyncNextTime property) 
     /// </summary>
@@ -53,7 +54,7 @@ public interface IFailedSyncItemService
     /// <param name="failedSyncItemInfo"></param>
     /// <returns></returns>
     BizFormItem? GetBizFormItem(FailedSyncItemInfo failedSyncItemInfo);
-    
+
     /// <summary>
     /// Delete record for given CRM, class name and ID
     /// </summary>

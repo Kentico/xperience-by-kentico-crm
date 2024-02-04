@@ -10,7 +10,6 @@ using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Synchronization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 [assembly: RegisterModule(typeof(DynamicsIntegrationGlobalEvents))]
 
@@ -25,7 +24,6 @@ internal class DynamicsIntegrationGlobalEvents : Module
     {
     }
 
-    private ILogger<DynamicsIntegrationGlobalEvents> logger = null!;
     private ICRMModuleInstaller? installer;
 
     protected override void OnInit(ModuleInitParameters parameters)
@@ -34,7 +32,6 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
         var services = parameters.Services;
 
-        logger = services.GetRequiredService<ILogger<DynamicsIntegrationGlobalEvents>>();
         installer = services.GetRequiredService<ICRMModuleInstaller>();
 
         ApplicationEvents.Initialized.Execute += InitializeModule;
@@ -45,7 +42,6 @@ internal class DynamicsIntegrationGlobalEvents : Module
         ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
         ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
 
-        logger = Service.Resolve<ILogger<DynamicsIntegrationGlobalEvents>>();
         Service.Resolve<ICRMModuleInstaller>().Install(CRMType.Dynamics);
 
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>

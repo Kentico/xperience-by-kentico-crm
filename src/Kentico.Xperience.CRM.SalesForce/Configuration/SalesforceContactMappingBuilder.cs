@@ -137,7 +137,7 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
         return this;
     }
     
-    public SalesforceContactMappingConfiguration Build() =>
+    internal SalesforceContactMappingConfiguration Build() =>
         new()
         {
             FieldsMapping = fieldMappings

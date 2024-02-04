@@ -1,5 +1,4 @@
 ﻿using Kentico.Xperience.CRM.Salesforce.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Salesforce.OpenApi;
 using System.Globalization;
@@ -15,7 +14,6 @@ namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
 internal class SalesforceApiService : ISalesforceApiService
 {
     private readonly HttpClient httpClient;
-    private readonly ILogger<SalesforceApiService> logger;
     private readonly IOptionsSnapshot<SalesforceIntegrationSettings> integrationSettings;
     private readonly SalesforceApiClient apiClient;
     
@@ -26,12 +24,10 @@ internal class SalesforceApiService : ISalesforceApiService
 
     public SalesforceApiService(
         HttpClient httpClient,
-        ILogger<SalesforceApiService> logger,
         IOptionsSnapshot<SalesforceIntegrationSettings> integrationSettings
     )
     {
         this.httpClient = httpClient;
-        this.logger = logger;
         this.integrationSettings = integrationSettings;
 
         apiClient = new SalesforceApiClient(httpClient);

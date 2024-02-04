@@ -36,19 +36,19 @@ internal interface ISalesforceApiService
     /// <param name="email"></param>
     /// <returns></returns>
     Task<string?> GetLeadByEmail(string email);
-    
+
     /// <summary>
-    /// Creates lead entity to SalesForce Leads
+    /// Creates contact entity to SalesForce Contacts
     /// </summary>
-    /// <param name="lead"></param>
+    /// <param name="contact"></param>
     /// <returns></returns>
     Task<SaveResult> CreateContactAsync(ContactSObject contact);
 
     /// <summary>
-    /// Updates lead entity to SalesForce Leads 
+    /// Updates contact entity to SalesForce Contacts
     /// </summary>
     /// <param name="id">SalesForce lead ID</param>
-    /// <param name="leadSObject"></param>
+    /// <param name="contact"></param>
     /// <returns></returns>
     Task UpdateContactAsync(string id, ContactSObject contact);
     

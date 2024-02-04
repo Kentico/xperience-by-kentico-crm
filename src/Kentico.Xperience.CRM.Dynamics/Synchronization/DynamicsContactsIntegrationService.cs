@@ -1,5 +1,4 @@
-﻿using CMS.Base;
-using CMS.ContactManagement;
+﻿using CMS.ContactManagement;
 using CMS.Helpers;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;

@@ -7,13 +7,9 @@ using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce;
-using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Kentico.Xperience.CRM.Salesforce.Synchronization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 [assembly: RegisterModule(typeof(SalesforceIntegrationGlobalEvents))]
 
@@ -24,7 +20,6 @@ namespace Kentico.Xperience.CRM.Salesforce;
 /// </summary>
 internal class SalesforceIntegrationGlobalEvents : Module
 {
-    private ILogger<SalesforceIntegrationGlobalEvents> logger = null!;
     private ICRMModuleInstaller? installer;
 
     public SalesforceIntegrationGlobalEvents() : base(nameof(SalesforceIntegrationGlobalEvents))
@@ -36,8 +31,7 @@ internal class SalesforceIntegrationGlobalEvents : Module
         base.OnInit(parameters);
 
         var services = parameters.Services;
-
-        logger = services.GetRequiredService<ILogger<SalesforceIntegrationGlobalEvents>>();
+        
         installer = services.GetRequiredService<ICRMModuleInstaller>();
 
         ApplicationEvents.Initialized.Execute += InitializeModule;

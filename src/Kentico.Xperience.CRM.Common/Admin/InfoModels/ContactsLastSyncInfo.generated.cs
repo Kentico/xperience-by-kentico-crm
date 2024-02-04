@@ -26,7 +26,6 @@ namespace Kentico.Xperience.CRM.Common
         /// <summary>
         /// Type information.
         /// </summary>
-#warning "You will need to configure the type info."
         public static readonly ObjectTypeInfo TYPEINFO = new ObjectTypeInfo(typeof(ContactsLastSyncInfoProvider), OBJECT_TYPE, "KenticoCRMCommon.ContactsLastSync", "ContactsLastSyncItemID", null, null, null, null, null, null, null)
         {
             TouchCacheDependencies = true,
