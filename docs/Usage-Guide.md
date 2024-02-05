@@ -20,14 +20,15 @@ Integration uses OAuth client credentials scheme, so you have to setup your CRM 
 
 ### CRM settings description
 
-| Setting                 | Description                                                                          |
-| ----------------------- | ------------------------------------------------------------------------------------ |
-| Forms enabled           | If enabled form submissions for registered forms are sent to CRM Leads               |
-| Contacts enabled (TBD)  | If enabled online marketing contacts are synced to CRM Leads or Contacts             |
-| Ignore existing records | If enabled then no updates in CRM will be performed on records with same ID or email |
-| CRM URL                 | Base Dynamics / Salesforce instance URL                                              |
-| Client ID               | Client ID for OAuth 2.0 client credentials scheme                                    |
-| Client secret           | Client secret for OAuth 2.0 client credentials scheme                                |
+| Setting                       | Description                                                                          |
+|-------------------------------| ------------------------------------------------------------------------------------ |
+| Forms enabled                 | If enabled form submissions for registered forms are sent to CRM Leads               |
+| Contacts enabled              | If enabled online marketing contacts are synced to CRM Leads or Contacts             |
+| Contacts two-way sync enabled | If enabled contacts are synced from CRM to Kentico (can set only when previous 'Contacts enabled' setting is true) 
+| Ignore existing records       | If enabled then no updates in CRM will be performed on records with same ID or email |
+| CRM URL                       | Base Dynamics / Salesforce instance URL                                              |
+| Client ID                     | Client ID for OAuth 2.0 client credentials scheme                                    |
+| Client secret                 | Client secret for OAuth 2.0 client credentials scheme                                |
 
 ### Dynamics settings
 
@@ -219,4 +220,208 @@ Use this option when you need complex logic and need to use another service via 
  // ...
  builder.Services.AddKenticoCRMSalesforce(builder =>
      builder.AddFormWithConverter<SomeCustomConverter>(DancingGoatContactUsItem.CLASS_NAME));
+```
+
+## Contacts integration
+
+You can enable synchronization of online marketing contacts (OM_Contact table).
+You can choose between Lead and Contact entities in CRM where to sync data (but only one option is supported at any given time).
+
+#### Dynamics Sales
+
+Basic example how to init (default mapping from ContactInfo to CRM entity is used):
+
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ // Add sync to Leads
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Lead);
+ // Add sync to Contacts
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact);
+```
+
+Example how to init sync to Leads with custom mapping:
+
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // ...
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.MapField(nameof(ContactInfo.ContactEmail), "emailaddress1")
+                .MapField(c => c.ContactFirstName, "firstname")
+                .MapField<Lead>(nameof(ContactInfo.ContactLastName), e => e.LastName)
+                .MapField<Lead>(c => c.ContactMobilePhone, e => e.MobilePhone),
+            useDefaultMappingToCRM: false);
+```
+
+For most advanced scenarios when you need to use injected services, custom converters are recommended:
+
+First create custom converter (example from ContactInfo to Lead):
+
+```csharp
+public class DynamicsContactToLeadCustomConverter : ICRMTypeConverter<ContactInfo, Lead>
+{
+    public Task Convert(ContactInfo source, Lead destination)
+    {        
+        //to do some mapping
+        destination.EMailAddress1 = source.ContactEmail;
+        // ...
+        return Task.CompletedTask;
+    }
+}
+```
+Then initialize integration with custom converter:
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // ...
+ // Sync to Leads (only one option is supported)!
+ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.AddContactToLeadConverter<DynamicsContactToLeadCustomConverter>(),
+            useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
+ 
+ // Sync to Contacts (only one option is supported)!
+  builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact, builder =>
+            builder.AddContactToContactConverter<DynamicsContactToContactCustomConverter>(),
+            useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
+```
+
+##### Sync from CRM to Kentico
+
+Contacts are synced each minute from CRM (from Leads or Contacts) when setting 'Contacts two-way sync enabled' is checked.
+By default existing contacts (paired by email) are updated and new contacts are created (default mapping is used). 
+Update is performed only when some data has changed.\
+But you can customize this process with custom converter:
+
+```csharp
+public class DynamicsContactToKenticoContactCustomConverter : ICRMTypeConverter<Contact, ContactInfo>
+{
+    public Task Convert(Contact source, ContactInfo destination)
+    {
+        if (destination.ContactID == 0)
+        {
+            // mapping on create
+            destination.ContactEmail = source.EMailAddress1;
+            destination.ContactFirstName = source.FirstName;
+            destination.ContactLastName = source.LastName;
+        }
+        else
+        {
+            // mapping on update
+            destination.ContactNotes = $"Status: {source.StatusCode?.ToString()}";
+        }
+        
+        return Task.CompletedTask;
+    }
+}
+```
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+// ...
+builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact, builder =>
+            builder.AddContactToKenticoConverter<DynamicsContactToKenticoContactCustomConverter>(),
+            useDefaultMappingToKentico: false); // when true then both (custom and default) converter are applied
+```
+
+#### Salesforce
+
+Basic example how to init (default mapping from ContactInfo to CRM entity is used):
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ // Add sync to Leads
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead);
+ // Add sync to Contacts 
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
+```
+
+Example how to init sync to Leads with custom mapping:
+
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // ...
+ // Choose between sync to Leads and Contacts (only one option is supported)!
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.MapField(nameof(ContactInfo.ContactEmail), "Email")
+                .MapField(c => c.ContactFirstName, "FirstName")
+                .MapLeadField(nameof(ContactInfo.ContactLastName), e => e.LastName)
+                .MapLeadField(c => c.ContactMobilePhone, e => e.MobilePhone),
+            useDefaultMappingToCRM: false);
+```
+
+For most advanced scenarios when you need to use injected services, custom converters are recommended:
+
+First create custom converter (example from ContactInfo to Lead):
+
+```csharp
+public class SalesforceContactToLeadCustomConverter : ICRMTypeConverter<ContactInfo, LeadSObject>
+{
+    public Task Convert(ContactInfo source, LeadSObject destination)
+    {        
+        //to do some mapping
+        destination.Email = source.ContactEmail;
+
+        return Task.CompletedTask;
+    }
+}
+```
+Then initialize integration with custom converter:
+```csharp
+ // Program.cs
+ var builder = WebApplication.CreateBuilder(args);
+ // ...
+ // Sync to Leads (only one option is supported)!
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.AddContactToLeadConverter<SalesforceContactToLeadCustomConverter>(),
+            useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
+ 
+ // Sync to Contacts (only one option is supported)!
+ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.AddContactToContactConverter<SalesforceContactToContactCustomConverter>(),
+            useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
+```
+
+##### Sync from CRM to Kentico
+
+Contacts are synced each minute from CRM (from Leads or Contacts) when setting 'Contacts two-way sync enabled' is checked.
+By default existing contacts (paired by email) are updated and new contacts are created (default mapping is used).
+Update is performed only when some data has changed.\
+But you can customize this process with custom converter:
+
+```csharp
+public class SalesforceLeadToKenticoContactCustomConverter : ICRMTypeConverter<LeadSObject, ContactInfo>
+{
+    public Task Convert(LeadSObject source, ContactInfo destination)
+    {
+        if (destination.ContactID == 0)
+        {
+            // mapping on create
+            destination.ContactEmail = source.Email;
+            destination.ContactFirstName = source.FirstName;
+            destination.ContactLastName = source.LastName;
+        }
+        else
+        {
+            // mapping on update
+            destination.ContactNotes = $"Status: {source.Status}";
+        }
+        
+        return Task.CompletedTask;
+    }
+}}
+```
+
+```csharp
+// Program.cs
+var builder = WebApplication.CreateBuilder(args);
+// ...
+builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+            builder.AddLeadToKenticoConverter<SalesforceLeadToKenticoContactCustomConverter>(),
+            useDefaultMappingToKentico: false); // when true then both (custom and default) converter are applied
 ```

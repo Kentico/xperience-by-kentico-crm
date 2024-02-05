@@ -66,7 +66,7 @@ internal static class DynamicsContactsIntegrationScenarios
 
     private static void InitToContactsCustomConverter(WebApplicationBuilder builder)
     {
-        builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Lead, builder =>
+        builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact, builder =>
             builder.AddContactToContactConverter<DynamicsContactToContactCustomConverter>(),
             useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
     }
