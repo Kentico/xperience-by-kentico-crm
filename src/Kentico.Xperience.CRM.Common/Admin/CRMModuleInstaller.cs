@@ -191,7 +191,8 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
             Visible = false,
             Precision = 0,
             DataType = "datetime",
-            Enabled = true
+            Enabled = true,
+            AllowEmpty = true
         };
         formInfo.AddFormItem(formItem);
 
