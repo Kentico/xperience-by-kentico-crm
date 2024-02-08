@@ -9,9 +9,9 @@ Xperience by Kentico CRM integration Starter kit for general CRM integrations. P
 
 ## Screenshots
 
-![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
+![Synchronized leads](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/CRM_form_sync_table.png)
 
-![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
+![Dynamics settings](https://raw.githubusercontent.com/Kentico/xperience-by-kentico-crm/main/images/screenshots/Dynamics_CRM_settings.png)
 
 ## Library Version Matrix
 
