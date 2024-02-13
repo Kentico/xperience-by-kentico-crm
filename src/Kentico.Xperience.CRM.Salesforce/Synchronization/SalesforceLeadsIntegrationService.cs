@@ -96,9 +96,9 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
                 {
                     existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
                 }
-                catch (Exception)
+                catch (ApiException e) when (e.StatusCode == 404)
                 {
-                    //exception means de-facto 404-NotFound status
+                    //suppress exception on 404-NotFound status
                 }
                 if (existingLead is null)
                 {

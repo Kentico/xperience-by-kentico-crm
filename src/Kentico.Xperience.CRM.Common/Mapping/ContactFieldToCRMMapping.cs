@@ -1,4 +1,4 @@
-﻿namespace Kentico.Xperience.CRM.Common.Mapping.Implementations;
+﻿namespace Kentico.Xperience.CRM.Common.Mapping;
 
 /// <summary>
 /// Mapping wrapper for BizForm field mapping and Crm entity field mapping

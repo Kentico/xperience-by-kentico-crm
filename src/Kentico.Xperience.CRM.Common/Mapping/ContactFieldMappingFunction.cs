@@ -1,6 +1,6 @@
 ﻿using CMS.ContactManagement;
 
-namespace Kentico.Xperience.CRM.Common.Mapping.Implementations;
+namespace Kentico.Xperience.CRM.Common.Mapping;
 
 public class ContactFieldMappingFunction : IContactFieldMapping
 {

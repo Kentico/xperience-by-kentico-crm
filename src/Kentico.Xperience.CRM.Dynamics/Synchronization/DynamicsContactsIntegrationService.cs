@@ -3,7 +3,6 @@ using CMS.Helpers;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
@@ -17,7 +16,7 @@ using System.ServiceModel;
 
 namespace Kentico.Xperience.CRM.Dynamics.Synchronization;
 
-public class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationService
+internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationService
 {
     private readonly DynamicsContactMappingConfiguration contactMapping;
     private readonly IContactsIntegrationValidationService validationService;

@@ -3,7 +3,6 @@ using CMS.Helpers;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
@@ -142,9 +141,9 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                     existingContact =
                         await apiService.GetContactById(syncItem.CRMSyncItemCRMID, nameof(ContactSObject.Id));
                 }
-                catch (Exception)
+                catch (ApiException e) when (e.StatusCode == 404)
                 {
-                    //exception means de-facto 404-NotFound status
+                    //supress exception on 404-NotFound status
                 }
 
                 if (existingContact is null)

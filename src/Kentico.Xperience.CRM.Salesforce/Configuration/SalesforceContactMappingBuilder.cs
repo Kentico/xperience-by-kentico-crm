@@ -3,7 +3,6 @@ using CMS.Globalization;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Salesforce.OpenApi;

@@ -17,7 +17,7 @@ internal class SalesforceApiService : ISalesforceApiService
     private readonly IOptionsSnapshot<SalesforceIntegrationSettings> integrationSettings;
     private readonly SalesforceApiClient apiClient;
     
-    private static JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.General)
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.General)
     {
         Converters = { new DateTimeOffsetConverter() }
     };

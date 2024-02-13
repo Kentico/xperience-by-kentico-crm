@@ -42,8 +42,6 @@ internal class DynamicsIntegrationGlobalEvents : Module
         ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
         ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
 
-        Service.Resolve<ICRMModuleInstaller>().Install(CRMType.Dynamics);
-
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
             DynamicsSyncQueueWorker.Current.EnsureRunningThread();

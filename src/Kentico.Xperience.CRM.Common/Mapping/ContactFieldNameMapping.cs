@@ -1,6 +1,6 @@
 ﻿using CMS.ContactManagement;
 
-namespace Kentico.Xperience.CRM.Common.Mapping.Implementations;
+namespace Kentico.Xperience.CRM.Common.Mapping;
 
 /// <summary>
 /// Contact Info item field mapping based on form field name

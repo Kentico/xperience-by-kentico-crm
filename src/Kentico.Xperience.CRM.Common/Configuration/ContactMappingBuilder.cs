@@ -1,6 +1,5 @@
 ﻿using CMS.ContactManagement;
 using Kentico.Xperience.CRM.Common.Mapping;
-using Kentico.Xperience.CRM.Common.Mapping.Implementations;
 using Kentico.Xperience.CRM.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,8 +10,7 @@ where TBuilder : ContactMappingBuilder<TBuilder>
 {
     private readonly IServiceCollection serviceCollection;
     protected readonly List<ContactFieldToCRMMapping> fieldMappings = new();
-    protected readonly List<Type> converters = new();
-
+    
     protected ContactMappingBuilder(IServiceCollection serviceCollection)
     {
         this.serviceCollection = serviceCollection;
