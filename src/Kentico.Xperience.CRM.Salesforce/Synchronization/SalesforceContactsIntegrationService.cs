@@ -411,7 +411,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             {
                 CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
                 CRMFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
                     fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }
@@ -432,7 +432,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
             {
                 CRMFieldNameMapping m => contact.AdditionalProperties[m.CrmFieldName] = formFieldValue,
                 CRMFieldMappingFunction<ContactSObject> m => m.MapCrmField(contact, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
                     fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
             };
         }

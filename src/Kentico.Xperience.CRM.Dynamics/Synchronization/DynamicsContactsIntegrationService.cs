@@ -377,7 +377,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
             }
             else
             {
-                throw new ArgumentOutOfRangeException(nameof(fieldMapping.CRMFieldMapping),
+                throw new ArgumentOutOfRangeException(nameof(fieldMappings),
                     fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping");
             }
         }
