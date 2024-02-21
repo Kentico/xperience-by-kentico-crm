@@ -58,7 +58,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM Successful sync item";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(CRMSyncItemInfo.CRMSyncItemID));
 
@@ -141,7 +141,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM Failed sync item";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(FailedSyncItemInfo.FailedSyncItemID));
 
@@ -222,7 +222,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM integration settings";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
@@ -350,7 +350,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM Contacts last sync";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(ContactsLastSyncInfo.ContactsLastSyncItemID));

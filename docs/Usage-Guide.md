@@ -3,6 +3,7 @@
 ## Screenshots
 
 ![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
+![Synchronized contacts](../images/screenshots/CRM_contacts_sync_table.png "Table of synchronized leads")
 ![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## CRM settings
@@ -227,7 +228,7 @@ Use this option when you need complex logic and need to use another service via 
 You can enable synchronization of online marketing contacts (OM_Contact table).
 You can choose between Lead and Contact entities in CRM where to sync data (but only one option is supported at any given time).
 
-#### Dynamics Sales
+### Dynamics Sales
 
 Basic example how to init (default mapping from ContactInfo to CRM entity is used):
 
@@ -288,7 +289,7 @@ Then initialize integration with custom converter:
             useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
 ```
 
-##### Sync from CRM to Kentico
+#### Sync from CRM to Kentico
 
 Contacts are synced each minute from CRM (from Leads or Contacts) when setting 'Contacts two-way sync enabled' is checked.
 By default existing contacts (paired by email) are updated and new contacts are created (default mapping is used). 
@@ -327,7 +328,7 @@ builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMTyp
             useDefaultMappingToKentico: false); // when true then both (custom and default) converter are applied
 ```
 
-#### Salesforce
+### Salesforce
 
 Basic example how to init (default mapping from ContactInfo to CRM entity is used):
 ```csharp
@@ -387,7 +388,13 @@ Then initialize integration with custom converter:
             useDefaultMappingToCRM: false); // when true default mapping is applied after custom converter
 ```
 
-##### Sync from CRM to Kentico
+#### Duplicates detection issue
+
+By default Salesforce has duplicates detection enabled. Collisions can be detected even between records in Leads and Contacts.\
+For this reason, we do not recommend using the synchronization of form submissions and synchronization of contacts at the same time unless duplicate detection is turned off.\
+More about [Standard Duplicate Rules](https://help.salesforce.com/s/articleView?id=sf.duplicate_rules_standard_rules.htm&type=5)
+
+#### Sync from CRM to Kentico
 
 Contacts are synced each minute from CRM (from Leads or Contacts) when setting 'Contacts two-way sync enabled' is checked.
 By default existing contacts (paired by email) are updated and new contacts are created (default mapping is used).
@@ -425,3 +432,13 @@ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMT
             builder.AddLeadToKenticoConverter<SalesforceLeadToKenticoContactCustomConverter>(),
             useDefaultMappingToKentico: false); // when true then both (custom and default) converter are applied
 ```
+
+## Troubleshooting
+
+- When uprading from version 1.0.0 and database objects has been already created, you need to manually change
+  [FailedSyncItemNextTime] column as nullable in table [KenticoCRMCommon_FailedSyncItem] to prevent errors in thread worker after
+  10 failed attempts were performed.
+  \
+  Another solution for this issue is drop table and remove record in CMS_Class (ClassName: KenticoCRMCommon.FailedSyncItem) and let install table again after restarting application.
+
+
