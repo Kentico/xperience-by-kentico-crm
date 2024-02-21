@@ -3,7 +3,7 @@
 ## Screenshots
 
 ![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
-![Synchronized contacts](../images/screenshots/CRM_contacts_sync_table.png "Table of synchronized leads")
+![Synchronized contacts](../images/screenshots/CRM_contacts_sync_table.png "Table of synchronized contacts")
 ![Dynamics settings](../images/screenshots/Dynamics_CRM_settings.png "Dynamics CRM settings")
 
 ## CRM settings
