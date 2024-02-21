@@ -1,5 +1,12 @@
 # Usage Guide
 
+## Table of contents
+1. [Screenshots](#screenshots)
+2. [CRM settings](#crm-settings)
+3. [Forms data - Leads integration](#forms-data---leads-integration)
+4. [Contacts integration](#contacts-integration)
+5. [Troubleshooting](#troubleshooting)
+
 ## Screenshots
 
 ![Synchronized leads](../images/screenshots/CRM_form_sync_table.png "Table of synchronized leads")
