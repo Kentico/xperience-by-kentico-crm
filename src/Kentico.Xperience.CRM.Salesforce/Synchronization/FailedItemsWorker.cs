@@ -8,7 +8,7 @@ namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
 /// Specific thread worker for Salesforce which try to synchronize failed items. It run each 1 minute.
 /// </summary>
 internal class FailedItemsWorker : FailedSyncItemsWorkerBase<FailedItemsWorker, ISalesforceLeadsIntegrationService,
-    SalesforceIntegrationSettings, SalesforceApiConfig>
+    ISalesforceContactsIntegrationService, SalesforceIntegrationSettings, SalesforceApiConfig>
 {
     protected override string CRMName => CRMType.Salesforce;
 }

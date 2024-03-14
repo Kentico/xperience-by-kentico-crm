@@ -1,6 +1,9 @@
 ﻿using CMS.Base;
+using CMS.ContactManagement;
 using CMS.Core;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Enums;
+using Kentico.Xperience.CRM.Common.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,12 +16,16 @@ namespace Kentico.Xperience.CRM.Common.Synchronization;
 /// Concrete implementation for each CRM must exists
 /// </summary>
 /// <typeparam name="TWorker"></typeparam>
-/// <typeparam name="TService"></typeparam>
+/// <typeparam name="TFormLeadsService"></typeparam>
+/// <typeparam name="TContactsService"></typeparam>
 /// <typeparam name="TSettings"></typeparam>
 /// <typeparam name="TApiConfig"></typeparam>
-public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TApiConfig> : ThreadWorker<TWorker>
+public abstract class
+    FailedSyncItemsWorkerBase<TWorker, TFormLeadsService, TContactsService, TSettings,
+        TApiConfig> : ThreadWorker<TWorker>
     where TWorker : ThreadWorker<TWorker>, new()
-    where TService : ILeadsIntegrationService
+    where TFormLeadsService : ILeadsIntegrationService
+    where TContactsService : IContactsIntegrationService
     where TSettings : CommonIntegrationSettings<TApiConfig>
     where TApiConfig : new()
 {
@@ -41,24 +48,47 @@ public abstract class FailedSyncItemsWorkerBase<TWorker, TService, TSettings, TA
             using var serviceScope = Service.Resolve<IServiceProvider>().CreateScope();
 
             var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<TSettings>>().Value;
-            if (!settings.FormLeadsEnabled) return;
+            if (!settings.FormLeadsEnabled && !settings.ContactsEnabled) return;
 
             var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
 
             ILeadsIntegrationService? leadsIntegrationService = null;
+            IContactsIntegrationService? contactsIntegrationService = null;
 
             foreach (var syncItem in failedSyncItemsService.GetFailedSyncItemsToReSync(CRMName))
             {
-                leadsIntegrationService ??= serviceScope.ServiceProvider
-                    .GetRequiredService<TService>();
-
-                var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
-                if (bizFormItem is null)
+                // contacts
+                if (syncItem.FailedSyncItemEntityClass == ContactInfo.TYPEINFO.ObjectClassName && settings.ContactsEnabled)
                 {
-                    continue;
-                }
+                    contactsIntegrationService ??= serviceScope.ServiceProvider.GetRequiredService<TContactsService>();
 
-                leadsIntegrationService.SynchronizeLeadAsync(bizFormItem).ConfigureAwait(false).GetAwaiter().GetResult();
+                    var contactInfo = ContactInfo.Provider.Get(syncItem.FailedSyncItemEntityID);
+                    if (contactInfo is null)
+                    {
+                        syncItem.Delete();
+                        continue;
+                    }
+
+                    (settings.ContactType == ContactCRMType.Lead ?
+                            contactsIntegrationService.SynchronizeContactToLeadsAsync(contactInfo) :
+                            contactsIntegrationService.SynchronizeContactToContactsAsync(contactInfo))
+                        .GetAwaiter().GetResult();
+                }
+                //form submissions
+                else if (settings.FormLeadsEnabled)
+                {
+                    leadsIntegrationService ??= serviceScope.ServiceProvider
+                        .GetRequiredService<TFormLeadsService>();
+
+                    var bizFormItem = failedSyncItemsService.GetBizFormItem(syncItem);
+                    if (bizFormItem is null)
+                    {
+                        syncItem.Delete();
+                        continue;
+                    }
+
+                    leadsIntegrationService.SynchronizeLeadAsync(bizFormItem).GetAwaiter().GetResult();
+                }
             }
         }
         catch (Exception e)

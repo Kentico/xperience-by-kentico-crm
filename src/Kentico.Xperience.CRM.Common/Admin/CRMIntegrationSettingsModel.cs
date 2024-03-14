@@ -13,20 +13,24 @@ public class CRMIntegrationSettingsModel
     [CheckBoxComponent(Label = "Contacts enabled", Order = 2)]
     public bool ContactsEnabled { get; set; }
 
-    [CheckBoxComponent(Label = "Ignore existing records", Order = 3)]
+    [CheckBoxComponent(Label = "Contacts two-way sync enabled", Order = 3)]
+    [VisibleIfTrue(nameof(ContactsEnabled))]
+    public bool ContactsTwoWaySyncEnabled { get; set; } = true;
+
+    [CheckBoxComponent(Label = "Ignore existing records", Order = 4)]
     public bool IgnoreExistingRecords { get; set; }
 
     [UrlValidationRule]
-    [TextInputComponent(Label = "CRM URL", Order = 4)]
+    [TextInputComponent(Label = "CRM URL", Order = 5)]
     [RequiredValidationRule]
     public string? Url { get; set; }
 
     [RequiredValidationRule]
-    [TextInputComponent(Label = "Client ID", Order = 5)]
+    [TextInputComponent(Label = "Client ID", Order = 6)]
     public string? ClientId { get; set; }
 
     [RequiredValidationRule]
-    [PasswordComponent(Label = "Client secret", Order = 6, RequiredLength = 0, RequireDigit = false,
+    [PasswordComponent(Label = "Client secret", Order = 7, RequiredLength = 0, RequireDigit = false,
         RequireLowercase = false, RequireUppercase = false, RequiredUniqueChars = 0, RequireNonAlphanumeric = false)]
     public string? ClientSecret { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
@@ -90,7 +91,15 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
             }
             else
             {
-                var existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                LeadSObject? existingLead = null;
+                try
+                {
+                    existingLead = await apiService.GetLeadById(syncItem.CRMSyncItemCRMID, nameof(LeadSObject.Id));
+                }
+                catch (ApiException e) when (e.StatusCode == 404)
+                {
+                    //suppress exception on 404-NotFound status
+                }
                 if (existingLead is null)
                 {
                     await UpdateByEmailOrCreate(bizFormItem, fieldMappings, converters);
@@ -131,11 +140,18 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
         var tmpLead = new LeadSObject();
         await MapLead(bizFormItem, tmpLead, fieldMappings, converters);
 
-        if (!string.IsNullOrWhiteSpace(tmpLead.Email))
+        string? emailAddress = tmpLead.Email;
+        if (string.IsNullOrWhiteSpace(emailAddress))
         {
-            existingLeadId = await apiService.GetLeadByEmail(tmpLead.Email);
+            emailAddress = tmpLead.AdditionalProperties.TryGetValue(nameof(LeadSObject.Email), out var email) ?
+                email as string :
+                null;
         }
-
+        if (!string.IsNullOrWhiteSpace(emailAddress))
+        {
+            existingLeadId = await apiService.GetLeadByEmail(emailAddress!);
+        }
+        
         if (existingLeadId is null)
         {
             await CreateLeadAsync(bizFormItem, fieldMappings, converters);

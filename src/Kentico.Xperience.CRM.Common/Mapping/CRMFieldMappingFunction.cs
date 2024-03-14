@@ -9,9 +9,9 @@ namespace Kentico.Xperience.CRM.Common.Mapping;
 /// <typeparam name="TCrmEntity"></typeparam>
 public class CRMFieldMappingFunction<TCrmEntity> : ICRMFieldMapping
 {
-    private readonly Expression<Func<TCrmEntity, object>> mappingFunc;
+    private readonly Expression<Func<TCrmEntity, object?>> mappingFunc;
 
-    public CRMFieldMappingFunction(Expression<Func<TCrmEntity, object>> mappingFunc)
+    public CRMFieldMappingFunction(Expression<Func<TCrmEntity, object?>> mappingFunc)
     {
         this.mappingFunc = mappingFunc;
     }

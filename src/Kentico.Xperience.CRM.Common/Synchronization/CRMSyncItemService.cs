@@ -1,5 +1,5 @@
-﻿using CMS.OnlineForms;
-using Kentico.Xperience.CRM.Common;
+﻿using CMS.ContactManagement;
+using CMS.OnlineForms;
 
 namespace Kentico.Xperience.CRM.Common.Synchronization;
 
@@ -35,7 +35,6 @@ internal class CRMSyncItemService : ICRMSyncItemService
         else
         {
             syncItem.CRMSyncItemCRMID = crmId;
-            syncItem.CRMSyncItemCreatedByKentico = createdByKentico;
             syncItem.Update();
         }
     }
@@ -48,5 +47,35 @@ internal class CRMSyncItemService : ICRMSyncItemService
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), crmName)
             .GetEnumerableTypedResultAsync())
             .FirstOrDefault();
+    
+    public async Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName,
+        bool createdByKentico = false)
+    {
+        var syncItem = await GetContactSyncItem(contactInfo, crmName);
+        if (syncItem is null)
+        {
+            new CRMSyncItemInfo
+            {
+                CRMSyncItemEntityID = contactInfo.ContactEmail,
+                CRMSyncItemEntityClass = contactInfo.ClassName,
+                CRMSyncItemEntityCRM = crmName,
+                CRMSyncItemCRMID = crmId,
+                CRMSyncItemCreatedByKentico = createdByKentico
+            }.Insert();
+        }
+        else
+        {
+            syncItem.CRMSyncItemCRMID = crmId;
+            syncItem.Update();
+        }
+    }
 
+    public async Task<CRMSyncItemInfo?> GetContactSyncItem(ContactInfo contactInfo, string crmName)
+        => (await crmSyncItemInfoProvider.Get()
+                .TopN(1)
+                .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityClass), contactInfo.ClassName)
+                .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityID), contactInfo.ContactEmail)
+                .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), crmName)
+                .GetEnumerableTypedResultAsync())
+            .FirstOrDefault();
 }

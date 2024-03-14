@@ -2,6 +2,7 @@
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Kentico.Xperience.CRM.Salesforce.Synchronization;
 using Microsoft.Extensions.Configuration;
@@ -49,6 +50,59 @@ public static class SalesforceServiceCollectionsExtensions
         return serviceCollection;
     }
 
+    public static IServiceCollection AddKenticoCRMSalesforceContactsIntegration(
+        this IServiceCollection serviceCollection,
+        ContactCRMType crmType,
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
+        => serviceCollection.AddKenticoCRMSalesforceContactsIntegration(crmType, b => { }, configuration,
+            useDefaultMappingToCRM, useDefaultMappingToKentico);
+
+    public static IServiceCollection AddKenticoCRMSalesforceContactsIntegration(
+        this IServiceCollection serviceCollection,
+        ContactCRMType crmType,
+        Action<SalesforceContactMappingBuilder> mappingConfig,
+        IConfiguration? configuration = null,
+        bool useDefaultMappingToCRM = true,
+        bool useDefaultMappingToKentico = true)
+    {
+        serviceCollection.AddKenticoCrmCommonContactIntegration();
+
+        var mappingBuilder = new SalesforceContactMappingBuilder(serviceCollection);
+        if (useDefaultMappingToCRM)
+        {
+            mappingBuilder = crmType == ContactCRMType.Lead ?
+                mappingBuilder.AddDefaultMappingForLead() :
+                mappingBuilder.AddDefaultMappingForContact();
+        }
+        mappingConfig(mappingBuilder);
+
+        if (useDefaultMappingToKentico)
+        {
+            mappingBuilder.AddDefaultMappingToKenticoContact();
+        }
+
+        serviceCollection.TryAddSingleton(_ => mappingBuilder.Build());
+
+        if (configuration is null)
+        {
+            serviceCollection.AddOptions<SalesforceIntegrationSettings>()
+                .Configure<ICRMSettingsService>(ConfigureWithCMSSettings)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+        else
+        {
+            serviceCollection.AddOptions<SalesforceIntegrationSettings>().Bind(configuration)
+                .PostConfigure(s => s.ContactType = crmType);
+        }
+
+        AddSalesforceCommonIntegration(serviceCollection);
+
+        serviceCollection.AddScoped<ISalesforceContactsIntegrationService, SalesforceContactsIntegrationService>();
+        return serviceCollection;
+    }
+
     private static void AddSalesforceCommonIntegration(IServiceCollection serviceCollection)
     {
         // default cache for token management
@@ -77,7 +131,8 @@ public static class SalesforceServiceCollectionsExtensions
         serviceCollection.AddHttpClient<ISalesforceApiService, SalesforceApiService>((provider, client) =>
             {
                 //cannot use IOptionsSnapshot, so changes in CMS settings needs restarting app to apply immediately
-                var settings = provider.GetRequiredService<IOptionsMonitor<SalesforceIntegrationSettings>>().CurrentValue;
+                var settings = provider.GetRequiredService<IOptionsMonitor<SalesforceIntegrationSettings>>()
+                    .CurrentValue;
 
                 if (!settings.ApiConfig.IsValid())
                     throw new InvalidOperationException("Missing API settings");
@@ -89,10 +144,13 @@ public static class SalesforceServiceCollectionsExtensions
             .AddClientCredentialsTokenHandler("Salesforce.api.client");
     }
 
-    private static void ConfigureWithCMSSettings(SalesforceIntegrationSettings settings, ICRMSettingsService settingsService)
+    private static void ConfigureWithCMSSettings(SalesforceIntegrationSettings settings,
+        ICRMSettingsService settingsService)
     {
         var settingsInfo = settingsService.GetSettings(CRMType.Salesforce);
         settings.FormLeadsEnabled = settingsInfo?.CRMIntegrationSettingsFormsEnabled ?? false;
+        settings.ContactsEnabled = settingsInfo?.CRMIntegrationSettingsContactsEnabled ?? false;
+        settings.ContactsTwoWaySyncEnabled = settingsInfo?.CRMIntegrationSettingsContactsTwoWaySyncEnabled ?? false;
 
         settings.IgnoreExistingRecords = settingsInfo?.CRMIntegrationSettingsIgnoreExistingRecords ?? false;
 

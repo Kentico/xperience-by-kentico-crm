@@ -1,7 +1,6 @@
 ﻿using CMS.DataEngine;
 using CMS.FormEngine;
 using CMS.Modules;
-using Kentico.Xperience.CRM.Common.Constants;
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
@@ -25,7 +24,6 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     {
         var resourceInfo = InstallModule();
         InstallModuleClasses(resourceInfo);
-        InstallCRMIntegrationSettingsClass(resourceInfo);
     }
 
     private ResourceInfo InstallModule()
@@ -48,6 +46,8 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
     {
         InstallSyncedItemClass(resourceInfo);
         InstallFailedSyncItemClass(resourceInfo);
+        InstallCRMIntegrationSettingsClass(resourceInfo);
+        InstallContactsLastSyncTimeClass(resourceInfo);
     }
 
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
@@ -58,7 +58,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = CRMSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM Successful sync item";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(CRMSyncItemInfo.CRMSyncItemID));
 
@@ -141,7 +141,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = FailedSyncItemInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM Failed sync item";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo = FormHelper.GetBasicFormDefinition(nameof(FailedSyncItemInfo.FailedSyncItemID));
 
@@ -222,7 +222,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         info.ClassTableName = CRMIntegrationSettingsInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
         info.ClassDisplayName = "CRM integration settings";
         info.ClassResourceID = resourceInfo.ResourceID;
-        info.ClassType = ClassType.OTHER;
+        info.ClassType = ClassType.SYSTEM_TABLE;
 
         var formInfo =
             FormHelper.GetBasicFormDefinition(nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsItemID));
@@ -241,6 +241,17 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         {
             Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsEnabled),
             Caption = "Contacts enabled",
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMIntegrationSettingsInfo.CRMIntegrationSettingsContactsTwoWaySyncEnabled),
+            Caption = "Contacts two way sync enabled",
+            DefaultValue = "True",
             Visible = false,
             DataType = "boolean",
             Enabled = true
@@ -328,6 +339,48 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         else
         {
             info.ClassFormDefinition = form.GetXmlDefinition();
+        }
+    }
+
+    private void InstallContactsLastSyncTimeClass(ResourceInfo resourceInfo)
+    {
+        var info = DataClassInfoProvider.GetDataClassInfo(ContactsLastSyncInfo.OBJECT_TYPE) ?? DataClassInfo.New(ContactsLastSyncInfo.OBJECT_TYPE);
+
+        info.ClassName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = ContactsLastSyncInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM Contacts last sync";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.SYSTEM_TABLE;
+
+        var formInfo =
+            FormHelper.GetBasicFormDefinition(nameof(ContactsLastSyncInfo.ContactsLastSyncItemID));
+
+        var formItem = new FormFieldInfo
+        {
+            Name = nameof(ContactsLastSyncInfo.ContactsLastSyncCRM),
+            Visible = true,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(ContactsLastSyncInfo.ContactsLastSyncTime),
+            Visible = true,
+            Precision = 3,
+            DataType = "datetime",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        SetFormDefinition(info, formInfo);
+
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
         }
     }
 }

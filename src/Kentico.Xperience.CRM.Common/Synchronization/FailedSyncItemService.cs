@@ -1,6 +1,6 @@
-﻿using CMS.DataEngine;
+﻿using CMS.ContactManagement;
+using CMS.DataEngine;
 using CMS.OnlineForms;
-using Kentico.Xperience.CRM.Common;
 
 namespace Kentico.Xperience.CRM.Common.Synchronization;
 
@@ -20,15 +20,37 @@ internal class FailedSyncItemService : IFailedSyncItemService
     }
 
     public void LogFailedLeadItem(BizFormItem bizFormItem, string crmName)
+        => LogFailedCRMItem(crmName, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+
+    public void LogFailedContactItem(ContactInfo contactInfo, string crmName)
+        => LogFailedCRMItem(crmName, contactInfo.ClassName, contactInfo.ContactID);
+
+    public void LogFailedLeadItems(IEnumerable<BizFormItem> bizFormItems, string crmName)
     {
-        var existingItem = GetExistingItem(crmName, bizFormItem.BizFormClassName, bizFormItem.ItemID);
+        foreach (var item in bizFormItems)
+        {
+            LogFailedLeadItem(item, crmName);
+        }
+    }
+
+    public void LogFailedContactItems(IEnumerable<ContactInfo> contactInfos, string crmName)
+    {
+        foreach (var contactInfo in contactInfos)
+        {
+            LogFailedContactItem(contactInfo, crmName);
+        }
+    }
+
+    private void LogFailedCRMItem(string crmName, string entityClass, int entityId)
+    {
+        var existingItem = GetExistingItem(crmName, entityClass, entityId);
 
         if (existingItem is null)
         {
             existingItem = new FailedSyncItemInfo
             {
-                FailedSyncItemEntityClass = bizFormItem.BizFormClassName,
-                FailedSyncItemEntityID = bizFormItem.ItemID,
+                FailedSyncItemEntityClass = entityClass,
+                FailedSyncItemEntityID = entityId,
                 FailedSyncItemEntityCRM = crmName,
                 FailedSyncItemNextTime = DateTime.Now.AddMinutes(1),
                 FailedSyncItemTryCount = 0
@@ -71,9 +93,9 @@ internal class FailedSyncItemService : IFailedSyncItemService
             .FirstOrDefault();
     }
 
-    public void DeleteFailedSyncItem(string crmCrmName, string entityClass, int entityId)
+    public void DeleteFailedSyncItem(string crmName, string entityClass, int entityId)
     {
-        GetExistingItem(crmCrmName, entityClass, entityId)?.Delete();
+        GetExistingItem(crmName, entityClass, entityId)?.Delete();
     }
 
     private FailedSyncItemInfo? GetExistingItem(string crmName, string entityClass, int entityId)

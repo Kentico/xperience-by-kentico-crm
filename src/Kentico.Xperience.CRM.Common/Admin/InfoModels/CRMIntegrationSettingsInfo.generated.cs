@@ -67,8 +67,17 @@ namespace Kentico.Xperience.CRM.Common
             get => ValidationHelper.GetBoolean(GetValue(nameof(CRMIntegrationSettingsContactsEnabled)), false);
             set => SetValue(nameof(CRMIntegrationSettingsContactsEnabled), value);
         }
-
-
+        
+        /// <summary>
+        /// When true, data are synced from CRM to Kentico. Relevant only when <see cref="CRMIntegrationSettingsContactsEnabled"/> is true.
+        /// </summary>
+        [DatabaseField]
+        public virtual bool CRMIntegrationSettingsContactsTwoWaySyncEnabled
+        {
+            get => ValidationHelper.GetBoolean(GetValue(nameof(CRMIntegrationSettingsContactsTwoWaySyncEnabled)), true);
+            set => SetValue(nameof(CRMIntegrationSettingsContactsTwoWaySyncEnabled), value);
+        }
+        
         /// <summary>
         /// CRM integration settings ignore existing records.
         /// </summary>

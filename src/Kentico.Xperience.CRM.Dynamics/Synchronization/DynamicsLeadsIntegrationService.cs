@@ -1,5 +1,6 @@
 ﻿using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Constants;
+using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
@@ -161,10 +162,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
         var leadEntity = new Lead();
         await MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
-        if (leadEntity.Subject is null)
-        {
-            leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
-        }
+        leadEntity.Subject ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
 
         var leadId = await serviceClient.CreateAsync(leadEntity);
 
@@ -178,10 +176,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
     {
         await MapLead(bizFormItem, leadEntity, fieldMappings, converters);
 
-        if (leadEntity.Subject is null)
-        {
-            leadEntity.Subject = $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
-        }
+        leadEntity.Subject ??= $"Form {bizFormItem.BizFormInfo.FormDisplayName} - ID: {bizFormItem.ItemID}";
 
         await serviceClient.UpdateAsync(leadEntity);
 

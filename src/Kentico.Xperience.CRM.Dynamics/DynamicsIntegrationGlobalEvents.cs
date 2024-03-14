@@ -1,17 +1,15 @@
 ﻿using CMS;
 using CMS.Base;
+using CMS.ContactManagement;
 using CMS.Core;
 using CMS.DataEngine;
+using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Dynamics;
-using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Synchronization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 [assembly: RegisterModule(typeof(DynamicsIntegrationGlobalEvents))]
 
@@ -26,7 +24,6 @@ internal class DynamicsIntegrationGlobalEvents : Module
     {
     }
 
-    private ILogger<DynamicsIntegrationGlobalEvents> logger = null!;
     private ICRMModuleInstaller? installer;
 
     protected override void OnInit(ModuleInitParameters parameters)
@@ -35,16 +32,20 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
         var services = parameters.Services;
 
-        logger = services.GetRequiredService<ILogger<DynamicsIntegrationGlobalEvents>>();
         installer = services.GetRequiredService<ICRMModuleInstaller>();
 
         ApplicationEvents.Initialized.Execute += InitializeModule;
 
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
+        
+        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
 
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
+            DynamicsSyncQueueWorker.Current.EnsureRunningThread();
+            ContactsSyncFromCRMWorker.Current.EnsureRunningThread();
             FailedItemsWorker.Current.EnsureRunningThread();
         };
     }
@@ -56,24 +57,16 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
     private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
-        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
-        try
-        {
-            using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
-            {
-                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<DynamicsIntegrationSettings>>().Value;
-                if (!settings.FormLeadsEnabled) return;
+        DynamicsSyncQueueWorker.Current.Enqueue(e.Item);
+    }
 
-                var leadsIntegrationService = serviceScope.ServiceProvider
-                    .GetRequiredService<IDynamicsLeadsIntegrationService>();
+    private void ContactSync(object? sender, ObjectEventArgs args)
+    {
+        if (args.Object is not ContactInfo contactInfo ||
+            ValidationHelper.GetBoolean(RequestStockHelper.GetItem("SuppressEvents"), false) ||
+            !ValidationHelper.IsEmail(contactInfo.ContactEmail))
+            return;
 
-                leadsIntegrationService.SynchronizeLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Error occured during updating lead");
-            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Dynamics);
-        }
+        DynamicsSyncQueueWorker.Current.Enqueue(contactInfo);
     }
 }

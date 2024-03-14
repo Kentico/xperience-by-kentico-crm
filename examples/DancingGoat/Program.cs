@@ -8,10 +8,10 @@ using Kentico.Membership;
 using Kentico.OnlineMarketing.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 using Kentico.Web.Mvc;
+using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
-using Kentico.Xperience.CRM.Salesforce;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -58,6 +58,7 @@ ConfigureMembershipServices(builder.Services);
 
 //CRM integration registration start
 
+// manual mapping example:
 //builder.Services.AddKenticoCRMDynamics(builder =>
 //        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
 //                c => c
@@ -70,11 +71,13 @@ ConfigureMembershipServices(builder.Services);
 //    ,
 //    builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName)); //config section with settings
 
+// Dynamics form submissions to Leads based on auto-mapping (mapping to contact fields is used from XbyK)
 builder.Services.AddKenticoCRMDynamics(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem, Lead>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>()); //optional
 
+// manual mapping example:
 //builder.Services.AddKenticoCRMSalesforce(builder =>
 //        builder.AddForm(DancingGoatContactUsItem.CLASS_NAME, //form class name
 //                c => c
@@ -84,11 +87,22 @@ builder.Services.AddKenticoCRMDynamics(builder =>
 //                    .MapField<BizFormItem>(b => b.GetStringValue("UserMessage", ""), e => e.Description) //option 4: source mapping function general BizFormItem  -> member expression to SObject
 //            ));
 
+// Salesforce form submissions to Leads based on auto-mapping (mapping to contact fields is used from XbyK)
 builder.Services.AddKenticoCRMSalesforce(builder =>
     builder.AddFormWithContactMapping(DancingGoatContactUsItem.CLASS_NAME, b => b
             .MapField<DancingGoatContactUsItem>(c => c.UserMessage, e => e.Description))
         .AddCustomValidation<CustomFormLeadsValidationService>());
 
+
+// example with settings in configuration:
+// builder.Services.AddDynamicsContactsIntegration(ContactCRMType.Lead,
+//     builder.Configuration.GetSection(DynamicsIntegrationSettings.ConfigKeyName));
+
+// Dynamics contacts integration to Contacts
+builder.Services.AddKenticoCRMDynamicsContactsIntegration(crmType: ContactCRMType.Contact);
+
+// Salesforce contacts integration to Contacts
+builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
 //CRM integration registration end
 
 var app = builder.Build();

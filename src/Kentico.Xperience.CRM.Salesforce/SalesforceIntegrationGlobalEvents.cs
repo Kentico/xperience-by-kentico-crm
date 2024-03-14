@@ -1,17 +1,15 @@
 using CMS;
 using CMS.Base;
+using CMS.ContactManagement;
 using CMS.Core;
 using CMS.DataEngine;
+using CMS.Helpers;
 using CMS.OnlineForms;
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
-using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce;
-using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Kentico.Xperience.CRM.Salesforce.Synchronization;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 [assembly: RegisterModule(typeof(SalesforceIntegrationGlobalEvents))]
 
@@ -22,7 +20,6 @@ namespace Kentico.Xperience.CRM.Salesforce;
 /// </summary>
 internal class SalesforceIntegrationGlobalEvents : Module
 {
-    private ILogger<SalesforceIntegrationGlobalEvents> logger = null!;
     private ICRMModuleInstaller? installer;
 
     public SalesforceIntegrationGlobalEvents() : base(nameof(SalesforceIntegrationGlobalEvents))
@@ -34,23 +31,25 @@ internal class SalesforceIntegrationGlobalEvents : Module
         base.OnInit(parameters);
 
         var services = parameters.Services;
-
-        logger = services.GetRequiredService<ILogger<SalesforceIntegrationGlobalEvents>>();
+        
         installer = services.GetRequiredService<ICRMModuleInstaller>();
 
         ApplicationEvents.Initialized.Execute += InitializeModule;
 
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
-
-        ThreadWorker<FailedItemsWorker>.Current.EnsureRunningThread();
-
+        
+        ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
+        ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
+        
         RequestEvents.RunEndRequestTasks.Execute += (_, _) =>
         {
+            SalesforceSyncQueueWorker.Current.EnsureRunningThread();
+            ContactsSyncFromCRMWorker.Current.EnsureRunningThread();
             FailedItemsWorker.Current.EnsureRunningThread();
         };
     }
-
+    
     private void InitializeModule(object? sender, EventArgs e)
     {
         installer?.Install(CRMType.Salesforce);
@@ -58,24 +57,16 @@ internal class SalesforceIntegrationGlobalEvents : Module
 
     private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
-        var failedSyncItemsService = Service.Resolve<IFailedSyncItemService>();
-        try
-        {
-            using (var serviceScope = Service.Resolve<IServiceProvider>().CreateScope())
-            {
-                var settings = serviceScope.ServiceProvider.GetRequiredService<IOptionsSnapshot<SalesforceIntegrationSettings>>().Value;
-                if (!settings.FormLeadsEnabled) return;
+        SalesforceSyncQueueWorker.Current.Enqueue(e.Item);
+    }
+    
+    private void ContactSync(object? sender, ObjectEventArgs args)
+    {
+        if (args.Object is not ContactInfo contactInfo ||
+            ValidationHelper.GetBoolean(RequestStockHelper.GetItem("SuppressEvents"), false) ||
+            !ValidationHelper.IsEmail(contactInfo.ContactEmail))
+            return;
 
-                var leadsIntegrationService = serviceScope.ServiceProvider
-                    .GetRequiredService<ISalesforceLeadsIntegrationService>();
-
-                leadsIntegrationService.SynchronizeLeadAsync(e.Item).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "Error occured during updating lead");
-            failedSyncItemsService.LogFailedLeadItem(e.Item, CRMType.Salesforce);
-        }
+        SalesforceSyncQueueWorker.Current.Enqueue(contactInfo);
     }
 }

@@ -32,6 +32,7 @@ public abstract class CRMIntegrationSettingsEdit : ModelEditPage<CRMIntegrationS
         var info = SettingsInfo ?? new CRMIntegrationSettingsInfo();
         info.CRMIntegrationSettingsFormsEnabled = model.FormsEnabled;
         info.CRMIntegrationSettingsContactsEnabled = model.ContactsEnabled;
+        info.CRMIntegrationSettingsContactsTwoWaySyncEnabled = model.ContactsEnabled && model.ContactsTwoWaySyncEnabled;
         info.CRMIntegrationSettingsIgnoreExistingRecords = model.IgnoreExistingRecords;
         info.CRMIntegrationSettingsClientId = model.ClientId;
         info.CRMIntegrationSettingsClientSecret = model.ClientSecret;
@@ -50,6 +51,7 @@ public abstract class CRMIntegrationSettingsEdit : ModelEditPage<CRMIntegrationS
         {
             FormsEnabled = SettingsInfo.CRMIntegrationSettingsFormsEnabled,
             ContactsEnabled = SettingsInfo.CRMIntegrationSettingsContactsEnabled,
+            ContactsTwoWaySyncEnabled = SettingsInfo.CRMIntegrationSettingsContactsTwoWaySyncEnabled,
             IgnoreExistingRecords = SettingsInfo.CRMIntegrationSettingsIgnoreExistingRecords,
             Url = SettingsInfo.CRMIntegrationSettingsUrl,
             ClientId = SettingsInfo.CRMIntegrationSettingsClientId,

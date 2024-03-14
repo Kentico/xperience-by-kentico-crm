@@ -6,7 +6,7 @@ namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 /// Specific configuration for BizForm mapping to Lead in Salesforce Sales
 /// </summary>
 #pragma warning disable S2094 // Classes should not be empty
-public class SalesforceBizFormsMappingConfiguration : BizFormsMappingConfiguration
+internal class SalesforceBizFormsMappingConfiguration : BizFormsMappingConfiguration
 #pragma warning restore S2094 // Classes should not be empty
 {
 }
