@@ -1,12 +1,16 @@
-﻿using Kentico.Xperience.CRM.Salesforce.Configuration;
-using Microsoft.Extensions.Options;
-using Salesforce.OpenApi;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Net.Mime;
 using System.Text.Json;
 using System.Web;
+
+using Kentico.Xperience.CRM.Salesforce.Configuration;
+
+using Microsoft.Extensions.Options;
+
+using Salesforce.OpenApi;
+
 using SalesforceApiClient = Salesforce.OpenApi.SalesforceApiClient;
 
 namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
@@ -16,7 +20,7 @@ internal class SalesforceApiService : ISalesforceApiService
     private readonly HttpClient httpClient;
     private readonly IOptionsSnapshot<SalesforceIntegrationSettings> integrationSettings;
     private readonly SalesforceApiClient apiClient;
-    
+
     private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.General)
     {
         Converters = { new DateTimeOffsetConverter() }

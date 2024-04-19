@@ -1,15 +1,18 @@
-﻿using Duende.AccessTokenManagement;
+﻿using System.Globalization;
+
+using Duende.AccessTokenManagement;
+
 using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
 using Kentico.Xperience.CRM.Salesforce.Synchronization;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

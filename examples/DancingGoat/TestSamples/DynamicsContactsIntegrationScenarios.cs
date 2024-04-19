@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;

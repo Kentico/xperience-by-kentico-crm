@@ -1,8 +1,11 @@
-﻿using CMS.OnlineForms;
+﻿using System.Linq.Expressions;
+
+using CMS.OnlineForms;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Mapping;
+
 using Salesforce.OpenApi;
-using System.Linq.Expressions;
 
 namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 

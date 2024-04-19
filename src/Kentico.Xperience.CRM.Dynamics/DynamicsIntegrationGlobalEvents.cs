@@ -5,10 +5,12 @@ using CMS.Core;
 using CMS.DataEngine;
 using CMS.Helpers;
 using CMS.OnlineForms;
+
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Dynamics;
 using Kentico.Xperience.CRM.Dynamics.Synchronization;
+
 using Microsoft.Extensions.DependencyInjection;
 
 [assembly: RegisterModule(typeof(DynamicsIntegrationGlobalEvents))]
@@ -38,7 +40,7 @@ internal class DynamicsIntegrationGlobalEvents : Module
 
         BizFormItemEvents.Insert.After += SynchronizeBizFormLead;
         BizFormItemEvents.Update.After += SynchronizeBizFormLead;
-        
+
         ContactInfo.TYPEINFO.Events.Insert.After += ContactSync;
         ContactInfo.TYPEINFO.Events.Update.After += ContactSync;
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace DancingGoat.Models
+﻿namespace DancingGoat.Models
 {
     public record EventViewModel(string Title, string HeroBannerImageUrl, string HeroBannerShortDescription, string PromoText, DateTime Date, string Location, IEnumerable<string> Coffees)
     {
@@ -20,9 +16,9 @@ namespace DancingGoat.Models
             var cafe = eventContentItem.EventCafe?.FirstOrDefault();
 
             return new EventViewModel(
-                eventContentItem.EventTitle, 
-                bannerImage?.ImageFile.Url, 
-                bannerImage?.ImageShortDescription, 
+                eventContentItem.EventTitle,
+                bannerImage?.ImageFile.Url,
+                bannerImage?.ImageShortDescription,
                 eventContentItem.EventPromoText,
                 eventContentItem.EventDate,
                 cafe?.CafeName,

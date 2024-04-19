@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Net;
 
 using CMS.Core;
 using CMS.DataEngine;
@@ -180,10 +177,10 @@ namespace DancingGoat.Controllers
             }
 
             var homePageUrl = await webPageUrlRetriever.Retrieve(
-                websiteChannel.WebsiteChannelHomePage, 
-                websiteChannelContext.WebsiteChannelName, 
-                currentLanguageRetriever.Get(), 
-                websiteChannelContext.IsPreview, 
+                websiteChannel.WebsiteChannelHomePage,
+                websiteChannelContext.WebsiteChannelName,
+                currentLanguageRetriever.Get(),
+                websiteChannelContext.IsPreview,
                 cancellationToken
             );
 

@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-using CMS.ContactManagement;
+﻿using CMS.ContactManagement;
 using CMS.DataProtection;
 
 using DancingGoat;
@@ -9,7 +6,6 @@ using DancingGoat.Controllers;
 using DancingGoat.Helpers.Generator;
 using DancingGoat.Models;
 
-using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 
 using Microsoft.AspNetCore.Mvc;

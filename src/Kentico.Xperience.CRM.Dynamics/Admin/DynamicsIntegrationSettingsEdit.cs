@@ -4,6 +4,7 @@ using Kentico.Xperience.CRM.Common;
 using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Dynamics.Admin;
+
 using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.IFormItemCollectionProvider;
 
 [assembly: UIPage(

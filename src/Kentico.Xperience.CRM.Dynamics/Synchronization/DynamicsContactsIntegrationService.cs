@@ -1,5 +1,8 @@
-﻿using CMS.ContactManagement;
+﻿using System.ServiceModel;
+
+using CMS.ContactManagement;
 using CMS.Helpers;
+
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
@@ -7,12 +10,12 @@ using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
-using System.ServiceModel;
 
 namespace Kentico.Xperience.CRM.Dynamics.Synchronization;
 

@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using DancingGoat.Widgets;
 
 using Kentico.PageBuilder.Web.Mvc;
-
-using DancingGoat.Widgets;
 
 namespace DancingGoat.Sections
 {

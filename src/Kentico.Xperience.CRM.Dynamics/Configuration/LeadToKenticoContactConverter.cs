@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 
@@ -6,7 +7,7 @@ namespace Kentico.Xperience.CRM.Dynamics.Converters;
 
 public class LeadToKenticoContactConverter : ICRMTypeConverter<Lead, ContactInfo>
 {
-     public Task Convert(Lead source, ContactInfo destination)
+    public Task Convert(Lead source, ContactInfo destination)
     {
         destination.ContactFirstName = source.FirstName;
         destination.ContactMiddleName = source.MiddleName;

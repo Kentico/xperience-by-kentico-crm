@@ -3,6 +3,7 @@ using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Kentico.Xperience.CRM.Common.Synchronization;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

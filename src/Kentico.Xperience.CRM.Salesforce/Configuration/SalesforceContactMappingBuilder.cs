@@ -1,12 +1,16 @@
-﻿using CMS.ContactManagement;
+﻿using System.Linq.Expressions;
+
+using CMS.ContactManagement;
 using CMS.Globalization;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Salesforce.OpenApi;
-using System.Linq.Expressions;
 
 namespace Kentico.Xperience.CRM.Salesforce.Configuration;
 
@@ -69,10 +73,10 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
         MapLeadField(c => c.ContactBusinessPhone, l => l.Phone);
         MapLeadField(c => c.ContactCompanyName, l => l.Company);
         MapLeadField(c => c.ContactNotes, l => l.Description);
-        
+
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddDefaultMappingForContact()
     {
         MapContactField(c => c.ContactFirstName, l => l.FirstName);
@@ -88,10 +92,10 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
         MapContactField(c => c.ContactMobilePhone, l => l.MobilePhone);
         MapContactField(c => c.ContactBusinessPhone, l => l.Phone);
         MapContactField(c => c.ContactNotes, l => l.Description);
-        
+
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddContactToLeadConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, LeadSObject>
     {
@@ -99,7 +103,7 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
             .Scoped<ICRMTypeConverter<ContactInfo, LeadSObject>, TConverter>());
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddContactToContactConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactInfo, ContactSObject>
     {
@@ -107,35 +111,35 @@ public class SalesforceContactMappingBuilder : ContactMappingBuilder<SalesforceC
             .Scoped<ICRMTypeConverter<ContactInfo, ContactSObject>, TConverter>());
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddDefaultMappingToKenticoContact()
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<LeadSObject, ContactInfo>, LeadToKenticoContactConverter>());
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactSObject, ContactInfo>, ContactToKenticoContactConverter>());
-        
+
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddLeadToKenticoConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<LeadSObject, ContactInfo>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<LeadSObject, ContactInfo>, TConverter>());
-        
+
         return this;
     }
-    
+
     public SalesforceContactMappingBuilder AddContactToKenticoConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<ContactSObject, ContactInfo>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<ContactSObject, ContactInfo>, TConverter>());
-        
+
         return this;
     }
-    
+
     internal SalesforceContactMappingConfiguration Build() =>
         new()
         {

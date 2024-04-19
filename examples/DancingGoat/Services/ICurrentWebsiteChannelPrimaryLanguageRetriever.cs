@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace DancingGoat
+﻿namespace DancingGoat
 {
     /// <summary>
     /// Retrieves current website channel primary language.

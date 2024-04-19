@@ -1,7 +1,8 @@
-﻿using Kentico.Xperience.Admin.Base;
+﻿using CMS.ContactManagement;
+
+using Kentico.Xperience.Admin.Base;
 using Kentico.Xperience.Admin.DigitalMarketing.UIPages;
 using Kentico.Xperience.CRM.Common.Admin;
-using CMS.ContactManagement;
 
 [assembly: UIPage(
     parentType: typeof(ContactManagementApplication),
@@ -20,7 +21,7 @@ internal class CRMContactSyncItemListing : ListingPage
 
     public override Task ConfigurePage()
     {
-        PageConfiguration.ColumnConfigurations            
+        PageConfiguration.ColumnConfigurations
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityID), "Email", maxWidth: 50)
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), "CRM", maxWidth: 20)
             .AddColumn(nameof(CRMSyncItemInfo.CRMSyncItemCRMID), "CRM ID")

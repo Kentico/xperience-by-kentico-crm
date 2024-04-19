@@ -1,13 +1,16 @@
-﻿using CMS.Base;
+﻿using System.Diagnostics;
+
+using CMS.Base;
 using CMS.ContactManagement;
 using CMS.Core;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 
 namespace Kentico.Xperience.CRM.Common.Synchronization;
 

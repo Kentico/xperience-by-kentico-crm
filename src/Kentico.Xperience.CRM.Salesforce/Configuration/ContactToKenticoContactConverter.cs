@@ -1,5 +1,7 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Converters;
+
 using Salesforce.OpenApi;
 
 namespace Kentico.Xperience.CRM.Salesforce.Configuration;
