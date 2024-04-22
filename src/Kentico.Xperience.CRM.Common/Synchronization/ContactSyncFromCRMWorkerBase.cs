@@ -1,12 +1,15 @@
-﻿using CMS.Base;
+﻿using System.Diagnostics;
+
+using CMS.Base;
 using CMS.Core;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Common.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Diagnostics;
 
 namespace Kentico.Xperience.CRM.Common.Synchronization;
 
@@ -47,7 +50,7 @@ public abstract class
                 var lastSync = GetLastSyncInfo();
                 var lastSyncTime = lastSync?.ContactsLastSyncTime ?? DateTime.Now.AddMinutes(-1);
                 var dateBeforeSync = DateTime.Now;
-                
+
                 (settings.ContactType == ContactCRMType.Lead
                         ? contactsIntegrationService.SynchronizeLeadsToKenticoAsync(lastSyncTime)
                         : contactsIntegrationService.SynchronizeContactsToKenticoAsync(lastSyncTime))
@@ -68,6 +71,6 @@ public abstract class
         .WhereEquals(nameof(ContactsLastSyncInfo.ContactsLastSyncCRM), CRMName)
         .TopN(1)
         .FirstOrDefault();
-    
+
     protected override void Finish() { }
 }

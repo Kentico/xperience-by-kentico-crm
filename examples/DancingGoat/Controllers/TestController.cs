@@ -1,7 +1,10 @@
 ﻿using CMS.OnlineForms;
 using CMS.OnlineForms.Types;
+
 using Microsoft.AspNetCore.Mvc;
+
 using Newtonsoft.Json;
+
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace DancingGoat.Controllers;
@@ -26,7 +29,7 @@ public class TestController : Controller
         Console.WriteLine($"CreatedDate: {myObject.CreatedDate}");
         return Ok();
     }
-    
+
     public class MyObject
     {
         [JsonProperty("CreatedDate")]

@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 
@@ -20,7 +21,7 @@ public class ContactToKenticoContactConverter : ICRMTypeConverter<Contact, Conta
         destination.ContactEmail = source.EMailAddress1;
         destination.ContactNotes = source.Description;
         destination.ContactBirthday = source.BirthDate ?? DateTime.MinValue;
-        
+
         return Task.CompletedTask;
     }
 }

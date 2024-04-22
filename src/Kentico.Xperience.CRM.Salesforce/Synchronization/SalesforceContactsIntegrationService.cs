@@ -1,15 +1,19 @@
-﻿using CMS.ContactManagement;
+﻿using System.Text.Json;
+
+using CMS.ContactManagement;
 using CMS.Helpers;
+
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Salesforce.OpenApi;
-using System.Text.Json;
 
 namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
 

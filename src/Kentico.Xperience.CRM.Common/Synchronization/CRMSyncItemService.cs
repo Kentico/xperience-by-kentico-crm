@@ -47,7 +47,7 @@ internal class CRMSyncItemService : ICRMSyncItemService
             .WhereEquals(nameof(CRMSyncItemInfo.CRMSyncItemEntityCRM), crmName)
             .GetEnumerableTypedResultAsync())
             .FirstOrDefault();
-    
+
     public async Task LogContactSyncItem(ContactInfo contactInfo, string crmId, string crmName,
         bool createdByKentico = false)
     {

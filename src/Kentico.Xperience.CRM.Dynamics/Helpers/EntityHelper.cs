@@ -1,6 +1,7 @@
-﻿using Microsoft.Xrm.Sdk;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Reflection;
+
+using Microsoft.Xrm.Sdk;
 
 namespace Kentico.Xperience.CRM.Dynamics.Helpers;
 

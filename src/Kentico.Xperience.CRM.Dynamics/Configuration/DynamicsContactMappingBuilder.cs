@@ -1,14 +1,17 @@
-﻿using CMS.ContactManagement;
+﻿using System.Linq.Expressions;
+
+using CMS.ContactManagement;
 using CMS.Globalization;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Dynamics.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 using Kentico.Xperience.CRM.Dynamics.Helpers;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Xrm.Sdk;
-using System.Linq.Expressions;
 
 namespace Kentico.Xperience.CRM.Dynamics.Configuration;
 
@@ -114,25 +117,25 @@ public class DynamicsContactMappingBuilder : ContactMappingBuilder<DynamicsConta
             .Scoped<ICRMTypeConverter<Lead, ContactInfo>, LeadToKenticoContactConverter>());
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<Contact, ContactInfo>, ContactToKenticoContactConverter>());
-        
+
         return this;
     }
-    
+
     public DynamicsContactMappingBuilder AddLeadToKenticoConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<Lead, ContactInfo>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<Lead, ContactInfo>, TConverter>());
-        
+
         return this;
     }
-    
+
     public DynamicsContactMappingBuilder AddContactToKenticoConverter<TConverter>()
         where TConverter : class, ICRMTypeConverter<Contact, ContactInfo>
     {
         serviceCollection.TryAddEnumerable(ServiceDescriptor
             .Scoped<ICRMTypeConverter<Contact, ContactInfo>, TConverter>());
-        
+
         return this;
     }
 

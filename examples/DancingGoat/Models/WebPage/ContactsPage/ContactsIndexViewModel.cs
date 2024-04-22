@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace DancingGoat.Models
+﻿namespace DancingGoat.Models
 {
     public class ContactsIndexViewModel
     {

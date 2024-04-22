@@ -1,5 +1,7 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Converters;
+
 using Salesforce.OpenApi;
 
 namespace DancingGoat.TestSamples;
@@ -7,7 +9,7 @@ namespace DancingGoat.TestSamples;
 internal class SalesforceContactToLeadCustomConverter : ICRMTypeConverter<ContactInfo, LeadSObject>
 {
     public Task Convert(ContactInfo source, LeadSObject destination)
-    {        
+    {
         //some mapping when updating
         if (destination.Id != null)
         {
@@ -23,7 +25,7 @@ internal class SalesforceContactToLeadCustomConverter : ICRMTypeConverter<Contac
     }
 }
 
-internal class SalesforceContactToContactCustomConverter : ICRMTypeConverter<ContactInfo, ContactSObject>    
+internal class SalesforceContactToContactCustomConverter : ICRMTypeConverter<ContactInfo, ContactSObject>
 {
     public Task Convert(ContactInfo source, ContactSObject destination)
     {
@@ -58,7 +60,7 @@ internal class SalesforceLeadToKenticoContactCustomConverter : ICRMTypeConverter
             // mapping on update
             destination.ContactNotes = $"Status: {source.Status}";
         }
-        
+
         return Task.CompletedTask;
     }
 }

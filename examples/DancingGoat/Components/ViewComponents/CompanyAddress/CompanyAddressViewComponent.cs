@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using DancingGoat.Models;
+﻿using DancingGoat.Models;
 
 using Microsoft.AspNetCore.Mvc;
 

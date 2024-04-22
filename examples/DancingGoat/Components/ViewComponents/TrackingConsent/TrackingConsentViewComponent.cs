@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-using CMS.ContactManagement;
+﻿using CMS.ContactManagement;
 using CMS.DataProtection;
 using CMS.Websites;
 using CMS.Websites.Routing;

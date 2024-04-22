@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using CMS.ContentEngine;
+﻿using CMS.ContentEngine;
 using CMS.DataEngine;
 using CMS.Helpers;
 using CMS.Websites;
@@ -24,9 +18,9 @@ namespace DancingGoat.Models
         /// Initializes new instance of <see cref="ArticlePageRepository"/>.
         /// </summary>
         public ArticlePageRepository(
-            IWebsiteChannelContext websiteChannelContext, 
-            IContentQueryExecutor executor, 
-            IWebPageQueryResultMapper mapper, 
+            IWebsiteChannelContext websiteChannelContext,
+            IContentQueryExecutor executor,
+            IWebPageQueryResultMapper mapper,
             IProgressiveCache cache,
             IWebPageLinkedItemsDependencyAsyncRetriever webPageLinkedItemsDependencyRetriever)
             : base(websiteChannelContext, executor, mapper, cache)

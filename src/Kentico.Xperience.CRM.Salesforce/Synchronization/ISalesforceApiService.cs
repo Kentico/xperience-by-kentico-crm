@@ -21,7 +21,7 @@ internal interface ISalesforceApiService
     /// <param name="leadSObject"></param>
     /// <returns></returns>
     Task UpdateLeadAsync(string id, LeadSObject leadSObject);
-    
+
     /// <summary>
     /// Get Lead by primary Id
     /// </summary>
@@ -51,7 +51,7 @@ internal interface ISalesforceApiService
     /// <param name="contact"></param>
     /// <returns></returns>
     Task UpdateContactAsync(string id, ContactSObject contact);
-    
+
     /// <summary>
     /// Get Lead by primary Id
     /// </summary>
@@ -67,7 +67,7 @@ internal interface ISalesforceApiService
     /// <returns></returns>
     Task<string?> GetContactByEmail(string email);
 
-    
+
     /// <summary>
     /// 
     /// </summary>

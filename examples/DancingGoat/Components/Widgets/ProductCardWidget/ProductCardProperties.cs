@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-using CMS.ContentEngine;
+﻿using CMS.ContentEngine;
 
 using DancingGoat.Models;
 

@@ -1,6 +1,8 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Services;
+
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kentico.Xperience.CRM.Common.Configuration;
@@ -10,7 +12,7 @@ where TBuilder : ContactMappingBuilder<TBuilder>
 {
     private readonly IServiceCollection serviceCollection;
     protected readonly List<ContactFieldToCRMMapping> fieldMappings = new();
-    
+
     protected ContactMappingBuilder(IServiceCollection serviceCollection)
     {
         this.serviceCollection = serviceCollection;
@@ -27,7 +29,7 @@ where TBuilder : ContactMappingBuilder<TBuilder>
         fieldMappings.Add(new ContactFieldToCRMMapping(new ContactFieldMappingFunction(mappingFunc), new CRMFieldNameMapping(crmFieldName)));
         return (TBuilder)this;
     }
-    
+
     /// <summary>
     /// Adds custom service for BizForm item validation before sending to CRM
     /// </summary>

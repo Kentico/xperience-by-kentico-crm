@@ -1,13 +1,17 @@
-﻿using CMS.OnlineForms;
+﻿using System.Text.Json;
+
+using CMS.OnlineForms;
+
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
 using Salesforce.OpenApi;
-using System.Text.Json;
 
 namespace Kentico.Xperience.CRM.Salesforce.Synchronization;
 
@@ -151,7 +155,7 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
         {
             existingLeadId = await apiService.GetLeadByEmail(emailAddress!);
         }
-        
+
         if (existingLeadId is null)
         {
             await CreateLeadAsync(bizFormItem, fieldMappings, converters);

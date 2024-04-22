@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-
-using CMS.Websites;
+﻿using CMS.Websites;
 
 using DancingGoat;
 using DancingGoat.Controllers;
@@ -27,22 +24,22 @@ namespace DancingGoat.Controllers
         private readonly IPreferredLanguageRetriever currentLanguageRetriever;
 
 
-		public DancingGoatArticleController(
-			ArticlePageRepository articlePageRepository,
-			ArticlesSectionRepository articlesSectionRepository,
-			IWebPageUrlRetriever urlRetriever,
-			IWebPageDataContextRetriever webPageDataContextRetriever,
-			IPreferredLanguageRetriever currentLanguageRetriever)
-		{
-			this.articlePageRepository = articlePageRepository;
-			this.articlesSectionRepository = articlesSectionRepository;
-			this.urlRetriever = urlRetriever;
-			this.webPageDataContextRetriever = webPageDataContextRetriever;
-			this.currentLanguageRetriever = currentLanguageRetriever;
-		}
+        public DancingGoatArticleController(
+            ArticlePageRepository articlePageRepository,
+            ArticlesSectionRepository articlesSectionRepository,
+            IWebPageUrlRetriever urlRetriever,
+            IWebPageDataContextRetriever webPageDataContextRetriever,
+            IPreferredLanguageRetriever currentLanguageRetriever)
+        {
+            this.articlePageRepository = articlePageRepository;
+            this.articlesSectionRepository = articlesSectionRepository;
+            this.urlRetriever = urlRetriever;
+            this.webPageDataContextRetriever = webPageDataContextRetriever;
+            this.currentLanguageRetriever = currentLanguageRetriever;
+        }
 
 
-		public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var languageName = currentLanguageRetriever.Get();
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-
-using CMS.ContentEngine;
+﻿using CMS.ContentEngine;
 using CMS.Helpers;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -20,10 +14,10 @@ namespace DancingGoat.Models
 
 
         public CafeRepository(
-            IWebsiteChannelContext websiteChannelContext, 
-            IContentQueryExecutor executor, 
-            IWebPageQueryResultMapper mapper, 
-            IProgressiveCache cache, 
+            IWebsiteChannelContext websiteChannelContext,
+            IContentQueryExecutor executor,
+            IWebPageQueryResultMapper mapper,
+            IProgressiveCache cache,
             ILinkedItemsDependencyAsyncRetriever linkedItemsDependencyRetriever)
             : base(websiteChannelContext, executor, mapper, cache)
         {

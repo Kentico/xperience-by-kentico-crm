@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
 
@@ -7,7 +8,7 @@ namespace DancingGoat.TestSamples;
 internal class DynamicsContactToLeadCustomConverter : ICRMTypeConverter<ContactInfo, Lead>
 {
     public Task Convert(ContactInfo source, Lead destination)
-    {        
+    {
         //some mapping when updating
         if (destination.Id != Guid.Empty)
         {
@@ -23,7 +24,7 @@ internal class DynamicsContactToLeadCustomConverter : ICRMTypeConverter<ContactI
     }
 }
 
-internal class DynamicsContactToContactCustomConverter : ICRMTypeConverter<ContactInfo, Contact>    
+internal class DynamicsContactToContactCustomConverter : ICRMTypeConverter<ContactInfo, Contact>
 {
     public Task Convert(ContactInfo source, Contact destination)
     {
@@ -58,7 +59,7 @@ internal class DynamicsLeadToKenticoContactCustomConverter : ICRMTypeConverter<L
             // mapping on update
             destination.ContactNotes = $"Status: {source.StatusCode?.ToString()}";
         }
-        
+
         return Task.CompletedTask;
     }
 }
@@ -79,7 +80,7 @@ internal class DynamicsContactToKenticoContactCustomConverter : ICRMTypeConverte
             // mapping on update
             destination.ContactNotes = $"Status: {source.StatusCode?.ToString()}";
         }
-        
+
         return Task.CompletedTask;
     }
 }

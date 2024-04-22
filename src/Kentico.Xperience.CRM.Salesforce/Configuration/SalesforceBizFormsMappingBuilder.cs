@@ -1,9 +1,12 @@
 ﻿using CMS.OnlineForms;
+
 using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Synchronization;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+
 using Salesforce.OpenApi;
 
 namespace Kentico.Xperience.CRM.Salesforce.Configuration;
