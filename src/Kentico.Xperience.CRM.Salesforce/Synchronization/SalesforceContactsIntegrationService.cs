@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 
 using CMS.ContactManagement;
+using CMS.DataEngine;
 using CMS.Helpers;
 
 using Kentico.Xperience.CRM.Common.Constants;
@@ -30,7 +31,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters;
     private readonly IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters;
     private readonly IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters;
-    private readonly IContactInfoProvider contactInfoProvider;
+    private readonly IInfoProvider<ContactInfo> contactInfoProvider;
 
     public SalesforceContactsIntegrationService(
         SalesforceContactMappingConfiguration contactMapping,
@@ -44,7 +45,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters,
         IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters,
         IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters,
-        IContactInfoProvider contactInfoProvider)
+        IInfoProvider<ContactInfo> contactInfoProvider)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;

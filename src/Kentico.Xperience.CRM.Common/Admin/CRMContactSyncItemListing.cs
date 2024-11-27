@@ -10,8 +10,7 @@ using Kentico.Xperience.CRM.Common.Admin;
     uiPageType: typeof(CRMContactSyncItemListing),
     name: "CRM contacts sync",
     templateName: TemplateNames.LISTING,
-    order: 1000,
-    icon: Icons.IntegrationScheme)]
+    order: 1000)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 

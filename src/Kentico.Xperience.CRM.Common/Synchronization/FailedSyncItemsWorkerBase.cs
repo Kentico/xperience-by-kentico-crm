@@ -96,7 +96,7 @@ public abstract class
         }
         catch (Exception e)
         {
-            logger.LogError(e, $"Error occured during running '{GetType().Name}'");
+            logger.LogError(e, "Error occured during running '{TypeName}'", GetType().Name);
         }
     }
 

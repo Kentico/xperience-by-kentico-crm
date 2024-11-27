@@ -203,7 +203,7 @@ internal class SalesforceLeadsIntegrationService : ISalesforceLeadsIntegrationSe
             bizFormItem.ItemID);
     }
 
-    private async Task MapLead(BizFormItem bizFormItem, LeadSObject lead,
+    private static async Task MapLead(BizFormItem bizFormItem, LeadSObject lead,
         IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, LeadSObject>> converters)
     {
         foreach (var converter in converters)

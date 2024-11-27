@@ -188,7 +188,7 @@ internal class DynamicsLeadsIntegrationService : IDynamicsLeadsIntegrationServic
             bizFormItem.ItemID);
     }
 
-    protected async Task MapLead(BizFormItem bizFormItem, Lead leadEntity,
+    protected static async Task MapLead(BizFormItem bizFormItem, Lead leadEntity,
         IEnumerable<BizFormFieldMapping> fieldMappings, IEnumerable<ICRMTypeConverter<BizFormItem, Lead>> converters)
     {
         foreach (var converter in converters)

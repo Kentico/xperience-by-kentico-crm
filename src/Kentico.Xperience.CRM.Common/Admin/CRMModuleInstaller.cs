@@ -13,9 +13,9 @@ namespace Kentico.Xperience.CRM.Common.Admin;
 /// </summary>
 internal class CRMModuleInstaller : ICRMModuleInstaller
 {
-    private readonly IResourceInfoProvider resourceInfoProvider;
+    private readonly IInfoProvider<ResourceInfo> resourceInfoProvider;
 
-    public CRMModuleInstaller(IResourceInfoProvider resourceInfoProvider)
+    public CRMModuleInstaller(IInfoProvider<ResourceInfo> resourceInfoProvider)
     {
         this.resourceInfoProvider = resourceInfoProvider;
     }
