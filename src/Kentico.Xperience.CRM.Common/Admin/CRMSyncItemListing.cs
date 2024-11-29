@@ -14,7 +14,8 @@ using Kentico.Xperience.CRM.Common.Admin;
     uiPageType: typeof(CRMSyncItemListing),
     name: "CRM sync",
     templateName: TemplateNames.LISTING,
-    order: 1000)]
+    order: 1000,
+    Icon = Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
