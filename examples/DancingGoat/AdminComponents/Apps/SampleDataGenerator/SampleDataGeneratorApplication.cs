@@ -36,10 +36,10 @@ namespace DancingGoat.AdminComponents
 
         private readonly IFormBuilderConfigurationSerializer formBuilderConfigurationSerializer;
         private readonly IEventLogService eventLogService;
-        private readonly IConsentInfoProvider consentInfoProvider;
-        private readonly IBizFormInfoProvider bizFormInfoProvider;
-        private readonly IContactGroupInfoProvider contactGroupInfoProvider;
-        private readonly ISettingsKeyInfoProvider settingsKeyInfoProvider;
+        private readonly IInfoProvider<ConsentInfo> consentInfoProvider;
+        private readonly IInfoProvider<BizFormInfo> bizFormInfoProvider;
+        private readonly IInfoProvider<ContactGroupInfo> contactGroupInfoProvider;
+        private readonly IInfoProvider<SettingsKeyInfo> settingsKeyInfoProvider;
         private readonly IInfoProvider<WebsiteChannelInfo> websiteChannelInfoProvider;
 
 
@@ -56,10 +56,10 @@ namespace DancingGoat.AdminComponents
         public SampleDataGeneratorApplication(
             IFormBuilderConfigurationSerializer formBuilderConfigurationSerializer,
             IEventLogService eventLogService,
-            IConsentInfoProvider consentInfoProvider,
-            IBizFormInfoProvider bizFormInfoProvider,
-            IContactGroupInfoProvider contactGroupInfoProvider,
-            ISettingsKeyInfoProvider settingsKeyInfoProvider,
+            IInfoProvider<ConsentInfo> consentInfoProvider,
+            IInfoProvider<BizFormInfo> bizFormInfoProvider,
+            IInfoProvider<ContactGroupInfo> contactGroupInfoProvider,
+            IInfoProvider<SettingsKeyInfo> settingsKeyInfoProvider,
             IInfoProvider<WebsiteChannelInfo> websiteChannelInfoProvider)
         {
             this.formBuilderConfigurationSerializer = formBuilderConfigurationSerializer;

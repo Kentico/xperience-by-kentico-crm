@@ -1,5 +1,6 @@
 ﻿using CMS.ContactManagement;
 using CMS.Core;
+using CMS.DataEngine;
 using CMS.Globalization;
 using CMS.OnlineForms;
 using CMS.OnlineForms.Internal;
@@ -15,14 +16,14 @@ namespace Kentico.Xperience.CRM.Dynamics.Configuration;
 public class FormContactMappingToLeadConverter : ICRMTypeConverter<BizFormItem, Lead>
 {
     private readonly IContactFieldFromFormRetriever contactFieldFromFormRetriever;
-    private readonly ICountryInfoProvider countries;
-    private readonly IStateInfoProvider states;
+    private readonly IInfoProvider<CountryInfo> countries;
+    private readonly IInfoProvider<StateInfo> states;
     private readonly IConversionService conversion;
 
     public FormContactMappingToLeadConverter(
         IContactFieldFromFormRetriever contactFieldFromFormRetriever,
-        ICountryInfoProvider countries,
-        IStateInfoProvider states,
+        IInfoProvider<CountryInfo> countries,
+        IInfoProvider<StateInfo> states,
         IConversionService conversion)
     {
         this.contactFieldFromFormRetriever = contactFieldFromFormRetriever;

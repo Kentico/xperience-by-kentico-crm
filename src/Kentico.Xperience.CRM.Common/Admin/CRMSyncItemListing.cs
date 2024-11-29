@@ -15,7 +15,7 @@ using Kentico.Xperience.CRM.Common.Admin;
     name: "CRM sync",
     templateName: TemplateNames.LISTING,
     order: 1000,
-    icon: Icons.IntegrationScheme)]
+    Icon = Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 
@@ -34,7 +34,7 @@ internal class CRMSyncItemListing : ListingPage
     public int FormId { get; set; }
 
     private BizFormInfo EditedForm =>
-        this.editedForm ??= AbstractInfo<BizFormInfo, IBizFormInfoProvider>.Provider.Get(FormId);
+        this.editedForm ??= AbstractInfo<BizFormInfo, IInfoProvider<BizFormInfo>>.Provider.Get(FormId);
 
     private DataClassInfo DataClassInfo => this.dataClassInfo ??=
         DataClassInfoProviderBase<DataClassInfoProvider>.GetDataClassInfo(EditedForm.FormClassID);
