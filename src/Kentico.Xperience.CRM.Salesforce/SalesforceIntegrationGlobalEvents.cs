@@ -57,12 +57,12 @@ internal class SalesforceIntegrationGlobalEvents : Module
         installer?.Install(CRMType.Salesforce);
     }
 
-    private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
+    private static void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
         SalesforceSyncQueueWorker.Current.Enqueue(e.Item);
     }
 
-    private void ContactSync(object? sender, ObjectEventArgs args)
+    private static void ContactSync(object? sender, ObjectEventArgs args)
     {
         if (args.Object is not ContactInfo contactInfo ||
             ValidationHelper.GetBoolean(RequestStockHelper.GetItem("SuppressEvents"), false) ||

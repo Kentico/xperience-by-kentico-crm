@@ -1,6 +1,7 @@
 ﻿using System.ServiceModel;
 
 using CMS.ContactManagement;
+using CMS.DataEngine;
 using CMS.Helpers;
 
 using Kentico.Xperience.CRM.Common.Constants;
@@ -17,6 +18,8 @@ using Microsoft.PowerPlatform.Dataverse.Client;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Query;
 
+using QueryExpression = Microsoft.Xrm.Sdk.Query.QueryExpression;
+
 namespace Kentico.Xperience.CRM.Dynamics.Synchronization;
 
 internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegrationService
@@ -32,7 +35,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
     private readonly IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters;
     private readonly IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters;
     private readonly IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters;
-    private readonly IContactInfoProvider contactInfoProvider;
+    private readonly IInfoProvider<ContactInfo> contactInfoProvider;
 
     public DynamicsContactsIntegrationService(DynamicsContactMappingConfiguration contactMapping,
         IContactsIntegrationValidationService validationService,
@@ -45,7 +48,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
         IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters,
         IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters,
         IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters,
-        IContactInfoProvider contactInfoProvider)
+        IInfoProvider<ContactInfo> contactInfoProvider)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
