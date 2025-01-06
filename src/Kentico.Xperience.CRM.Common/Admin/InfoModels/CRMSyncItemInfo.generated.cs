@@ -1,10 +1,9 @@
-using System;
 using System.Data;
-using System.Runtime.Serialization;
 
 using CMS;
 using CMS.DataEngine;
 using CMS.Helpers;
+
 using Kentico.Xperience.CRM.Common;
 
 [assembly: RegisterObjectType(typeof(CRMSyncItemInfo), CRMSyncItemInfo.OBJECT_TYPE)]
@@ -125,18 +124,6 @@ namespace Kentico.Xperience.CRM.Common
         {
             Provider.Set(this);
         }
-
-
-        /// <summary>
-        /// Constructor for de-serialization.
-        /// </summary>
-        /// <param name="info">Serialization info.</param>
-        /// <param name="context">Streaming context.</param>
-        protected CRMSyncItemInfo(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
-
 
         /// <summary>
         /// Creates an empty instance of the <see cref="CRMSyncItemInfo"/> class.

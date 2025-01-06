@@ -1,10 +1,9 @@
-using System;
 using System.Data;
-using System.Runtime.Serialization;
 
 using CMS;
 using CMS.DataEngine;
 using CMS.Helpers;
+
 using Kentico.Xperience.CRM.Common;
 
 [assembly: RegisterObjectType(typeof(ContactsLastSyncInfo), ContactsLastSyncInfo.OBJECT_TYPE)]
@@ -80,17 +79,6 @@ namespace Kentico.Xperience.CRM.Common
         protected override void SetObject()
         {
             Provider.Set(this);
-        }
-
-
-        /// <summary>
-        /// Constructor for de-serialization.
-        /// </summary>
-        /// <param name="info">Serialization info.</param>
-        /// <param name="context">Streaming context.</param>
-        protected ContactsLastSyncInfo(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
         }
 
 

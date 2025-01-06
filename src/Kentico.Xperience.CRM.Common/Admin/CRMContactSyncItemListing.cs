@@ -11,7 +11,7 @@ using Kentico.Xperience.CRM.Common.Admin;
     name: "CRM contacts sync",
     templateName: TemplateNames.LISTING,
     order: 1000,
-    icon: Icons.IntegrationScheme)]
+    Icon = Icons.IntegrationScheme)]
 
 namespace Kentico.Xperience.CRM.Common.Admin;
 

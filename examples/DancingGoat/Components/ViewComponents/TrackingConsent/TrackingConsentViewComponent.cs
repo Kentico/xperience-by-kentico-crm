@@ -1,4 +1,5 @@
 ﻿using CMS.ContactManagement;
+using CMS.DataEngine;
 using CMS.DataProtection;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -15,7 +16,7 @@ namespace DancingGoat.ViewComponents
 {
     public class TrackingConsentViewComponent : ViewComponent
     {
-        private readonly IConsentInfoProvider consentInfoProvider;
+        private readonly IInfoProvider<ConsentInfo> consentInfoProvider;
         private readonly IConsentAgreementService consentAgreementService;
         private readonly IPreferredLanguageRetriever currentLanguageRetriever;
         private readonly IWebPageDataContextRetriever webPageDataContextRetriever;
@@ -24,7 +25,7 @@ namespace DancingGoat.ViewComponents
 
 
         public TrackingConsentViewComponent(
-            IConsentInfoProvider consentInfoProvider,
+            IInfoProvider<ConsentInfo> consentInfoProvider,
             IConsentAgreementService consentAgreementService,
             IPreferredLanguageRetriever currentLanguageRetriever,
             IWebPageDataContextRetriever webPageDataContextRetriever,

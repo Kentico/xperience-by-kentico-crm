@@ -18,7 +18,7 @@
     "DancingGoat": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:31742",
+      "applicationUrl": "https://localhost:31743",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

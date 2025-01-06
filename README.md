@@ -27,10 +27,11 @@ The versions of this library are supported by the following versions of Xperienc
 |-------------------|-----------------|
 | >= 28.0.0         | >= 1.0.0        |
 | >= 28.3.1         | >= 2.0.0        |
+| >= 30.0.0         | >= 3.0.0        |
 
 ### Dependencies
 
-- [ASP.NET Core 6.0](https://dotnet.microsoft.com/en-us/download)
+- [ASP.NET Core 8.0](https://dotnet.microsoft.com/en-us/download)
 - [Xperience by Kentico](https://docs.xperience.io/xp/changelog)
 
 ## Package Installation

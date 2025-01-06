@@ -4,6 +4,7 @@
 		<Description>Shared functionality for all Xperience by Kentico CRM platform integrations</Description>
 		<PackageId>Kentico.Xperience.CRM.Common</PackageId>
 		<RootNamespace>Kentico.Xperience.CRM.Common</RootNamespace>
+		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
 
 	<ItemGroup>

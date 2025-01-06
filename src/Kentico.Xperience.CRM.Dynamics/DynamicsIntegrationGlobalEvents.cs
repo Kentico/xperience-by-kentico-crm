@@ -57,12 +57,12 @@ internal class DynamicsIntegrationGlobalEvents : Module
         installer?.Install(CRMType.Dynamics);
     }
 
-    private void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
+    private static void SynchronizeBizFormLead(object? sender, BizFormItemEventArgs e)
     {
         DynamicsSyncQueueWorker.Current.Enqueue(e.Item);
     }
 
-    private void ContactSync(object? sender, ObjectEventArgs args)
+    private static void ContactSync(object? sender, ObjectEventArgs args)
     {
         if (args.Object is not ContactInfo contactInfo ||
             ValidationHelper.GetBoolean(RequestStockHelper.GetItem("SuppressEvents"), false) ||
