@@ -11,7 +11,7 @@
 
 ## Description
 
-Xperience by Kentico CRM integration Starter kit for general CRM integrations. Plus plug-and-play packages for Microsoft Dynamics Sales and Salesforce Sales Cloud. This integration enables sending form submissions from Xperience by Kentico to a CRM as leads and checking synchronizatino status in the admin UI.
+Xperience by Kentico CRM integration Starter kit for general CRM integrations. Plus plug-and-play packages for Microsoft Dynamics Sales and Salesforce Sales Cloud. This integration enables sending form submissions from Xperience by Kentico to a CRM as leads and checking synchronization status in the admin UI.
 
 ## Screenshots
 
@@ -74,7 +74,7 @@ Configure mapping for each form between Kentico Form fields and Dynamics Lead en
 
 #### Dynamics Sales
 
-Added form with auto mapping based on Form field mapping to Contacts atttibutes. Uses CMS settings:
+Added form with auto mapping based on Form field mapping to Contacts attributes. Uses CMS settings:
 
 ```csharp
  // Program.cs
@@ -116,7 +116,7 @@ Use this option when you need complex logic and need to use another service via 
 
 #### Salesforce
 
-Added form with auto mapping based on Form field mapping to Contacts atttibutes. Uses CMS settings:
+Added form with auto mapping based on Form field mapping to Contacts attributes. Uses CMS settings:
 
 ```csharp
  // Program.cs
