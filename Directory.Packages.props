@@ -6,19 +6,19 @@
     <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Kentico.Xperience.Admin" Version="30.0.0" />
-    <PackageVersion Include="Kentico.Xperience.WebApp" Version="30.0.0" />
-    <PackageVersion Include="kentico.xperience.azurestorage" Version="30.0.0" />
-    <PackageVersion Include="kentico.xperience.imageprocessing" Version="30.0.0" />
-    <PackageVersion Include="Kentico.Xperience.Core" Version="30.0.0" />
-    <PackageVersion Include="SonarAnalyzer.CSharp" Version="9.32.0.97167" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageVersion Include="NUnit" Version="4.2.2" />
-    <PackageVersion Include="NUnit3TestAdapter" Version="4.6.0" />
-    <PackageVersion Include="NUnit.Analyzers" Version="4.4.0" />
-    <PackageVersion Include="coverlet.collector" Version="6.0.2" />
-    <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.2.2" />
-    <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.2" />
+    <PackageVersion Include="Kentico.Xperience.Admin" Version="30.6.0" />
+    <PackageVersion Include="Kentico.Xperience.WebApp" Version="30.6.0" />
+    <PackageVersion Include="kentico.xperience.azurestorage" Version="30.6.0" />
+    <PackageVersion Include="kentico.xperience.imageprocessing" Version="30.6.0" />
+    <PackageVersion Include="Kentico.Xperience.Core" Version="30.6.0" />
+    <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.12.0.118525" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="NUnit" Version="4.3.2" />
+    <PackageVersion Include="NUnit3TestAdapter" Version="5.0.0" />
+    <PackageVersion Include="NUnit.Analyzers" Version="4.9.2" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.2.9" />
+    <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="3.2.0" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
     <PackageVersion Include="NSwag.ApiDescription.Client" Version="[13.20.0, 14.0.0)" />
   </ItemGroup>

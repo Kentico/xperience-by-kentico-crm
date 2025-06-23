@@ -1,6 +1,8 @@
 ﻿using DancingGoat.Widgets;
 
-using Kentico.PageBuilder.Web.Mvc;
+using Kentico.Builder.Web.Mvc;
+
+using WidgetDefinition = Kentico.PageBuilder.Web.Mvc.WidgetDefinition;
 
 namespace DancingGoat.Sections
 {
