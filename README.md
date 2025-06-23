@@ -28,6 +28,7 @@ The versions of this library are supported by the following versions of Xperienc
 | >= 28.0.0         | >= 1.0.0        |
 | >= 28.3.1         | >= 2.0.0        |
 | >= 30.0.0         | >= 3.0.0        |
+| >= 30.6.0         | >= 3.1.0        |
 
 ### Dependencies
 
