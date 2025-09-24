@@ -3,38 +3,19 @@ name: "$(Build.DefinitionName) #$(Build.BuildId)"
 trigger: none # Manual Publish
 pr: none # GitHub Actions handle PRs
 
-parameters:
-  - name: AgentPoolName
-    displayName: Agent pool name
-    type: string
-    default: ADO Windows Server 2022
-
-  - name: AgentName
-    displayName: Agent name - single char for any
-    type: string
-    default: " "
+pool:
+  vmImage: windows-latest
 
 resources:
   repositories:
     - repository: self
       type: git
-
-  containers:
-    - container: Windows
-      image: mcr.microsoft.com/dotnet/sdk:8.0-windowsservercore-ltsc2022
-
+      
 stages:
   - stage: Build
     jobs:
       - job: Build
         displayName: Build, Sign, and Pack
-
-        pool:
-          name: ${{ parameters.AgentPoolName }}
-          ${{ if ne(length(parameters.AgentName), 1) }}:
-            demands:
-              - Agent.Name -equals ${{ parameters.AgentName }}
-        container: Windows
 
         variables:
           - group: Code Sign KV Auth
@@ -100,16 +81,7 @@ stages:
           - deployment: PublishNuGetPackages
             displayName: Publish NuGet packages
 
-            pool:
-              name: ${{ parameters.AgentPoolName }}
-              ${{ if ne(length(parameters.AgentName), 1) }}:
-                demands:
-                  - Agent.Name -equals ${{ parameters.AgentName }}
-            container: Windows
-
             environment: integrations-release-nuget
-            workspace:
-              clean: all
             strategy:
               runOnce:
                 deploy:
