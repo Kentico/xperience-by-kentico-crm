@@ -84,4 +84,3 @@ internal class DynamicsContactToKenticoContactCustomConverter : ICRMTypeConverte
         return Task.CompletedTask;
     }
 }
-
