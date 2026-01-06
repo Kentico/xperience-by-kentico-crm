@@ -199,7 +199,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
 
                 if (contactInfo.HasChanged)
                 {
-                    contactInfoProvider.Set(contactInfo);
+                    await contactInfoProvider.SetAsync(contactInfo);
                     await syncItemService.LogContactSyncItem(contactInfo, lead.Id.ToString(), CRMType.Dynamics);
                 }
             }
@@ -240,7 +240,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
 
                 if (contactInfo.HasChanged)
                 {
-                    contactInfoProvider.Set(contactInfo);
+                    await contactInfoProvider.SetAsync(contactInfo);
                     await syncItemService.LogContactSyncItem(contactInfo, contact.Id.ToString(), CRMType.Dynamics);
                 }
 
