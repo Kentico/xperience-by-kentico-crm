@@ -212,7 +212,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
                 if (contactInfo.HasChanged)
                 {
-                    contactInfoProvider.Set(contactInfo);
+                    await contactInfoProvider.SetAsync(contactInfo);
                     await syncItemService.LogContactSyncItem(contactInfo, lead.Id!, CRMType.Salesforce);
                 }
             }
@@ -253,7 +253,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
                 if (contactInfo.HasChanged)
                 {
-                    contactInfoProvider.Set(contactInfo);
+                    await contactInfoProvider.SetAsync(contactInfo);
                     await syncItemService.LogContactSyncItem(contactInfo, contact.Id!, CRMType.Salesforce);
                 }
             }
