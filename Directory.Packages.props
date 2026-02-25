@@ -18,7 +18,7 @@
     <PackageVersion Include="NUnit.Analyzers" Version="4.4.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="Microsoft.PowerPlatform.Dataverse.Client" Version="1.2.2" />
-    <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="2.1.2" />
+    <PackageVersion Include="Duende.AccessTokenManagement.OpenIdConnect" Version="3.1.0" />
     <PackageVersion Include="IdentityModel" Version="7.0.0" />
     <PackageVersion Include="NSwag.ApiDescription.Client" Version="[13.20.0, 14.0.0)" />
   </ItemGroup>
