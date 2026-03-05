@@ -1,4 +1,6 @@
-﻿using DancingGoat.Models;
+﻿using System.Linq;
+
+using DancingGoat.Models;
 
 namespace DancingGoat.Widgets
 {
@@ -30,7 +32,7 @@ namespace DancingGoat.Widgets
         /// </summary>
         /// <param name="product">Product.</param>
         /// <returns>Hydrated ViewModel.</returns>
-        public static ProductCardViewModel GetViewModel(Coffee product)
+        public static ProductCardViewModel GetViewModel(IProductFields product)
         {
             if (product == null)
             {
@@ -39,9 +41,9 @@ namespace DancingGoat.Widgets
 
             return new ProductCardViewModel
             {
-                Heading = product.CoffeeName,
-                ImagePath = (product.CoffeeImage.FirstOrDefault())?.ImageFile.Url,
-                Text = product.CoffeeShortDescription
+                Heading = product.ProductFieldName,
+                ImagePath = product.ProductFieldImage.FirstOrDefault()?.ImageFile.Url,
+                Text = product.ProductFieldDescription
             };
         }
     }

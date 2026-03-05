@@ -18,7 +18,8 @@ namespace DancingGoat.Models
 	/// <summary>
 	/// Represents a content item of type <see cref="Contact"/>.
 	/// </summary>
-	public partial class Contact
+	[RegisterContentTypeMapping(CONTENT_TYPE_NAME)]
+	public partial class Contact : IContentItemFieldsSource
 	{
 		/// <summary>
 		/// Code name of the content type.
@@ -29,6 +30,7 @@ namespace DancingGoat.Models
 		/// <summary>
 		/// Represents system properties for a content item.
 		/// </summary>
+		[SystemField]
 		public ContentItemFields SystemFields { get; set; }
 
 
@@ -54,6 +56,12 @@ namespace DancingGoat.Models
 		/// ContactCountry.
 		/// </summary>
 		public string ContactCountry { get; set; }
+
+
+		/// <summary>
+		/// ContactUSState.
+		/// </summary>
+		public string ContactUSState { get; set; }
 
 
 		/// <summary>

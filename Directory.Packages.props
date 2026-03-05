@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageVersion Include="Kentico.Xperience.Admin" Version="31.0.0" />
     <PackageVersion Include="Kentico.Xperience.WebApp" Version="31.0.0" />
+    <PackageVersion Include="Kentico.Xperience.Mjml" Version="31.0.0" />
     <PackageVersion Include="kentico.xperience.azurestorage" Version="31.0.0" />
     <PackageVersion Include="kentico.xperience.imageprocessing" Version="31.0.0" />
     <PackageVersion Include="Kentico.Xperience.Core" Version="31.0.0" />

@@ -1,4 +1,6 @@
-﻿using Kentico.Content.Web.Mvc.Routing;
+﻿using System.Threading.Tasks;
+
+using Kentico.Content.Web.Mvc.Routing;
 
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +22,7 @@ namespace DancingGoat.ViewComponents
         {
             var languageName = currentLanguageRetriever.Get();
 
-            var navigationViewModels = await navigationService.GetNavigationItemViewModels(languageName, HttpContext.RequestAborted);
+            var navigationViewModels = await navigationService.GetSiteNavigationItemViewModels(languageName, HttpContext.RequestAborted);
 
             return View($"~/Components/ViewComponents/NavigationMenu/Default.cshtml", navigationViewModels);
         }
