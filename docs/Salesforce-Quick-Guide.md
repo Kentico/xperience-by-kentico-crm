@@ -37,3 +37,7 @@ Navigate to  *Apps* -> *External Client App Manager*, locate your app and open i
 You will be prompted to verify your email, and then you have your Key (Client ID) and Secret (Client secret)! For the URL use the current domain name from your browser.
 
 ![](../images/screenshots/secrets.png)
+
+## Setup XbyK admin
+
+![](../images/screenshots/xbyk_settings.png)
