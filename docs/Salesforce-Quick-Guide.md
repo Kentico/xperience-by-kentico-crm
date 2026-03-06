@@ -6,11 +6,11 @@ This guide lets you quickly set up Salesforce App to ingest and send data from X
 
 Go to [https://developer.salesforce.com/signup](https://developer.salesforce.com/signup) and sign up for a free developer account. It is possible that you already have some account assigned to your work email so feel free to specify and made up Username to start from a scratch.
 
-## Creating the Connected App
+## Creating the External Client App
 
 Log in, you should land on the Setup screen (or use the cogwheel button in the top right menu).
 
-In the left menu navigate to the *Apps* -> *App Manager* and create a *New Connected App*.
+In the left menu navigate to the *Apps* -> *App Manager* and create a *New External Client App*.
 
 ![Create New Connected App](../images/screenshots/create_app.png)
 
@@ -38,7 +38,7 @@ You must set a user on behalf of whom the app will be running. So far there is p
 
 ## Getting the secret
 
-Now navigate back to  *Apps* -> *App Manager*, locate your app and on the right hidden behind the carret hit *View*.
+Navigate to  *Apps* -> *External Client App Manager*, locate your app and open its *Settings* tab and expand *OAuth Settings*.
 
 ![](../images/screenshots/view_app.png)
 
@@ -47,6 +47,6 @@ On the detail of the app, click *Manage* button
 
 ![](../images/screenshots/manage_app.png)
 
-You will be prompted to verify your email, and then you have your Key and Secret! For the URL use the current domain name from your browser.
+You will be prompted to verify your email, and then you have your Key (Client ID) and Secret (Client secret)! For the URL use the current domain name from your browser.
 
 ![](../images/screenshots/secrets.png)
