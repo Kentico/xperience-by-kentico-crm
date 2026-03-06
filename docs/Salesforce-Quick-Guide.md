@@ -20,32 +20,19 @@ Set up your app following the images below
 
 ![Create New Connected App](../images/screenshots/new_app_2.png)
 
-![Create New Connected App](../images/screenshots/new_app_3.png)
-
-Now hit save.
-
-## Setting up permissions
-
-Now navigate to the *Apps* -> *Connected App* -> *Manage Connected Apps* and hit *Edit* on your app.
-
-![](../images/screenshots/connected_1.png)
-
 You might want to Relax IP restrictions at the top of the page.
 
 You must set a user on behalf of whom the app will be running. So far there is probably only you, a global admin. This is definitely not a good practice, but for our demo it will suffice.
 
-![](../images/screenshots/run_as.png)
+![Create New Connected App](../images/screenshots/new_app_3.png)
+
+Now hit save.
 
 ## Getting the secret
 
 Navigate to  *Apps* -> *External Client App Manager*, locate your app and open its *Settings* tab and expand *OAuth Settings*.
 
 ![](../images/screenshots/view_app.png)
-
-
-On the detail of the app, click *Manage* button
-
-![](../images/screenshots/manage_app.png)
 
 You will be prompted to verify your email, and then you have your Key (Client ID) and Secret (Client secret)! For the URL use the current domain name from your browser.
 
