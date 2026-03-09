@@ -1,4 +1,6 @@
-﻿namespace DancingGoat.Models
+﻿using System.Linq;
+
+namespace DancingGoat.Models
 {
     public record ReferenceViewModel(string Name, string Description, string Text, string ImageUrl, string ImageShortDescription)
     {

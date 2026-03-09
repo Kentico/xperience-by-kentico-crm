@@ -1,4 +1,8 @@
-﻿using CMS.ContentEngine;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CMS.ContentEngine;
 using CMS.DataEngine;
 using CMS.Websites;
 using CMS.Websites.Routing;
@@ -6,18 +10,15 @@ using CMS.Websites.Routing;
 namespace DancingGoat
 {
     /// <summary>
-    ///
+    /// Retrieves current website channel primary language.
     /// </summary>
-    public class CurrentWebsiteChannelPrimaryLanguageRetriever : ICurrentWebsiteChannelPrimaryLanguageRetriever
+    public sealed class CurrentWebsiteChannelPrimaryLanguageRetriever
     {
         private readonly IWebsiteChannelContext websiteChannelContext;
         private readonly IInfoProvider<WebsiteChannelInfo> websiteChannelInfoProvider;
         private readonly IInfoProvider<ContentLanguageInfo> contentLanguageInfoProvider;
 
 
-        /// <summary>
-        /// Initializes an instance of the <see cref="CurrentWebsiteChannelPrimaryLanguageRetriever"/> class.
-        /// </summary>
         public CurrentWebsiteChannelPrimaryLanguageRetriever(
             IWebsiteChannelContext websiteChannelContext,
             IInfoProvider<WebsiteChannelInfo> websiteChannelInfoProvider,
@@ -28,7 +29,11 @@ namespace DancingGoat
             this.contentLanguageInfoProvider = contentLanguageInfoProvider;
         }
 
-        /// <inheritdoc/>
+
+        /// <summary>
+        /// Returns language code of the current website channel primary language.
+        /// </summary>
+        /// <param name="cancellationToken">Cancellation instruction.</param>
         public async Task<string> Get(CancellationToken cancellationToken = default)
         {
             var websiteChannel = await websiteChannelInfoProvider.GetAsync(websiteChannelContext.WebsiteChannelID, cancellationToken);

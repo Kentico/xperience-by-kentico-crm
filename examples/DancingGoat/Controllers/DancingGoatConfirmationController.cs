@@ -1,4 +1,6 @@
-﻿using DancingGoat;
+﻿using System.Threading.Tasks;
+
+using DancingGoat;
 using DancingGoat.Controllers;
 using DancingGoat.Models;
 
@@ -13,24 +15,19 @@ namespace DancingGoat.Controllers
 {
     public class DancingGoatConfirmationController : Controller
     {
-        private readonly ConfirmationPageRepository confirmationPageRepository;
-        private readonly IWebPageDataContextRetriever webPageDataContextRetriever;
-        private readonly IPreferredLanguageRetriever currentLanguageRetriever;
+        private readonly IContentRetriever contentRetriever;
 
-        public DancingGoatConfirmationController(ConfirmationPageRepository confirmationPageRepository, IWebPageDataContextRetriever webPageDataContextRetriever, IPreferredLanguageRetriever currentLanguageRetriever)
+        public DancingGoatConfirmationController(IContentRetriever contentRetriever)
         {
-            this.confirmationPageRepository = confirmationPageRepository;
-            this.webPageDataContextRetriever = webPageDataContextRetriever;
-            this.currentLanguageRetriever = currentLanguageRetriever;
+            this.contentRetriever = contentRetriever;
         }
-
 
         public async Task<IActionResult> Index()
         {
-            var webPageItemId = webPageDataContextRetriever.Retrieve().WebPage.WebPageItemID;
-            var languageName = currentLanguageRetriever.Get();
-
-            var confirmationPage = await confirmationPageRepository.GetConfirmationPage(webPageItemId, languageName, cancellationToken: HttpContext.RequestAborted);
+            var confirmationPage = await contentRetriever.RetrieveCurrentPage<ConfirmationPage>(
+                new RetrieveCurrentPageParameters { IncludeSecuredItems = true },
+                HttpContext.RequestAborted
+            );
 
             return View(ConfirmationPageViewModel.GetViewModel(confirmationPage));
         }

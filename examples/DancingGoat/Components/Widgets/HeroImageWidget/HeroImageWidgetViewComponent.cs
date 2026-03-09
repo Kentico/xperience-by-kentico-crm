@@ -1,12 +1,16 @@
+﻿using System.Linq;
+using System.Threading.Tasks;
+
 using DancingGoat.Models;
 using DancingGoat.Widgets;
 
+using Kentico.Content.Web.Mvc;
 using Kentico.PageBuilder.Web.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 
-[assembly: RegisterWidget(HeroImageWidgetViewComponent.IDENTIFIER, typeof(HeroImageWidgetViewComponent), "Hero image", typeof(HeroImageWidgetProperties), Description = "Displays an image, text, and a CTA button.", IconClass = "icon-badge")]
+[assembly: RegisterWidget(HeroImageWidgetViewComponent.IDENTIFIER, typeof(HeroImageWidgetViewComponent), "{$dancinggoat.heroimagewidget.title$}", typeof(HeroImageWidgetProperties), Description = "{$dancinggoat.heroimagewidget.description$}", IconClass = "icon-badge")]
 
 namespace DancingGoat.Widgets
 {
@@ -20,16 +24,16 @@ namespace DancingGoat.Widgets
         /// </summary>
         public const string IDENTIFIER = "DancingGoat.LandingPage.HeroImage";
 
-        private readonly ImageRepository imageRepository;
+        private readonly IContentRetriever contentRetriever;
 
 
         /// <summary>
         /// Creates an instance of <see cref="HeroImageWidgetViewComponent"/> class.
         /// </summary>
-        /// <param name="imageRepository">Repository for images.</param>
-        public HeroImageWidgetViewComponent(ImageRepository imageRepository)
+        /// <param name="contentRetriever">Content retriever.</param>
+        public HeroImageWidgetViewComponent(IContentRetriever contentRetriever)
         {
-            this.imageRepository = imageRepository;
+            this.contentRetriever = contentRetriever;
         }
 
 
@@ -57,7 +61,12 @@ namespace DancingGoat.Widgets
                 return null;
             }
 
-            return await imageRepository.GetImage(image.Identifier);
+            var result = await contentRetriever.RetrieveContentByGuids<Image>(
+                [image.Identifier],
+                HttpContext.RequestAborted
+            );
+
+            return result.FirstOrDefault();
         }
     }
 }

@@ -1,12 +1,20 @@
-﻿using DancingGoat.Models;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
+using CMS.ContentEngine;
+
+using DancingGoat.Models;
 using DancingGoat.Widgets;
 
+using Kentico.Content.Web.Mvc;
+using Kentico.Content.Web.Mvc.Routing;
 using Kentico.PageBuilder.Web.Mvc;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 
-[assembly: RegisterWidget(ProductCardWidgetViewComponent.IDENTIFIER, typeof(ProductCardWidgetViewComponent), "Product cards", typeof(ProductCardProperties), Description = "Displays products.", IconClass = "icon-box")]
+[assembly: RegisterWidget(ProductCardWidgetViewComponent.IDENTIFIER, typeof(ProductCardWidgetViewComponent), "{$dancinggoat.productcardwidget.title$}", typeof(ProductCardProperties), Description = "{$dancinggoat.productcardwidget.description$}", IconClass = "icon-box")]
 
 namespace DancingGoat.Widgets
 {
@@ -21,25 +29,41 @@ namespace DancingGoat.Widgets
         public const string IDENTIFIER = "DancingGoat.LandingPage.ProductCardWidget";
 
 
-        private readonly CoffeeRepository repository;
+        private readonly IContentRetriever contentRetriever;
+        private readonly IPreferredLanguageRetriever currentLanguageRetriever;
 
 
         /// <summary>
         /// Creates an instance of <see cref="ProductCardWidgetViewComponent"/> class.
         /// </summary>
-        /// <param name="repository">Repository for retrieving products.</param>
-        public ProductCardWidgetViewComponent(CoffeeRepository repository)
+        /// <param name="contentRetriever">Content retriever.</param>
+        /// <param name="currentLanguageRetriever">Retrieves preferred language name for the current request. Takes language fallback into account.</param>
+        public ProductCardWidgetViewComponent(IContentRetriever contentRetriever, IPreferredLanguageRetriever currentLanguageRetriever)
         {
-            this.repository = repository;
+            this.contentRetriever = contentRetriever;
+            this.currentLanguageRetriever = currentLanguageRetriever;
         }
 
 
-        public async Task<ViewViewComponentResult> InvokeAsync(ProductCardProperties properties)
+        public async Task<ViewViewComponentResult> InvokeAsync(ProductCardProperties properties, CancellationToken cancellationToken)
         {
+            var languageName = currentLanguageRetriever.Get();
             var selectedProductGuids = properties.SelectedProducts.Select(i => i.Identifier).ToList();
-            IEnumerable<Coffee> products = (await repository.GetCoffees(selectedProductGuids))
-                                                     .OrderBy(p => selectedProductGuids.IndexOf(p.SystemFields.ContentItemGUID));
-            var model = ProductCardListViewModel.GetViewModel(products);
+
+            var products = await contentRetriever.RetrieveContentOfReusableSchemas<IProductFields>(
+                [IProductFields.REUSABLE_FIELD_SCHEMA_NAME],
+                new RetrieveContentOfReusableSchemasParameters
+                {
+                    LinkedItemsMaxLevel = 1,
+                    WorkspaceNames = [DancingGoatConstants.COMMERCE_WORKSPACE_NAME]
+                },
+                query => query.Where(where => where.WhereIn(nameof(IContentQueryDataContainer.ContentItemGUID), selectedProductGuids)),
+                new RetrievalCacheSettings($"WhereIn_{nameof(IContentQueryDataContainer.ContentItemGUID)}_{string.Join("_", selectedProductGuids)}"),
+                cancellationToken
+            );
+
+            var orderedProducts = products.OrderBy(p => selectedProductGuids.IndexOf(((IContentItemFieldsSource)p).SystemFields.ContentItemGUID));
+            var model = ProductCardListViewModel.GetViewModel(orderedProducts);
 
             return View("~/Components/Widgets/ProductCardWidget/_ProductCardWidget.cshtml", model);
         }

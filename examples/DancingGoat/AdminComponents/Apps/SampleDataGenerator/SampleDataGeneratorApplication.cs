@@ -1,4 +1,8 @@
-﻿using CMS.Base;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+using CMS.Base;
 using CMS.ContactManagement;
 using CMS.Core;
 using CMS.DataEngine;
@@ -76,7 +80,7 @@ namespace DancingGoat.AdminComponents
         {
             PageConfiguration.CardGroups.AddCardGroup().AddCard(GetGdprCard());
 
-            PageConfiguration.Caption = "Generator";
+            PageConfiguration.Caption = "Sample data generator";
 
             return base.ConfigurePage();
         }
@@ -137,7 +141,8 @@ namespace DancingGoat.AdminComponents
                     new Kentico.Xperience.Admin.Base.Action(ActionType.Command)
                     {
                         Label = "Generate",
-                        Parameter = nameof(GenerateGdprSampleData)
+                        Parameter = nameof(GenerateGdprSampleData),
+                        ButtonColor = ButtonColor.Secondary
                     }
                 },
                 Components = new List<IOverviewCardComponent>()

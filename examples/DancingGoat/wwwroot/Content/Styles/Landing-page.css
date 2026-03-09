@@ -4336,6 +4336,9 @@ p {
 .icon-file-sln:before {
   content: "\e6ff";
 }
+.icon-file-svg:before {
+  content: "\e633";
+}
 .icon-file-swf:before {
   content: "\e636";
 }
@@ -4356,6 +4359,9 @@ p {
 }
 .icon-file-webm:before {
   content: "\e636";
+}
+.icon-file-webp:before {
+  content: "\e633";
 }
 .icon-file-wma:before {
   content: "\e71c";
@@ -4486,6 +4492,17 @@ p {
 }
 .row.section-cappuccino .image-uploader-editor .uploader .dz-message {
   color: #ffffff;
+}
+/*# Consent #*/
+.consent-item:not(:first-of-type) {
+  border-top: 1px solid #e7e7e7;
+}
+.consent-item .row {
+  margin: 0 32px 0 32px;
+  padding: 8px 0 0 0;
+}
+.consent-item .consent-heading {
+  margin: 0;
 }
 .cookie-consent {
   font-size: 16px;

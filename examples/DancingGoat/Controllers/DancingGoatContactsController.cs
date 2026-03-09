@@ -1,7 +1,11 @@
-﻿using DancingGoat;
+﻿using System.Linq;
+using System.Threading.Tasks;
+
+using DancingGoat;
 using DancingGoat.Controllers;
 using DancingGoat.Models;
 
+using Kentico.Content.Web.Mvc;
 using Kentico.Content.Web.Mvc.Routing;
 
 using Microsoft.AspNetCore.Mvc;
@@ -12,42 +16,35 @@ namespace DancingGoat.Controllers
 {
     public class DancingGoatContactsController : Controller
     {
-        private readonly ContactRepository contactRepository;
-        private readonly CafeRepository cafeRepository;
+        private readonly IContentRetriever contentRetriever;
 
-
-        public DancingGoatContactsController(ContactRepository contactRepository,
-            CafeRepository cafeRepository)
+        public DancingGoatContactsController(IContentRetriever contentRetriever)
         {
-            this.contactRepository = contactRepository;
-            this.cafeRepository = cafeRepository;
+            this.contentRetriever = contentRetriever;
         }
 
-
-        public async Task<ActionResult> Index(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index()
         {
-            var model = await GetIndexViewModel(cancellationToken);
+            var contactsPage = await contentRetriever.RetrieveCurrentPage<ContactsPage>();
+
+            var cafes = await contentRetriever.RetrieveContent<Cafe>();
+
+            var contact = (await contentRetriever.RetrieveContent<Contact>(
+                HttpContext.RequestAborted
+            )).FirstOrDefault();
+
+            var companyCafes = cafes.Where(c => c.CafeIsCompanyCafe).OrderBy(c => c.CafeName).Select(CafeViewModel.GetViewModel).ToList();
+            var partnerCafes = cafes.Where(c => !c.CafeIsCompanyCafe).OrderBy(c => c.CafeCity).Select(CafeViewModel.GetViewModel).ToList();
+
+            var model = new ContactsIndexViewModel
+            {
+                WebPage = contactsPage,
+                CompanyContact = ContactViewModel.GetViewModel(contact),
+                CompanyCafes = companyCafes,
+                PartnerCafes = partnerCafes
+            };
 
             return View(model);
-        }
-
-
-        private async Task<ContactsIndexViewModel> GetIndexViewModel(CancellationToken cancellationToken)
-        {
-            var cafes = await cafeRepository.GetCompanyCafes(4, cancellationToken);
-            var contact = await contactRepository.GetContact(HttpContext.RequestAborted);
-
-            return new ContactsIndexViewModel
-            {
-                CompanyContact = ContactViewModel.GetViewModel(contact),
-                CompanyCafes = GetCompanyCafesModel(cafes)
-            };
-        }
-
-
-        private List<CafeViewModel> GetCompanyCafesModel(IEnumerable<Cafe> cafes)
-        {
-            return cafes.Select(cafe => CafeViewModel.GetViewModel(cafe)).ToList();
         }
     }
 }

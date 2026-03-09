@@ -93,8 +93,9 @@ internal class SalesforceApiService : ISalesforceApiService
     private async Task<string?> GetEntityIdByEmail(string email, string entityName)
     {
         var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
-        using var request = new HttpRequestMessage(HttpMethod.Get,
-                $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+{entityName}+WHERE+Email='{HttpUtility.UrlEncode(email)}'+ORDER+BY+CreatedDate+DESC");
+        string query = $"/services/data/v{apiVersion}/query?q=SELECT+Id+FROM+{entityName}+WHERE+Email='{HttpUtility.UrlEncode(email)}'+ORDER+BY+CreatedDate+DESC";
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, query);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
         var response = await httpClient.SendAsync(request);
 
