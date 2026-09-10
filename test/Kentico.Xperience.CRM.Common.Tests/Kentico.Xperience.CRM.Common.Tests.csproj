@@ -19,4 +19,8 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Kentico.Xperience.CRM.Common\Kentico.Xperience.CRM.Common.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -7,7 +7,9 @@ on:
       - "**.cs"
       - "**.cshtml"
       - "**.tsx"
+      - "**.ts"
       - "**.js"
+      - "**.mjs"
       - "**.json"
       - "**.csproj"
       - "**.props"
@@ -35,6 +37,15 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           global-json-file: global.json
+
+      # The Release build of Kentico.Xperience.CRM.Common runs npm ci and npm run build to produce the
+      # admin UI client bundle, which is then embedded in the assembly.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/Kentico.Xperience.CRM.Common/Client/package-lock.json
 
       - name: Install dependencies
         run: |

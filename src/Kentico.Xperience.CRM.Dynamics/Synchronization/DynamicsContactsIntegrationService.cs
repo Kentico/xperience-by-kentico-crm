@@ -4,6 +4,7 @@ using CMS.ContactManagement;
 using CMS.DataEngine;
 using CMS.Helpers;
 
+using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
@@ -11,6 +12,7 @@ using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
 using Kentico.Xperience.CRM.Dynamics.Dataverse.Entities;
+using Kentico.Xperience.CRM.Dynamics.Metadata;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -36,6 +38,8 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
     private readonly IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters;
     private readonly IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters;
     private readonly IInfoProvider<ContactInfo> contactInfoProvider;
+    private readonly IContactFieldMappingService fieldMappingService;
+    private readonly IDynamicsAttributeValueConverter valueConverter;
 
     public DynamicsContactsIntegrationService(DynamicsContactMappingConfiguration contactMapping,
         IContactsIntegrationValidationService validationService,
@@ -48,7 +52,9 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
         IEnumerable<ICRMTypeConverter<ContactInfo, Contact>> contactContactConverters,
         IEnumerable<ICRMTypeConverter<Lead, ContactInfo>> leadKenticoConverters,
         IEnumerable<ICRMTypeConverter<Contact, ContactInfo>> contactKenticoConverters,
-        IInfoProvider<ContactInfo> contactInfoProvider)
+        IInfoProvider<ContactInfo> contactInfoProvider,
+        IContactFieldMappingService fieldMappingService,
+        IDynamicsAttributeValueConverter valueConverter)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
@@ -62,7 +68,17 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
         this.leadKenticoConverters = leadKenticoConverters;
         this.contactKenticoConverters = contactKenticoConverters;
         this.contactInfoProvider = contactInfoProvider;
+        this.fieldMappingService = fieldMappingService;
+        this.valueConverter = valueConverter;
     }
+
+    /// <summary>
+    /// Returns the field mappings to apply. A mapping configured in the admin UI for this CRM and entity
+    /// type fully replaces <see cref="DynamicsContactMappingConfiguration"/>, which is what was registered
+    /// on startup through <see cref="DynamicsContactMappingBuilder"/>.
+    /// </summary>
+    private IEnumerable<ContactFieldToCRMMapping> GetFieldMappings(string entityType) =>
+        fieldMappingService.GetEffectiveMappings(CRMType.Dynamics, entityType, contactMapping.FieldsMapping);
 
     public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
     {
@@ -79,7 +95,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
 
             if (syncItem is null)
             {
-                await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                await UpdateLeadByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Lead));
             }
             else
             {
@@ -87,11 +103,11 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
                     await GetEntityById<Lead>(Guid.Parse(syncItem.CRMSyncItemCRMID), Lead.EntityLogicalName);
                 if (existingLead is null)
                 {
-                    await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                    await UpdateLeadByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Lead));
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateLeadAsync(existingLead, contactInfo, contactMapping.FieldsMapping);
+                    await UpdateLeadAsync(existingLead, contactInfo, GetFieldMappings(EntityType.Lead));
                 }
                 else
                 {
@@ -131,7 +147,7 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
 
             if (syncItem is null)
             {
-                await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                await UpdateContactByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Contact));
             }
             else
             {
@@ -139,11 +155,11 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
                     await GetEntityById<Contact>(Guid.Parse(syncItem.CRMSyncItemCRMID), Contact.EntityLogicalName);
                 if (existingContact is null)
                 {
-                    await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                    await UpdateContactByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Contact));
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateContactAsync(existingContact, contactInfo, contactMapping.FieldsMapping);
+                    await UpdateContactAsync(existingContact, contactInfo, GetFieldMappings(EntityType.Contact));
                 }
                 else
                 {
@@ -379,7 +395,12 @@ internal class DynamicsContactsIntegrationService : IDynamicsContactsIntegration
 
             if (fieldMapping.CRMFieldMapping is CRMFieldNameMapping m)
             {
-                leadEntity[m.CrmFieldName] = formFieldValue;
+                // Mappings configured in the admin UI produce text, which Dataverse rejects for option
+                // set, money, lookup and other typed attributes, so the value is converted first. Values
+                // that already have the expected type - as those from mappings defined in code do - are
+                // returned unchanged, which keeps the existing behavior intact.
+                leadEntity[m.CrmFieldName] =
+                    await valueConverter.ConvertAsync(leadEntity.LogicalName, m.CrmFieldName, formFieldValue);
             }
             else
             {

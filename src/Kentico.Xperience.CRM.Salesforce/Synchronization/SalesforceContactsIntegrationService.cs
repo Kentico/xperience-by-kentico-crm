@@ -4,12 +4,14 @@ using CMS.ContactManagement;
 using CMS.DataEngine;
 using CMS.Helpers;
 
+using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Converters;
 using Kentico.Xperience.CRM.Common.Mapping;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Synchronization;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
+using Kentico.Xperience.CRM.Salesforce.Metadata;
 
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -32,6 +34,8 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
     private readonly IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters;
     private readonly IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters;
     private readonly IInfoProvider<ContactInfo> contactInfoProvider;
+    private readonly IContactFieldMappingService fieldMappingService;
+    private readonly ISalesforceFieldValueSetter fieldValueSetter;
 
     public SalesforceContactsIntegrationService(
         SalesforceContactMappingConfiguration contactMapping,
@@ -45,7 +49,9 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         IEnumerable<ICRMTypeConverter<ContactInfo, ContactSObject>> contactContactConverters,
         IEnumerable<ICRMTypeConverter<LeadSObject, ContactInfo>> leadKenticoConverters,
         IEnumerable<ICRMTypeConverter<ContactSObject, ContactInfo>> contactKenticoConverters,
-        IInfoProvider<ContactInfo> contactInfoProvider)
+        IInfoProvider<ContactInfo> contactInfoProvider,
+        IContactFieldMappingService fieldMappingService,
+        ISalesforceFieldValueSetter fieldValueSetter)
     {
         this.contactMapping = contactMapping;
         this.validationService = validationService;
@@ -59,7 +65,17 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         this.leadKenticoConverters = leadKenticoConverters;
         this.contactKenticoConverters = contactKenticoConverters;
         this.contactInfoProvider = contactInfoProvider;
+        this.fieldMappingService = fieldMappingService;
+        this.fieldValueSetter = fieldValueSetter;
     }
+
+    /// <summary>
+    /// Returns the field mappings to apply. A mapping configured in the admin UI for this CRM and entity
+    /// type fully replaces <see cref="SalesforceContactMappingConfiguration"/>, which is what was
+    /// registered on startup through <see cref="SalesforceContactMappingBuilder"/>.
+    /// </summary>
+    private IEnumerable<ContactFieldToCRMMapping> GetFieldMappings(string entityType) =>
+        fieldMappingService.GetEffectiveMappings(CRMType.Salesforce, entityType, contactMapping.FieldsMapping);
 
     public async Task SynchronizeContactToLeadsAsync(ContactInfo contactInfo)
     {
@@ -76,7 +92,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
             if (syncItem is null)
             {
-                await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                await UpdateLeadByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Lead));
             }
             else
             {
@@ -92,11 +108,11 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
                 if (existingLead is null)
                 {
-                    await UpdateLeadByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                    await UpdateLeadByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Lead));
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateLeadAsync(existingLead.Id!, contactInfo, contactMapping.FieldsMapping);
+                    await UpdateLeadAsync(existingLead.Id!, contactInfo, GetFieldMappings(EntityType.Lead));
                 }
                 else
                 {
@@ -136,7 +152,7 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
             if (syncItem is null)
             {
-                await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                await UpdateContactByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Contact));
             }
             else
             {
@@ -153,11 +169,11 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
 
                 if (existingContact is null)
                 {
-                    await UpdateContactByEmailOrCreate(contactInfo, contactMapping.FieldsMapping);
+                    await UpdateContactByEmailOrCreate(contactInfo, GetFieldMappings(EntityType.Contact));
                 }
                 else if (!settings.Value.IgnoreExistingRecords)
                 {
-                    await UpdateContactAsync(existingContact.Id!, contactInfo, contactMapping.FieldsMapping);
+                    await UpdateContactAsync(existingContact.Id!, contactInfo, GetFieldMappings(EntityType.Contact));
                 }
                 else
                 {
@@ -412,13 +428,24 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
                 continue;
             }
 
-            _ = fieldMapping.CRMFieldMapping switch
+            if (fieldMapping.CRMFieldMapping is CRMFieldNameMapping nameMapping)
             {
-                CRMFieldNameMapping m => lead.AdditionalProperties[m.CrmFieldName] = formFieldValue,
-                CRMFieldMappingFunction<LeadSObject> m => m.MapCrmField(lead, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
-                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
-            };
+                // Mappings configured in the admin UI only know the field name, so the value is routed to
+                // the generated property when the sObject declares one, and to the extension data
+                // otherwise. Writing a declared field through the property also stops it from being sent
+                // twice, which would happen if it went into the extension data as well.
+                await fieldValueSetter.SetFieldAsync(lead, lead.AdditionalProperties, EntityType.Lead,
+                    nameMapping.CrmFieldName, formFieldValue);
+            }
+            else if (fieldMapping.CRMFieldMapping is CRMFieldMappingFunction<LeadSObject> functionMapping)
+            {
+                functionMapping.MapCrmField(lead, formFieldValue);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(fieldMappings),
+                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping");
+            }
         }
     }
 
@@ -433,13 +460,20 @@ internal class SalesforceContactsIntegrationService : ISalesforceContactsIntegra
         foreach (var fieldMapping in fieldMappings)
         {
             var formFieldValue = fieldMapping.ContactFieldMapping.MapContactField(contactInfo);
-            _ = fieldMapping.CRMFieldMapping switch
+            if (fieldMapping.CRMFieldMapping is CRMFieldNameMapping nameMapping)
             {
-                CRMFieldNameMapping m => contact.AdditionalProperties[m.CrmFieldName] = formFieldValue,
-                CRMFieldMappingFunction<ContactSObject> m => m.MapCrmField(contact, formFieldValue),
-                _ => throw new ArgumentOutOfRangeException(nameof(fieldMappings),
-                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping")
-            };
+                await fieldValueSetter.SetFieldAsync(contact, contact.AdditionalProperties,
+                    EntityType.Contact, nameMapping.CrmFieldName, formFieldValue);
+            }
+            else if (fieldMapping.CRMFieldMapping is CRMFieldMappingFunction<ContactSObject> functionMapping)
+            {
+                functionMapping.MapCrmField(contact, formFieldValue);
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(fieldMappings),
+                    fieldMapping.CRMFieldMapping.GetType(), "Unsupported mapping");
+            }
         }
     }
 }

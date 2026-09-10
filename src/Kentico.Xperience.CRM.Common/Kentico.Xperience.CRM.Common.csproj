@@ -7,10 +7,37 @@
 		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<!-- Must match ORGANIZATION_NAME in CRMAdminModule and orgName in Client/webpack.config.js -->
+		<AdminOrgName>kentico</AdminOrgName>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<AssemblyAttribute Include="CMS.AssemblyDiscoverableAttribute">
 		</AssemblyAttribute>
+
+		<Compile Remove="Client\node_modules\**" />
+		<EmbeddedResource Remove="Client\node_modules\**" />
+		<None Remove="Client\node_modules\**" />
+
+		<!-- Requires that npm run build or npm run build:dev was executed _before_ the .NET build -->
+		<AdminClientPath Include="Client\dist\**" Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+			<ProjectName>xperience-integrations-crm</ProjectName>
+		</AdminClientPath>
 	</ItemGroup>
+
+	<Target Name="NpmInstall" BeforeTargets="NpmBuildClient" Condition=" '$(Configuration)|$(Platform)' != 'Debug|AnyCPU' ">
+		<Exec Command="npm ci --no-audit --no-fund" WorkingDirectory="$(MSBuildProjectDirectory)\Client" />
+	</Target>
+	<Target Name="NpmBuildClient" BeforeTargets="BeforeBuild" Condition=" '$(Configuration)|$(Platform)' != 'Debug|AnyCPU' ">
+		<Exec Command="npm run build" WorkingDirectory="$(MSBuildProjectDirectory)\Client" />
+
+		<ItemGroup>
+			<AdminClientPath Include="Client\dist\**">
+				<ProjectName>xperience-integrations-crm</ProjectName>
+			</AdminClientPath>
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="Kentico.Xperience.Admin" />
@@ -18,4 +45,3 @@
 	</ItemGroup>
 
 </Project>
- 

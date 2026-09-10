@@ -186,6 +186,16 @@ You can choose between Lead and Contact entities in CRM where to sync data (but 
  builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMType.Contact);
 ```
 
+### Visual contact field mapping
+
+Marketers can map contact fields onto the CRM record in the administration instead of in code - open the
+**CRM integration** application and select **Dynamics contact mapping** or **Salesforce contact mapping**.
+A CRM field can be filled from one contact field, from several combined in a template, from a fixed value,
+from the first field that has a value, or from a resolved reference field such as the contact's country.
+
+A mapping saved there replaces the mapping registered in code for that CRM and target record. See
+[Visual contact field mapping](./docs/Usage-Guide.md#visual-contact-field-mapping) for details.
+
 ## Full Instructions
 
 View the [Usage Guide](./docs/Usage-Guide.md) for more detailed instructions.

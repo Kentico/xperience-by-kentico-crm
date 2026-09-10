@@ -7,6 +7,7 @@ using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Salesforce.Configuration;
+using Kentico.Xperience.CRM.Salesforce.Metadata;
 using Kentico.Xperience.CRM.Salesforce.Synchronization;
 
 using Microsoft.Extensions.Configuration;
@@ -48,6 +49,10 @@ public static class SalesforceServiceCollectionsExtensions
         }
 
         AddSalesforceCommonIntegration(serviceCollection);
+
+        // The field mapping page is available for the Salesforce integration regardless of which parts of
+        // it are registered, so its metadata provider is registered here as well.
+        serviceCollection.TryAddScoped<SalesforceEntityMetadataProvider>();
 
         serviceCollection.AddScoped<ISalesforceLeadsIntegrationService, SalesforceLeadsIntegrationService>();
         return serviceCollection;
@@ -101,6 +106,11 @@ public static class SalesforceServiceCollectionsExtensions
         }
 
         AddSalesforceCommonIntegration(serviceCollection);
+
+        // Scoped so that the API client can be resolved lazily, and so an unconfigured integration falls
+        // back to the generated sObject definition instead of failing.
+        serviceCollection.TryAddScoped<SalesforceEntityMetadataProvider>();
+        serviceCollection.TryAddScoped<ISalesforceFieldValueSetter, SalesforceFieldValueSetter>();
 
         serviceCollection.AddScoped<ISalesforceContactsIntegrationService, SalesforceContactsIntegrationService>();
         return serviceCollection;

@@ -81,4 +81,12 @@ internal interface ISalesforceApiService
     /// <param name="lastSync"></param>
     /// <returns></returns>
     Task<IEnumerable<ContactSObject>> GetModifiedContactsAsync(DateTime lastSync);
+
+    /// <summary>
+    /// Retrieves the field metadata of an sObject, used to offer the CRM fields in the field mapping UI.
+    /// </summary>
+    /// <param name="sObjectName">sObject API name, for example <c>Lead</c>.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    Task<SObjectDescribe?> DescribeSObjectAsync(string sObjectName,
+        CancellationToken cancellationToken = default);
 }

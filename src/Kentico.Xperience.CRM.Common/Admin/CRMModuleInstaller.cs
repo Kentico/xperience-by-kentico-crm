@@ -48,6 +48,7 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         InstallFailedSyncItemClass(resourceInfo);
         InstallCRMIntegrationSettingsClass(resourceInfo);
         InstallContactsLastSyncTimeClass(resourceInfo);
+        InstallContactFieldMappingClass(resourceInfo);
     }
 
     private void InstallSyncedItemClass(ResourceInfo resourceInfo)
@@ -370,6 +371,128 @@ internal class CRMModuleInstaller : ICRMModuleInstaller
         {
             Name = nameof(ContactsLastSyncInfo.ContactsLastSyncTime),
             Visible = true,
+            Precision = 3,
+            DataType = "datetime",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        SetFormDefinition(info, formInfo);
+
+        if (info.HasChanged)
+        {
+            DataClassInfoProvider.SetDataClassInfo(info);
+        }
+    }
+
+    private void InstallContactFieldMappingClass(ResourceInfo resourceInfo)
+    {
+        var info = DataClassInfoProvider.GetDataClassInfo(CRMContactFieldMappingInfo.OBJECT_TYPE) ?? DataClassInfo.New(CRMContactFieldMappingInfo.OBJECT_TYPE);
+
+        info.ClassName = CRMContactFieldMappingInfo.TYPEINFO.ObjectClassName;
+        info.ClassTableName = CRMContactFieldMappingInfo.TYPEINFO.ObjectClassName.Replace(".", "_");
+        info.ClassDisplayName = "CRM contact field mapping";
+        info.ClassResourceID = resourceInfo.ResourceID;
+        info.ClassType = ClassType.SYSTEM_TABLE;
+
+        var formInfo =
+            FormHelper.GetBasicFormDefinition(nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingID));
+
+        var formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingCRMName),
+            Caption = "CRM",
+            Visible = false,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingEntityType),
+            Caption = "CRM entity type",
+            Visible = false,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingCRMField),
+            Caption = "CRM field",
+            Visible = false,
+            Precision = 0,
+            Size = 200,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingValueKind),
+            Caption = "Value kind",
+            Visible = false,
+            Precision = 0,
+            Size = 50,
+            DataType = "text",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingExpression),
+            Caption = "Value expression",
+            Visible = false,
+            Precision = 0,
+            DataType = "longtext",
+            Enabled = true,
+            AllowEmpty = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingOrder),
+            Caption = "Order",
+            Visible = false,
+            DataType = "integer",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingEnabled),
+            Caption = "Enabled",
+            DefaultValue = "True",
+            Visible = false,
+            DataType = "boolean",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingGUID),
+            Visible = false,
+            Precision = 0,
+            DataType = "guid",
+            Enabled = true
+        };
+        formInfo.AddFormItem(formItem);
+
+        formItem = new FormFieldInfo
+        {
+            Name = nameof(CRMContactFieldMappingInfo.CRMContactFieldMappingLastModified),
+            Visible = false,
             Precision = 3,
             DataType = "datetime",
             Enabled = true

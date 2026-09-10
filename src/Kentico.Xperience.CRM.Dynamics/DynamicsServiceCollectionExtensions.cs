@@ -3,6 +3,7 @@ using Kentico.Xperience.CRM.Common.Configuration;
 using Kentico.Xperience.CRM.Common.Constants;
 using Kentico.Xperience.CRM.Common.Enums;
 using Kentico.Xperience.CRM.Dynamics.Configuration;
+using Kentico.Xperience.CRM.Dynamics.Metadata;
 using Kentico.Xperience.CRM.Dynamics.Synchronization;
 
 using Microsoft.Extensions.Configuration;
@@ -43,6 +44,11 @@ public static class DynamicsServiceCollectionExtensions
         }
 
         serviceCollection.TryAddScoped(GetCrmServiceClient);
+
+        // The field mapping page is available for the Dynamics integration regardless of which parts of
+        // it are registered, so its metadata provider is registered here as well.
+        serviceCollection.TryAddScoped<DynamicsEntityMetadataProvider>();
+
         serviceCollection.AddScoped<IDynamicsLeadsIntegrationService, DynamicsLeadsIntegrationService>();
         return serviceCollection;
     }
@@ -96,6 +102,12 @@ public static class DynamicsServiceCollectionExtensions
         }
 
         serviceCollection.TryAddSingleton(GetCrmServiceClient);
+
+        // Scoped so that the Dataverse client can be resolved lazily whichever lifetime it was
+        // registered with, and so an unconfigured integration falls back instead of failing.
+        serviceCollection.TryAddScoped<DynamicsEntityMetadataProvider>();
+        serviceCollection.TryAddScoped<IDynamicsAttributeValueConverter, DynamicsAttributeValueConverter>();
+
         serviceCollection.AddScoped<IDynamicsContactsIntegrationService, DynamicsContactsIntegrationService>();
 
         return serviceCollection;

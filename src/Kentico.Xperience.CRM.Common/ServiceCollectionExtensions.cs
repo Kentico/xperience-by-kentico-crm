@@ -1,5 +1,7 @@
 ﻿using Kentico.Xperience.CRM.Common.Admin;
 using Kentico.Xperience.CRM.Common.Configuration;
+using Kentico.Xperience.CRM.Common.Mapping.Resolvers;
+using Kentico.Xperience.CRM.Common.Metadata;
 using Kentico.Xperience.CRM.Common.Services;
 using Kentico.Xperience.CRM.Common.Services.Implementations;
 using Kentico.Xperience.CRM.Common.Synchronization;
@@ -27,6 +29,8 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
         services.TryAddSingleton<ICRMSettingsService, CRMSettingsService>();
 
+        services.AddContactFieldMappingServices();
+
         return services;
     }
 
@@ -43,6 +47,24 @@ public static class ServiceCollectionExtensions
         services.TryAddSingleton<ICRMSyncItemService, CRMSyncItemService>();
         services.TryAddSingleton<ICRMSettingsService, CRMSettingsService>();
 
+        services.AddContactFieldMappingServices();
+
         return services;
+    }
+
+    /// <summary>
+    /// Adds the services backing the visually configured contact field mappings.
+    /// </summary>
+    private static void AddContactFieldMappingServices(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IContactFieldMappingService, ContactFieldMappingService>();
+        services.TryAddSingleton<IContactFieldSourceProvider, ContactFieldSourceProvider>();
+
+        services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IContactSourceValueResolver, CountryNameResolver>());
+        services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IContactSourceValueResolver, StateNameResolver>());
+        services.TryAddEnumerable(ServiceDescriptor
+            .Singleton<IContactSourceValueResolver, GenderLabelResolver>());
     }
 }

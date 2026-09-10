@@ -1,0 +1,56 @@
+{
+  "integrations": {
+    "crm": {
+      "mapping": {
+        "headline": "Contact field mapping",
+        "description": "Choose which Xperience contact data fills each field of the CRM record. A field can be filled from one contact field, from several combined in a template, from a fixed value, or from the first contact field that has a value.",
+        "target": "Target record",
+        "addMapping": "Map a CRM field",
+        "save": "Save",
+        "loadDefaults": "Load default mapping",
+        "clearAll": "Remove all mappings",
+        "empty": "No CRM field is mapped yet. Load the default mapping to start from the mapping this integration applies out of the box, or map a CRM field yourself.",
+        "usingCodeMapping": "No mapping is configured here, so the mapping defined in your project code is in use. Saving a mapping on this page replaces it.",
+        "usingStoredMapping": "This mapping replaces the mapping defined in your project code. Remove all mappings to return to the code mapping.",
+        "fallbackMetadata": "The CRM schema could not be retrieved, so this list shows the fields known to the integration rather than the fields in your CRM. Custom CRM fields are not listed, but you can still type their names.",
+        "requiredUnmapped": "Required CRM fields not mapped:",
+        "columns": {
+          "crmField": "CRM field",
+          "value": "Value",
+          "actions": "Actions"
+        },
+        "row": {
+          "selectCrmField": "Select a CRM field",
+          "customField": "Custom field",
+          "required": "Required",
+          "enabled": "Apply this mapping",
+          "remove": "Remove mapping",
+          "expand": "Edit value",
+          "collapse": "Close editor",
+          "notSet": "Not set"
+        },
+        "expression": {
+          "kind": "Value comes from",
+          "kinds": {
+            "sourceField": "A single contact field",
+            "template": "Several fields combined in a template",
+            "constant": "A fixed value",
+            "coalesce": "The first field that has a value",
+            "resolver": "A resolved reference field"
+          },
+          "sourceField": "Contact field",
+          "template": "Template",
+          "templateExplanation": "Write the text to send and insert contact fields as tokens, for example {{ContactFirstName}} {{ContactLastName}}.",
+          "insertField": "Insert",
+          "constant": "Value",
+          "coalesceExplanation": "The first of these contact fields that has a value is sent.",
+          "addFallback": "Add a fallback field",
+          "resolver": "Resolver",
+          "resolverSourceField": "Contact field to resolve",
+          "preview": "Preview",
+          "previewFor": "Previewed against"
+        }
+      }
+    }
+  }
+}

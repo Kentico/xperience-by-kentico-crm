@@ -5,7 +5,8 @@
 2. [CRM settings](#crm-settings)
 3. [Forms data - Leads integration](#forms-data---leads-integration)
 4. [Contacts integration](#contacts-integration)
-5. [Troubleshooting](#troubleshooting)
+5. [Visual contact field mapping](#visual-contact-field-mapping)
+6. [Troubleshooting](#troubleshooting)
 
 ## Screenshots
 
@@ -439,6 +440,107 @@ builder.Services.AddKenticoCRMSalesforceContactsIntegration(crmType: ContactCRMT
             builder.AddLeadToKenticoConverter<SalesforceLeadToKenticoContactCustomConverter>(),
             useDefaultMappingToKentico: false); // when true then both (custom and default) converter are applied
 ```
+
+## Visual contact field mapping
+
+Contact field mapping can also be configured by marketers in the administration, without code. Open the
+**CRM integration** application and select **Dynamics contact mapping** or **Salesforce contact mapping**.
+
+The page lists the fields of the CRM record. Each row owns one CRM field and describes how its value is
+produced, which is what allows several contact fields to fill a single CRM field.
+
+Use **Target record** to switch between the Lead and Contact entity. A mapping is stored per CRM and per
+target record, so you can prepare both and switch the integration over in `Program.cs` later.
+
+### Relationship to the mapping defined in code
+
+A saved mapping **fully replaces** the mapping registered on startup through the mapping builders for that
+CRM and target record. The page states which of the two is in effect.
+
+- To start from the mapping the integration applies out of the box, select **Load default mapping**. Nothing
+  is stored until you select **Save**.
+- To go back to the mapping defined in code, remove every row and save.
+- Custom converters (`ICRMTypeConverter<,>`) are **not** replaced. They always run, before the field
+  mapping is applied, so an advanced scenario implemented in a converter keeps working.
+
+Clearing the **Apply this mapping** checkbox keeps a row but stops it being applied. Disabling every row
+means nothing is mapped - it does not fall back to the mapping defined in code.
+
+### Value options
+
+| Value comes from | What it does | Example |
+| ---------------- | ------------ | ------- |
+| A single contact field | Sends the value of one contact field. | `ContactEmail` |
+| Several fields combined in a template | Free text with `{{ContactField}}` tokens. Use it to combine or format fields. | `{{ContactFirstName}} {{ContactLastName}}` |
+| A fixed value | Sends the same literal for every contact. | `Xperience web` |
+| The first field that has a value | Ordered list of contact fields, the first non-empty one wins. | `ContactBusinessPhone`, then `ContactMobilePhone` |
+| A resolved reference field | Turns a contact field holding an ID into text. | `ContactCountryID` to `Canada` |
+
+A token that refers to a contact field which no longer exists resolves to nothing rather than failing the
+synchronization. A template whose tokens all resolve to nothing sends no value at all.
+
+**Preview** evaluates a row against the most recently modified contact that has an email address, so you can
+see the value that would be sent before saving.
+
+Contact fields added to the contact class by your project are offered alongside the system ones.
+
+### Built-in resolvers
+
+| Resolver | Reads | Sends |
+| -------- | ----- | ----- |
+| Country name | `ContactCountryID` | Country display name |
+| State name | `ContactStateID` | State display name |
+| Gender label | `ContactGender` | `Male` or `Female` |
+
+To add your own, implement `IContactSourceValueResolver` and register it - it then appears in the resolver
+picker:
+
+```csharp
+public class ContactOwnerEmailResolver : IContactSourceValueResolver
+{
+    public string Name => "contact-owner-email";
+
+    public string DisplayName => "Contact owner email";
+
+    public string DefaultSourceField => nameof(ContactInfo.ContactOwnerUserID);
+
+    public object? Resolve(ContactInfo contactInfo, string? sourceField)
+    {
+        int userId = ValidationHelper.GetInteger(
+            contactInfo.GetValue(sourceField ?? DefaultSourceField), 0);
+
+        return userId > 0 ? UserInfo.Provider.Get(userId)?.Email : null;
+    }
+}
+```
+
+```csharp
+// Program.cs - register before the integration is added
+builder.Services.AddSingleton<IContactSourceValueResolver, ContactOwnerEmailResolver>();
+```
+
+### CRM fields and data types
+
+The CRM field list is retrieved from your CRM - Dataverse entity metadata for Dynamics, the sObject describe
+resource for Salesforce - so it contains the custom fields of your environment together with the allowed
+values of option set and picklist fields. The result is cached for 10 minutes.
+
+If the CRM cannot be reached, for example because the API settings are not filled in yet, the page falls back
+to the fields known to the integration and says so. Custom fields are not listed in that case, but you can
+still enter a field name by hand with **Custom field**.
+
+Values are converted to the type the CRM field expects, so a template or a constant can be mapped onto a
+number, a date, a checkbox or an option set. For an option set you may enter either the numeric value or the
+label. A value that cannot be converted is logged and the field is left unset rather than failing the whole
+record. A reference field can only be filled from an identifier when it points at a single entity type.
+
+> Values produced by mappings defined in code are passed through unchanged, so existing projects behave
+> exactly as before.
+
+### Where the configuration is stored
+
+Mappings are stored in the `KenticoCRMCommon_CRMContactFieldMapping` table, which the module installs on
+start together with the other objects of the integration.
 
 ## Troubleshooting
 

@@ -90,6 +90,27 @@ internal class SalesforceApiService : ISalesforceApiService
         }
     }
 
+    public async Task<SObjectDescribe?> DescribeSObjectAsync(string sObjectName,
+        CancellationToken cancellationToken = default)
+    {
+        var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
+
+        using var request = new HttpRequestMessage(HttpMethod.Get,
+            $"/services/data/v{apiVersion}/sobjects/{sObjectName}/describe");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+
+        var response = await httpClient.SendAsync(request, cancellationToken);
+
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<SObjectDescribe>(SerializerOptions,
+                cancellationToken);
+        }
+
+        string responseMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+        throw new ApiException("Unexpected response", (int)response.StatusCode, responseMessage, null!, null);
+    }
+
     private async Task<string?> GetEntityIdByEmail(string email, string entityName)
     {
         var apiVersion = integrationSettings.Value.ApiConfig.ApiVersion.ToString("F1", CultureInfo.InvariantCulture);
