@@ -32,7 +32,7 @@ The versions of this library are supported by the following versions of Xperienc
 
 ### Dependencies
 
-- [ASP.NET Core 8.0](https://dotnet.microsoft.com/en-us/download)
+- [ASP.NET Core 10.0](https://dotnet.microsoft.com/en-us/download)
 - [Xperience by Kentico](https://docs.xperience.io/xp/changelog)
 
 ## Package Installation

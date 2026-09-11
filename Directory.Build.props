@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <WarningsAsErrors>nullable</WarningsAsErrors>
@@ -32,6 +32,15 @@
     <NoWarn>$(NoWarn);1591;S101;S1121</NoWarn>
 
     <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+
+    <!--
+      The .NET 10 SDK audits transitive packages by default, which reports vulnerabilities in the
+      dependencies of the Xperience packages. Those are not ours to fix by overriding versions here -
+      see https://docs.kentico.com/documentation/developers-and-admins/security-guidelines/vulnerabilities-in-transitive-dependencies
+      Kept at 'direct' so the build reports only what this repository controls, which is the behavior
+      before the upgrade to .NET 10. Run a build with -p:NuGetAuditMode=all to review the transitive ones.
+    -->
+    <NuGetAuditMode>direct</NuGetAuditMode>
   </PropertyGroup>
 
   <PropertyGroup Condition=" $(Configuration) == 'Release' ">

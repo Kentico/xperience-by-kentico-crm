@@ -4,16 +4,28 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
+  Callout,
+  CalloutPlacementType,
+  CalloutType,
+  Card,
+  Cols,
+  Column,
   Headline,
   HeadlineSize,
+  Inline,
+  LayoutAlignment,
   MenuItem,
-  NotificationBarInfo,
-  NotificationBarWarning,
+  NameToggleButtons,
+  Row,
+  RowWrap,
   Select,
   Spacing,
   Stack,
+  Tag,
 } from '@kentico/xperience-admin-components';
 import React, { useRef, useState } from 'react';
+import { BodyText } from '../components/BodyText';
+import { MappingOverviewTable } from '../components/MappingOverviewTable';
 import { MappingRow } from '../components/MappingRow';
 import Localization from '../localization/localization.json';
 import {
@@ -33,6 +45,11 @@ const Commands = {
   LoadDefaults: 'LoadDefaults',
   Preview: 'Preview',
   Save: 'Save',
+};
+
+const Views = {
+  Review: 'review',
+  Edit: 'edit',
 };
 
 interface EntityTypeArguments {
@@ -81,6 +98,8 @@ export const ContactFieldMappingTemplate = (
   );
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [previews, setPreviews] = useState<Record<number, PreviewResult>>({});
+  // Review is the default: most visits are to check the configuration, not to change it.
+  const [view, setView] = useState(Views.Review);
 
   // The preview command result carries no row identity, so the requesting row is remembered here.
   // A ref rather than state, so the command callback never reads a stale value.
@@ -119,6 +138,8 @@ export const ContactFieldMappingTemplate = (
         setRows(result.mappings);
         setExpandedIndex(null);
         setPreviews({});
+        // Defaults are a starting point, so drop the marketer into the editor to review them.
+        setView(Views.Edit);
       }
     },
   });
@@ -148,12 +169,19 @@ export const ContactFieldMappingTemplate = (
     setExpandedIndex(null);
   };
 
-  const addRow = (): void =>
+  const addRow = (): void => {
     setRows((current) => {
       setExpandedIndex(current.length);
 
       return [...current, createEmptyRow()];
     });
+    setView(Views.Edit);
+  };
+
+  const editRow = (index: number): void => {
+    setExpandedIndex(index);
+    setView(Views.Edit);
+  };
 
   const requestPreview = (index: number, row: ContactFieldMappingRow): void => {
     previewIndex.current = index;
@@ -169,89 +197,170 @@ export const ContactFieldMappingTemplate = (
           <Headline size={HeadlineSize.M}>
             {`${props.crmName} - ${Strings.headline}`}
           </Headline>
-          <Box>{Strings.description}</Box>
+          <BodyText tone="subtle">{Strings.description}</BodyText>
         </Stack>
 
-        <Select
-          label={Strings.target}
-          value={entityType}
-          onChange={(value) => {
-            if (value && value !== entityType) {
-              void changeEntityType({ entityType: value });
-            }
-          }}
-        >
-          {props.entityTypes.map((option) => (
-            <MenuItem
-              key={option.value}
-              value={option.value}
-              primaryLabel={option.label}
-            />
-          ))}
-        </Select>
-
-        {!metadataIsLive && (
-          <NotificationBarWarning>
-            {Strings.fallbackMetadata}
-          </NotificationBarWarning>
-        )}
-
-        <NotificationBarInfo>
-          {hasConfiguration
-            ? Strings.usingStoredMapping
-            : Strings.usingCodeMapping}
-        </NotificationBarInfo>
-
-        {unmappedRequiredFields.length > 0 && (
-          <NotificationBarWarning>
-            {`${Strings.requiredUnmapped} ${unmappedRequiredFields.join(', ')}`}
-          </NotificationBarWarning>
-        )}
-
-        {rows.length === 0 ? (
-          <Box>{Strings.empty}</Box>
-        ) : (
+        <Card headline={Strings.sections.target}>
           <Stack spacing={Spacing.M}>
-            {rows.map((row, index) => (
-              <MappingRow
-                key={`${index}-${row.crmField}`}
-                row={row}
-                crmFields={crmFields}
-                sourceFields={props.sourceFields}
-                resolvers={props.resolvers}
-                expanded={expandedIndex === index}
-                preview={previews[index] ?? null}
-                onChange={(changed) => updateRow(index, changed)}
-                onRemove={() => removeRow(index)}
-                onToggleExpanded={() =>
-                  setExpandedIndex(expandedIndex === index ? null : index)
-                }
-                onPreview={() => requestPreview(index, row)}
-              />
-            ))}
-          </Stack>
-        )}
+            {/* Column children so Row's gutter actually applies, and alignY End so the tag lines up
+                with the select's input rather than floating level with its label. */}
+            <Row
+              spacing={Spacing.M}
+              alignY={LayoutAlignment.End}
+              wrap={RowWrap.Wrap}
+            >
+              <Column cols={Cols.Col6}>
+                <Select
+                  label={Strings.target}
+                  value={entityType}
+                  onChange={(value) => {
+                    if (value && value !== entityType) {
+                      void changeEntityType({ entityType: value });
+                    }
+                  }}
+                >
+                  {props.entityTypes.map((option) => (
+                    <MenuItem
+                      key={option.value}
+                      value={option.value}
+                      primaryLabel={option.label}
+                    />
+                  ))}
+                </Select>
+              </Column>
+              <Column>
+                <Box spacingBottom={Spacing.S}>
+                  <Tag
+                    label={
+                      hasConfiguration
+                        ? Strings.status.storedMapping
+                        : Strings.status.codeMapping
+                    }
+                  />
+                </Box>
+              </Column>
+            </Row>
 
-        <Stack spacing={Spacing.S}>
-          <Button
-            size={ButtonSize.S}
-            color={ButtonColor.Secondary}
-            label={Strings.addMapping}
-            onClick={addRow}
-          />
-          <Button
-            size={ButtonSize.S}
-            color={ButtonColor.Secondary}
-            label={Strings.loadDefaults}
-            onClick={() => void loadDefaults({ entityType })}
-          />
-          <Button
-            size={ButtonSize.M}
-            color={ButtonColor.Primary}
-            label={Strings.save}
-            onClick={() => void save({ entityType, mappings: rows })}
-          />
-        </Stack>
+            {/* Callouts rather than notification bars: these are standing context for the page, not
+                transient alerts, so they should not dominate it. */}
+            <Callout
+              type={CalloutType.QuickTip}
+              placement={CalloutPlacementType.OnPaper}
+            >
+              {hasConfiguration
+                ? Strings.usingStoredMapping
+                : Strings.usingCodeMapping}
+            </Callout>
+
+            {!metadataIsLive && (
+              <Callout
+                type={CalloutType.FriendlyWarning}
+                placement={CalloutPlacementType.OnPaper}
+              >
+                {Strings.fallbackMetadata}
+              </Callout>
+            )}
+          </Stack>
+        </Card>
+
+        <Card
+          headline={Strings.sections.mapping}
+          footer={
+            // Row only for the right alignment - with no spacing prop it adds no negative margin.
+            // The gaps come from Inline, which spaces each child. The outer Inline uses a wider gap
+            // so the primary action reads as separate from the two secondary ones.
+            <Row alignX={LayoutAlignment.End}>
+              <Inline spacing={Spacing.L}>
+                <Inline spacing={Spacing.S}>
+                  <Button
+                    size={ButtonSize.S}
+                    color={ButtonColor.Secondary}
+                    label={Strings.addMapping}
+                    onClick={addRow}
+                  />
+                  <Button
+                    size={ButtonSize.S}
+                    color={ButtonColor.Secondary}
+                    label={Strings.loadDefaults}
+                    onClick={() => void loadDefaults({ entityType })}
+                  />
+                </Inline>
+                <Button
+                  size={ButtonSize.M}
+                  color={ButtonColor.Primary}
+                  label={Strings.save}
+                  onClick={() => void save({ entityType, mappings: rows })}
+                />
+              </Inline>
+            </Row>
+          }
+        >
+          <Stack spacing={Spacing.M}>
+            {/* spacingBottom adds room between the toggle and the table below it. */}
+            <Box spacingBottom={Spacing.S}>
+              <Row alignX={LayoutAlignment.End}>
+                <NameToggleButtons
+                  orientation="horizontal"
+                  selectedItemId={view}
+                  items={[
+                    { id: Views.Review, label: Strings.view.review },
+                    { id: Views.Edit, label: Strings.view.edit },
+                  ]}
+                  onChange={(id) =>
+                    setView(id === Views.Edit ? Views.Edit : Views.Review)
+                  }
+                />
+              </Row>
+            </Box>
+
+            {unmappedRequiredFields.length > 0 && (
+              <Callout
+                type={CalloutType.FriendlyWarning}
+                placement={CalloutPlacementType.OnPaper}
+              >
+                {`${Strings.requiredUnmapped} ${unmappedRequiredFields.join(', ')}`}
+              </Callout>
+            )}
+
+            {rows.length === 0 && (
+              <BodyText tone="subtle">{Strings.empty}</BodyText>
+            )}
+
+            {rows.length > 0 && view === Views.Review && (
+              <Stack spacing={Spacing.S}>
+                <MappingOverviewTable
+                  mappings={rows}
+                  crmFields={crmFields}
+                  resolvers={props.resolvers}
+                  onEditRow={editRow}
+                />
+                <BodyText tone="subtle">{Strings.overview.hint}</BodyText>
+              </Stack>
+            )}
+
+            {rows.length > 0 && view === Views.Edit && (
+              <Stack spacing={Spacing.M}>
+                {rows.map((row, index) => (
+                  <MappingRow
+                    key={`${index}-${row.crmField}`}
+                    row={row}
+                    crmFields={crmFields}
+                    sourceFields={props.sourceFields}
+                    resolvers={props.resolvers}
+                    expanded={expandedIndex === index}
+                    preview={previews[index] ?? null}
+                    onChange={(changed) => updateRow(index, changed)}
+                    onRemove={() => removeRow(index)}
+                    onToggleExpanded={() =>
+                      setExpandedIndex(expandedIndex === index ? null : index)
+                    }
+                    onPreview={() => requestPreview(index, row)}
+                  />
+                ))}
+              </Stack>
+            )}
+          </Stack>
+        </Card>
       </Stack>
     </Box>
   );

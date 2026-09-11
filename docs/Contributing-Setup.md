@@ -6,16 +6,19 @@ The requirements to setup, develop, and build this project are listed below.
 
 ### .NET Runtime
 
-.NET SDK 7.0 or newer
+.NET SDK 10.0 or newer
 
-- <https://dotnet.microsoft.com/en-us/download/dotnet/7.0>
+- <https://dotnet.microsoft.com/en-us/download/dotnet/10.0>
 - See `global.json` file for specific SDK requirements
+- The projects target `net10.0`. Xperience by Kentico supports .NET 8 through .NET 10, and Microsoft ends
+  support for .NET 8 and .NET 9 on November 10, 2026 - see
+  [System requirements](https://docs.kentico.com/documentation/developers-and-admins/installation/system-requirements).
 
 ### Node.js Runtime
 
-- [Node.js](https://nodejs.org/en/download) 18.12.0 or newer
+- [Node.js](https://nodejs.org/en/download) 22 or newer, required to build the admin UI client
 - [NVM for Windows](https://github.com/coreybutler/nvm-windows) to manage multiple installed versions of Node.js
-- See `engines` in the solution `package.json` for specific version requirements
+- See `engines` in `src/Kentico.Xperience.CRM.Common/Client/package.json` for specific version requirements
 
 ### C# Editor
 

@@ -3,6 +3,7 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
+  Inline,
   Input,
   MenuItem,
   Select,
@@ -19,6 +20,7 @@ import {
   type ContactSourceField,
   type MappingResolver,
   type PreviewResult,
+  getSecondaryLabel,
 } from '../models/ContactFieldMapping';
 
 const Strings = Localization.integrations.crm.mapping.expression;
@@ -95,7 +97,7 @@ export const ExpressionEditor = ({
       key={field.name}
       value={field.name}
       primaryLabel={field.displayName}
-      secondaryLabel={field.name}
+      secondaryLabel={getSecondaryLabel(field.displayName, field.name)}
     />
   ));
 
@@ -162,7 +164,8 @@ export const ExpressionEditor = ({
         {row.kind === 'Coalesce' && (
           <Stack spacing={Spacing.S}>
             {row.sourceFields.length > 0 && (
-              <Stack spacing={Spacing.XS}>
+              // Inline so the fallback order reads left to right and wraps, rather than one tag per line.
+              <Inline spacing={Spacing.XS}>
                 {row.sourceFields.map((fieldName, index) => (
                   <Tag
                     key={fieldName}
@@ -171,7 +174,7 @@ export const ExpressionEditor = ({
                     onRemoveClick={() => removeFallbackField(fieldName)}
                   />
                 ))}
-              </Stack>
+              </Inline>
             )}
             <Select
               label={Strings.addFallback}
@@ -223,12 +226,15 @@ export const ExpressionEditor = ({
         )}
 
         <Stack spacing={Spacing.XS}>
-          <Button
-            size={ButtonSize.S}
-            color={ButtonColor.Secondary}
-            label={Strings.preview}
-            onClick={onPreview}
-          />
+          {/* Inline so the button keeps its natural width instead of stretching to the Stack. */}
+          <Inline spacing={Spacing.S}>
+            <Button
+              size={ButtonSize.S}
+              color={ButtonColor.Secondary}
+              label={Strings.preview}
+              onClick={onPreview}
+            />
+          </Inline>
           {preview !== null && (
             <Input
               readOnly

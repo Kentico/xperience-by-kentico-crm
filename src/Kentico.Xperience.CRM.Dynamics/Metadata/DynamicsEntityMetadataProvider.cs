@@ -97,8 +97,10 @@ internal class DynamicsEntityMetadataProvider : ICRMEntityMetadataProvider
     private static CRMFieldMetadata ToFieldMetadata(AttributeMetadata attribute) => new()
     {
         Name = attribute.LogicalName,
+        // The label alone - the admin UI has the attribute name in Name and shows it separately, so
+        // repeating it here only produced duplicated text and truncated table cells.
         DisplayName = attribute.DisplayName?.UserLocalizedLabel?.Label is { Length: > 0 } label
-            ? $"{label} ({attribute.LogicalName})"
+            ? label
             : attribute.LogicalName,
         DataType = ToDataType(attribute.AttributeType),
         IsRequired = attribute.RequiredLevel?.Value is AttributeRequiredLevel.ApplicationRequired
@@ -172,7 +174,10 @@ internal class DynamicsEntityMetadataProvider : ICRMEntityMetadataProvider
             .Select(g => new CRMFieldMetadata
             {
                 Name = g.Key,
-                DisplayName = $"{g.First().Property.Name} ({g.Key})",
+                // No label is available without the live schema, so the generated property name is the
+                // closest thing to one. It differs from the attribute name only in casing, which the
+                // admin UI detects and does not repeat.
+                DisplayName = g.First().Property.Name,
                 DataType = ToDataTypeFromClrType(g.First().Property.PropertyType),
                 NativeType = ToNativeType(g.First().Property.PropertyType)
             })

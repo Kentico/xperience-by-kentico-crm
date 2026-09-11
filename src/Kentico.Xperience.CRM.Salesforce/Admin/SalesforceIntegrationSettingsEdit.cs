@@ -11,9 +11,9 @@ using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.
     parentType: typeof(CRMIntegrationSettingsApplication),
     slug: "salesforce-settings-edit",
     uiPageType: typeof(SalesforceIntegrationSettingsEdit),
-    name: "Salesforce CRM",
+    name: "Salesforce settings",
     templateName: TemplateNames.EDIT,
-    order: 200)]
+    order: 300)]
 
 namespace Kentico.Xperience.CRM.Salesforce.Admin;
 

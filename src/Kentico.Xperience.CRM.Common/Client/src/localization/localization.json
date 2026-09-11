@@ -8,23 +8,47 @@
         "addMapping": "Map a CRM field",
         "save": "Save",
         "loadDefaults": "Load default mapping",
-        "clearAll": "Remove all mappings",
         "empty": "No CRM field is mapped yet. Load the default mapping to start from the mapping this integration applies out of the box, or map a CRM field yourself.",
         "usingCodeMapping": "No mapping is configured here, so the mapping defined in your project code is in use. Saving a mapping on this page replaces it.",
-        "usingStoredMapping": "This mapping replaces the mapping defined in your project code. Remove all mappings to return to the code mapping.",
+        "usingStoredMapping": "This mapping replaces the mapping defined in your project code. Remove all mappings and save to return to the code mapping.",
         "fallbackMetadata": "The CRM schema could not be retrieved, so this list shows the fields known to the integration rather than the fields in your CRM. Custom CRM fields are not listed, but you can still type their names.",
         "requiredUnmapped": "Required CRM fields not mapped:",
+        "sections": {
+          "target": "Target record",
+          "mapping": "Field mapping"
+        },
+        "status": {
+          "storedMapping": "Configured here",
+          "codeMapping": "From project code"
+        },
+        "view": {
+          "review": "Review",
+          "edit": "Edit"
+        },
+        "overview": {
+          "columns": {
+            "crmField": "CRM field",
+            "value": "Filled from",
+            "applied": "Applied"
+          },
+          "applied": {
+            "yes": "Yes",
+            "no": "No"
+          },
+          "hint": "Select a row to edit it.",
+          "summary": "{count} CRM field(s) mapped."
+        },
         "columns": {
           "crmField": "CRM field",
           "value": "Value",
           "actions": "Actions"
         },
         "row": {
-          "selectCrmField": "Select a CRM field",
-          "customField": "Custom field",
+          "selectCrmField": "Select from list",
+          "customField": "Enter name",
           "required": "Required",
           "enabled": "Apply this mapping",
-          "remove": "Remove mapping",
+          "remove": "Remove",
           "expand": "Edit value",
           "collapse": "Close editor",
           "notSet": "Not set"

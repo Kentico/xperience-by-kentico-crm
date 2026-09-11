@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
     uiPageType: typeof(SalesforceContactFieldMappingPage),
     name: "Salesforce contact mapping",
     templateName: CRMAdminClientModule.CONTACT_FIELD_MAPPING_TEMPLATE,
-    order: 300)]
+    order: 400)]
 
 namespace Kentico.Xperience.CRM.Salesforce.Admin;
 

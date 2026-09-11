@@ -93,9 +93,9 @@ internal class SalesforceEntityMetadataProvider : ICRMEntityMetadataProvider
     private static CRMFieldMetadata ToFieldMetadata(SObjectFieldDescribe field) => new()
     {
         Name = field.Name!,
-        DisplayName = string.IsNullOrWhiteSpace(field.Label)
-            ? field.Name!
-            : $"{field.Label} ({field.Name})",
+        // The label alone - the admin UI has the field name in Name and shows it separately, so
+        // repeating it here only produced duplicated text and truncated table cells.
+        DisplayName = string.IsNullOrWhiteSpace(field.Label) ? field.Name! : field.Label!,
         DataType = ToDataType(field.Type),
         // Salesforce rejects a record without a value only when the field cannot be empty and Salesforce
         // does not fill it itself.

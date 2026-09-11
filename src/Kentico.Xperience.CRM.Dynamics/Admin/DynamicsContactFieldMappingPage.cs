@@ -20,7 +20,7 @@ using Microsoft.Extensions.Options;
     uiPageType: typeof(DynamicsContactFieldMappingPage),
     name: "Dynamics contact mapping",
     templateName: CRMAdminClientModule.CONTACT_FIELD_MAPPING_TEMPLATE,
-    order: 100)]
+    order: 200)]
 
 namespace Kentico.Xperience.CRM.Dynamics.Admin;
 

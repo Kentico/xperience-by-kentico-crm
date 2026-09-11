@@ -11,9 +11,9 @@ using IFormItemCollectionProvider = Kentico.Xperience.Admin.Base.Forms.Internal.
     parentType: typeof(CRMIntegrationSettingsApplication),
     slug: "dynamics-settings-edit",
     uiPageType: typeof(DynamicsIntegrationSettingsEdit),
-    name: "Dynamics CRM",
+    name: "Dynamics settings",
     templateName: TemplateNames.EDIT,
-    order: UIPageOrder.First)]
+    order: 100)]
 
 namespace Kentico.Xperience.CRM.Dynamics.Admin;
 

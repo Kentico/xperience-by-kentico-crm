@@ -452,6 +452,15 @@ produced, which is what allows several contact fields to fill a single CRM field
 Use **Target record** to switch between the Lead and Contact entity. A mapping is stored per CRM and per
 target record, so you can prepare both and switch the integration over in `Program.cs` later.
 
+### Review and Edit views
+
+The page opens in the **Review** view, a read-only table of every mapped CRM field, what fills it, and
+whether it is applied. It is meant for checking the whole configuration at a glance without opening
+anything. Rows that are kept but not applied are shown greyed out.
+
+Select a row, or switch to the **Edit** view, to change the mapping. Adding a field or loading the default
+mapping also switches to **Edit** so you can review what you are about to save.
+
 ### Relationship to the mapping defined in code
 
 A saved mapping **fully replaces** the mapping registered on startup through the mapping builders for that

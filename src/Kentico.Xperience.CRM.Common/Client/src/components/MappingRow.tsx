@@ -4,14 +4,20 @@ import {
   ButtonColor,
   ButtonSize,
   Checkbox,
+  Cols,
+  Column,
   Divider,
   DividerOrientation,
+  Inline,
   Input,
   MenuItem,
   Paper,
+  Row,
+  RowWrap,
   Select,
   Spacing,
   Stack,
+  Tag,
 } from '@kentico/xperience-admin-components';
 import React, { useState } from 'react';
 import { ExpressionEditor } from './ExpressionEditor';
@@ -22,6 +28,8 @@ import {
   type CrmTargetField,
   type MappingResolver,
   type PreviewResult,
+  describeMappingValue,
+  getSecondaryLabel,
 } from '../models/ContactFieldMapping';
 
 const Strings = Localization.integrations.crm.mapping;
@@ -40,43 +48,6 @@ interface MappingRowProps {
   readonly onPreview: () => void;
   /* eslint-enable @typescript-eslint/naming-convention */
 }
-
-/**
- * Describes the row's value in one line, so the grid stays readable without expanding every row.
- */
-const describeValue = (
-  row: ContactFieldMappingRow,
-  resolvers: MappingResolver[],
-): string => {
-  switch (row.kind) {
-    case 'SourceField':
-      return row.sourceField ?? Strings.row.notSet;
-
-    case 'Template':
-      return row.template ?? Strings.row.notSet;
-
-    case 'Constant':
-      return row.constantValue
-        ? `"${row.constantValue}"`
-        : Strings.row.notSet;
-
-    case 'Coalesce':
-      return row.sourceFields.length > 0
-        ? row.sourceFields.join(' or ')
-        : Strings.row.notSet;
-
-    case 'Resolver': {
-      const resolver = resolvers.find((item) => item.name === row.resolver);
-
-      return resolver
-        ? `${resolver.displayName} (${row.sourceField ?? resolver.defaultSourceField})`
-        : Strings.row.notSet;
-    }
-
-    default:
-      return Strings.row.notSet;
-  }
-};
 
 export const MappingRow = ({
   row,
@@ -97,67 +68,84 @@ export const MappingRow = ({
 
   const selectedField = crmFields.find((field) => field.name === row.crmField);
 
-  const toggleManual = (
-    <Button
-      borderless
-      size={ButtonSize.XS}
-      color={ButtonColor.Tertiary}
-      label={manual ? Strings.row.selectCrmField : Strings.row.customField}
-      onClick={() => setManual(!manual)}
-    />
-  );
-
   return (
     <Paper>
       <Box spacing={Spacing.M}>
-        <Stack spacing={Spacing.S}>
-          <Stack spacing={Spacing.S}>
-            {manual ? (
+        <Stack spacing={Spacing.M}>
+          {/* Row with Column children: only Column consumes the gutter variables Row sets, so this
+              is the one place the Row spacing prop actually produces a gap. Both columns are a plain
+              label plus input, which keeps their inputs on the same line. */}
+          <Row spacing={Spacing.M} wrap={RowWrap.Wrap}>
+            <Column cols={Cols.Col6}>
+              {manual ? (
+                <Input
+                  label={Strings.columns.crmField}
+                  value={row.crmField}
+                  onChange={(event) =>
+                    onChange({ ...row, crmField: event.target.value })
+                  }
+                />
+              ) : (
+                <Select
+                  markAsRequired
+                  label={Strings.columns.crmField}
+                  value={row.crmField}
+                  onChange={(value) =>
+                    onChange({ ...row, crmField: value ?? '' })
+                  }
+                >
+                  {crmFields.map((field) => (
+                    <MenuItem
+                      key={field.name}
+                      value={field.name}
+                      primaryLabel={field.displayName}
+                      secondaryLabel={getSecondaryLabel(
+                        field.displayName,
+                        field.name,
+                      )}
+                    />
+                  ))}
+                </Select>
+              )}
+            </Column>
+            <Column cols={Cols.Col6}>
               <Input
-                label={Strings.columns.crmField}
-                labelActionsElement={toggleManual}
-                value={row.crmField}
-                onChange={(event) =>
-                  onChange({ ...row, crmField: event.target.value })
+                readOnly
+                label={Strings.columns.value}
+                value={describeMappingValue(row, resolvers)}
+                onClick={onToggleExpanded}
+              />
+            </Column>
+          </Row>
+
+          {/* Inline rather than Row: Inline wraps each child in a spaced Box, while Row would apply a
+              negative margin and pull this toolbar up over the field labels above it. The data type
+              lives here as a tag instead of as the select's explanation text, which used to collide
+              with these controls. */}
+          <Inline spacing={Spacing.S}>
+            {selectedField && (
+              <Tag
+                label={
+                  selectedField.isRequired
+                    ? `${selectedField.dataType} - ${Strings.row.required}`
+                    : selectedField.dataType
                 }
               />
-            ) : (
-              <Select
-                markAsRequired
-                label={Strings.columns.crmField}
-                labelActionsElement={toggleManual}
-                value={row.crmField}
-                explanationText={
-                  selectedField
-                    ? `${selectedField.dataType}${selectedField.isRequired ? ` - ${Strings.row.required}` : ''}`
-                    : undefined
-                }
-                onChange={(value) => onChange({ ...row, crmField: value ?? '' })}
-              >
-                {crmFields.map((field) => (
-                  <MenuItem
-                    key={field.name}
-                    value={field.name}
-                    primaryLabel={field.displayName}
-                    secondaryLabel={field.name}
-                  />
-                ))}
-              </Select>
             )}
-
-            <Input
-              readOnly
-              label={Strings.columns.value}
-              value={describeValue(row, resolvers)}
-              onClick={onToggleExpanded}
-            />
-          </Stack>
-
-          <Stack spacing={Spacing.S}>
             <Checkbox
               label={Strings.row.enabled}
               checked={row.enabled}
-              onChange={(_event, checked) => onChange({ ...row, enabled: checked })}
+              onChange={(_event, checked) =>
+                onChange({ ...row, enabled: checked })
+              }
+            />
+            <Button
+              size={ButtonSize.S}
+              color={ButtonColor.Secondary}
+              label={
+                manual ? Strings.row.selectCrmField : Strings.row.customField
+              }
+              onClick={() => setManual(!manual)}
             />
             <Button
               size={ButtonSize.S}
@@ -172,7 +160,7 @@ export const MappingRow = ({
               label={Strings.row.remove}
               onClick={onRemove}
             />
-          </Stack>
+          </Inline>
 
           {expanded && (
             <Stack spacing={Spacing.S}>
